@@ -9,7 +9,7 @@ import java.sql.Statement;
 
 public class DBConnection {
 	private static String USERNAME = "root";
-	private static String PASSWORD = "@Tuan16022005";
+	private static String PASSWORD = "0835269835Loc*";
 	private static String DRIVER = "com.mysql.cj.jdbc.Driver";
 	private static String URL = "jdbc:mysql://localhost:3306/aloute";
 	private static Connection con;
