@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="vi" data-bs-theme="dark">
 <head>
@@ -66,7 +67,7 @@
         <div class="card register-card rounded-4 shadow">
             <div class="card-body p-4 p-md-5">
                 <div class="text-center mb-4">
-                    <a class="navbar-brand fw-bold fs-2 d-inline-flex align-items-center text-decoration-none" href="index.jsp">
+                    <a class="navbar-brand fw-bold fs-2 d-inline-flex align-items-center text-decoration-none" href="/">
                         <svg class="bi me-2" width="40" height="40" fill="#0ea5e9" viewBox="0 0 16 16"><path d="M8 0a1 1 0 0 1 1 1v5.268l4.562-2.634a1 1 0 1 1 1 1.732L10 8l4.562 2.634a1 1 0 1 1-1 1.732L9 9.732V15a1 1 0 1 1-2 0V9.732L2.438 12.366a1 1 0 1 1-1-1.732L6 8 1.438 5.366a1 1 0 0 1 1-1.732L7 6.268V1a1 1 0 0 1 1-1z"/></svg>
                         AloUTE
                     </a>
@@ -75,28 +76,38 @@
 
                 <form id="registerForm" action="/do-register" method="post">
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control rounded-3" id="fullName" name="fullName" placeholder="Họ và tên" required>
-                        <label for="fullName">Họ và tên</label>
+						<input type="text" class="form-control rounded-3" id="fullName"
+							name="fullName" placeholder="Họ và tên"
+							value="${oldFullName != null ? oldFullName : ''}" required>
+						<label for="fullName">Họ và tên</label>
                     </div>
     
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control rounded-3" id="location" name="location" placeholder="Quê quán">
-                        <label for="location">Quê quán</label>
+						<input type="text" class="form-control rounded-3" id="location"
+							name="location" placeholder="Quê quán"
+							value="${oldLocation != null ? oldLocation : ''}"> 
+						<label for="location">Quê quán</label>
                     </div>
                     
                     <label for="email" class="form-label">Email</label>
                     <div class="input-group mb-3">
-                        <input type="email" class="form-control rounded-start-3" id="email" name="email" placeholder="name@example.com" required style="border-top-right-radius: 0; border-bottom-right-radius: 0;">
-                        <button class="btn btn-outline-secondary rounded-end-3" type="button" id="sendCodeBtn" onclick="sendCode()">Gửi mã</button>
+						<input type="email" class="form-control rounded-start-3"
+							id="email" name="email" placeholder="name@example.com" required
+							value="${oldEmail != null ? oldEmail : ''}">
+						<button class="btn btn-outline-secondary rounded-end-3" type="button" id="sendCodeBtn" onclick="sendCode()">Gửi mã</button>
 					</div>
 
                     <div id="email-status" style="color: green; font-size: 14px; margin-top: -10px; margin-bottom: 10px;"></div>
-
+					<c:if test="${not empty errorEmail}">
+						<div style="color:red; font-size: 0.9rem; margin-top: -10px; margin-bottom: 10px;">${errorEmail}</div>
+					</c:if>
                     <div class="form-floating mb-3">
                         <input type="text" class="form-control rounded-3" id="verificationCode" name="verificationCode" placeholder="Mã xác nhận" required>
                         <label for="verificationCode">Mã xác nhận</label>
                     </div>
-                    <div id="code-status" style="color: red; font-size: 14px; margin-top: -10px; margin-bottom: 10px;"></div>
+					<c:if test="${not empty errorOTP}">
+						<div style="color:red; font-size: 0.9rem; margin-top: -10px; margin-bottom: 10px;">${errorOTP}</div>
+					</c:if>
                     <div class="row g-2 mb-3">
                         <div class="col-md">
                             <div class="form-floating">
@@ -111,23 +122,27 @@
                             </div>
                         </div>
                     </div>
-                    <div id="password-status" style="color: red; font-size: 14px; margin-top: -10px; margin-bottom: 10px;"></div>
-                    <div class="row g-2 mb-3">
+					<c:if test="${not empty errorPass}">
+						<div style="color:red; font-size: 0.9rem; margin-top: -10px; margin-bottom: 10px;">${errorPass}</div>
+					</c:if>
+					<div class="row g-2 mb-3">
                         <div class="col-md">
                             <div class="form-floating">
-                                <input type="date" class="form-control rounded-3" id="birthday" name="birthday" placeholder="Ngày sinh">
-                                <label for="birthday">Ngày sinh</label>
+								<input type="date" class="form-control rounded-3" id="birthday"
+									name="birthday"
+									value="${oldBirthday != null ? oldBirthday : ''}"> 
+								<label for="birthday">Ngày sinh</label>
                             </div>
                         </div>
                         <div class="col-md">
                             <div class="form-floating">
-                                <select class="form-select rounded-3" id="gender" name="gender">
-                                  <option selected disabled value="">Chọn giới tính</option>
-                                  <option value="Nam">Nam</option>
-                                  <option value="Nữ">Nữ</option>
-                                  <option value="Khác">Khác</option>
-                                </select>
-                                <label for="gender">Giới tính</label>
+								<select class="form-select rounded-3" id="gender" name="gender">
+									<option disabled ${empty oldGender ? 'selected' : ''} value="">Chọn
+										giới tính</option>
+									<option value="Nam" ${oldGender == 'Nam' ? 'selected' : ''}>Nam</option>
+									<option value="Nữ" ${oldGender == 'Nữ' ? 'selected' : ''}>Nữ</option>
+								</select> 
+								<label for="gender">Giới tính</label>
                             </div>
                         </div>
                     </div>
@@ -148,7 +163,6 @@
         const email = document.getElementById("email").value.trim();
         const sendCodeBtn = document.getElementById('sendCodeBtn');
         const emailStatus = document.getElementById('email-status');
-
         if (email === "") {
             alert("Vui lòng nhập email trước khi gửi mã!");
             return;
@@ -228,62 +242,6 @@ function showSuccessAlert(message) {
 }
 
 
-document.getElementById("registerForm").addEventListener("submit", async function(event) {
-    event.preventDefault(); // ❌ chặn reload
-
-    const fullName = document.getElementById("fullName").value.trim();
-    const location = document.getElementById("location").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
-    const confirmPassword = document.getElementById("confirmPassword").value.trim();
-    const birthday = document.getElementById("birthday").value.trim();
-    const gender = document.getElementById("gender").value.trim();
-    const verificationCode = document.getElementById("verificationCode").value.trim();
-
-    const emailStatus = document.getElementById("email-status");
-    const passwordStatus = document.getElementById("password-status");
-    const codeStatus = document.getElementById("code-status");
-
-    // reset thông báo
-    emailStatus.textContent = "";
-    passwordStatus.textContent = "";
-    codeStatus.textContent = "";
-
-    try {
-        const response = await fetch("/do-register", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams({
-                fullName: fullName,
-                location: location,
-                email: email,
-                password: password,
-                confirmPassword: confirmPassword,
-                verificationCode: verificationCode,
-                birthday: birthday,
-                gender: gender
-            })
-        });
-
-        const msg = await response.text();
-
-        if (response.ok) {
-            window.location.href = "/login";
-        } else if (response.status === 400) {
-            codeStatus.textContent = msg;           // OTP sai
-        } else if (response.status === 401) {
-            passwordStatus.textContent = msg;       // Xác nhận mật khẩu sai
-        } else if (response.status === 409) {
-            emailStatus.textContent = msg;          // Email trùng
-        } else {
-            codeStatus.textContent = "❌ Có lỗi xảy ra.";
-        }
-
-    } catch (err) {
-        console.error("Lỗi:", err);
-        codeStatus.textContent = "❌ Không thể kết nối server!";
-    }
-});
 </script>
 <div id="alert-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
 
