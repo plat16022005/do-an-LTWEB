@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="vi" data-bs-theme="dark">
 <head>
@@ -65,21 +64,19 @@
     </style>
 </head>
 <body class="text-light">
-	<c:if test="${not empty success}">
-		<div class="alert alert-success alert-dismissible fade show"
-			role="alert"
-			style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
-			<strong>Thành công!</strong> ${success}
-			<button type="button" class="btn-close" data-bs-dismiss="alert"
-				aria-label="Close"></button>
-		</div>
-	</c:if>
-	<main class="m-auto">
+	<div th:if="${success}"
+		class="alert alert-success alert-dismissible fade show" role="alert"
+		style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+		<strong>Thành công!</strong> <span th:text="${success}"></span>
+		<button type="button" class="btn-close" data-bs-dismiss="alert"
+			aria-label="Close"></button>
+	</div>
+    <main class="m-auto">
         <div class="card login-card rounded-4 shadow">
             <div class="card-body p-4 p-md-5">
                 <div class="text-center mb-4">
                     <!-- Liên kết logo về trang chủ -->
-                    <a class="navbar-brand fw-bold fs-2 d-inline-flex align-items-center text-decoration-none" href="/">
+                    <a class="navbar-brand fw-bold fs-2 d-inline-flex align-items-center text-decoration-none" href="index.jsp">
                         <svg class="bi me-2" width="40" height="40" fill="#0ea5e9" viewBox="0 0 16 16"><path d="M8 0a1 1 0 0 1 1 1v5.268l4.562-2.634a1 1 0 1 1 1 1.732L10 8l4.562 2.634a1 1 0 1 1-1 1.732L9 9.732V15a1 1 0 1 1-2 0V9.732L2.438 12.366a1 1 0 1 1-1-1.732L6 8 1.438 5.366a1 1 0 0 1 1-1.732L7 6.268V1a1 1 0 0 1 1-1z"/></svg>
                         AloUTE
                     </a>
@@ -103,7 +100,7 @@
                                 Ghi nhớ tôi
                             </label>
                         </div>
-                        <a href="/forgot-pass" class="small text-decoration-none">Quên mật khẩu?</a>
+                        <a href="#" class="small text-decoration-none">Quên mật khẩu?</a>
                     </div>
 
                     <button class="w-100 btn btn-lg btn-primary rounded-pill" type="submit">Đăng nhập</button>
