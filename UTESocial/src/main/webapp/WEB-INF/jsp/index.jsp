@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="vi" data-bs-theme="dark">
 <head>
@@ -6,13 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Khám Phá - AloUTE (Bootstrap)</title>
     <!-- Bootstrap CSS -->
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-	rel="stylesheet"
-	xintegrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-	crossorigin="anonymous">
-
-<!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous">
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
         /* Tùy chỉnh màu nền chính */
@@ -69,7 +65,7 @@
         <div class="container-xl">
             <!-- Logo & Tên trang -->
             <a class="navbar-brand fw-bold fs-4 d-flex align-items-center" href="#">
-                 <svg class="bi me-2" width="32" height="32" fill="#0ea5e9"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18" stroke="currentColor"></path></svg>
+                <svg class="bi me-2" width="32" height="32" fill="#0ea5e9"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18" stroke="currentColor"></path></svg>
                 AloUTE
             </a>
 
@@ -83,10 +79,15 @@
                 </li>
             </ul>
 
-            <!-- Nút Đăng nhập -->
-            <a href="/login" class="btn btn-primary rounded-pill">
-                Đăng nhập
-            </a>
+            <!-- Nút Đăng nhập/Đăng xuất -->
+            <c:choose>
+                <c:when test="${not empty sessionScope.user}">
+                    <a href="/logout" class="btn btn-danger rounded-pill">Đăng xuất</a>
+                </c:when>
+                <c:otherwise>
+                    <a href="/login" class="btn btn-primary rounded-pill">Đăng nhập</a>
+                </c:otherwise>
+            </c:choose>
         </div>
     </nav>
 
@@ -227,4 +228,3 @@
     </script>
 </body>
 </html>
-
