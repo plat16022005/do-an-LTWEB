@@ -41,10 +41,4 @@ public class UserService {
         userRepository.save(user);
         return true;
     }
-    public void resetPass(String email, String password)
-    {
-    	User user = userRepository.findByEmail(email);
-    	user.setPasswordHash(PasswordUtil.hashPassword(password));
-    	userRepository.save(user);
-    }
 }
