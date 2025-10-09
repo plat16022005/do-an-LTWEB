@@ -45,48 +45,16 @@ public class UserController {
         User user = userService.login(email, password);
         
         if (user != null) {
-            session.setAttribute("user", user);
-            
-            // kiểm tra role, nếu là null thì mặc định là user
-            String role = user.getRole();
-            if (role == null) 
-            {
-                role = "User"; // kiểm tra role, nếu là null thì mặc định là user
-                user.setRole(role); // Cập nhật lại user
-                userRepository.save(user); // Lưu vào database
-            }
-            if ("Admin".equals(role)) 
-            {
-                return "redirect:/";
-            } 
-            else 
-            {
-                return "redirect:/index";
-            }
-        } 
-        else 
-        {
-            redirectAttributes.addFlashAttribute("error", "Sai tên đăng nhập hoặc mật khẩu");
+        	session.setAttribute("user", user);
+        	if (user.getRole().equals("Admin"))
+        		return "redirect:/";
+        	else
+        		return "redirect:/home";
+        } else {
+        	redirectAttributes.addFlashAttribute("error", "Sai tên đăng nhập hoặc mật khẩu");
             return "redirect:/login";
         }
     }
-    
-    
-    @GetMapping("/index")
-    public String showHomePage() 
-    {
-        return "index"; // Map tới /WEB-INF/jsp/home.jsp
-    }
-    
-    
-    //Bổ sung thêm logout
-    @GetMapping("/logout")
-    public String handleLogout(HttpSession session) 
-    {
-        session.invalidate(); // Xóa toàn bộ session
-        return "redirect:/login"; // Redirect về trang đăng nhập
-    }
-    
     
     @GetMapping("/register")
     public String showRegisterForm()

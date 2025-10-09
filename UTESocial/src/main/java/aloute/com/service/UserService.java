@@ -36,10 +36,8 @@ public class UserService {
     	user.setPasswordHash(PasswordUtil.hashPassword(passWord));
     	user.setBirthday(birthday);
     	user.setGender(gender);
-    	
-        user.setRole("User"); // Mặc định là user khi mới đăng ký
-        userRepository.save(user);
-        return true;
+    	userRepository.save(user);
+    	return true;
     }
     public void resetPass(String email, String password)
     {
