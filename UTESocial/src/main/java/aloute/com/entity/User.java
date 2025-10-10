@@ -133,11 +133,11 @@ public class User {
     @Column(name = "IsActivated")
     private Boolean isActivated = true;
 
-    
-    /*Thêm trường mới dựa theo database mới
     @Column(name = "Role", length = 20)
     private String role;
     
+    
+    /*
     @Column(name = "IsLocked", columnDefinition = "BIT DEFAULT 0")
     private Boolean isLocked;
 
