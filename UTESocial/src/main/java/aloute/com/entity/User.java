@@ -15,94 +15,119 @@ import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "Users")
-public class User {
+public class User 
+{
     public Integer getUserId() {
 		return userId;
 	}
-
 	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
 
+	
 	public String getEmail() {
 		return email;
 	}
-
 	public void setEmail(String email) {
 		this.email = email;
 	}
 
+	
 	public String getPasswordHash() {
 		return passwordHash;
 	}
-
 	public void setPasswordHash(String passwordHash) {
 		this.passwordHash = passwordHash;
 	}
 
+	
 	public String getFullName() {
 		return fullName;
 	}
-
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
 	}
 
+	
 	public String getLocation() {
 		return location;
 	}
-
 	public void setLocation(String location) {
 		this.location = location;
 	}
 
+	
 	public LocalDate getBirthday() {
 		return birthday;
 	}
-
 	public void setBirthday(LocalDate birthday) {
 		this.birthday = birthday;
 	}
 
+	
 	public String getGender() {
 		return gender;
 	}
-
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
 
+	
 	public LocalDateTime getCreatedAt() {
 		return createdAt;
 	}
-
 	public void setCreatedAt(LocalDateTime createdAt) {
 		this.createdAt = createdAt;
 	}
 
+	
 	public String getAvatar() {
 		return avatar;
 	}
-
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
 	}
 
+	
 	public Boolean getIsActivated() {
 		return isActivated;
 	}
-
 	public void setIsActivated(Boolean isActivated) {
 		this.isActivated = isActivated;
 	}
 
+	
 	public String getRole() {
 		return role;
 	}
-
 	public void setRole(String role) {
 		this.role = role;
 	}
+	
+	
+	public Boolean getIsLocked() {
+        return isLocked;
+    }
+    public void setIsLocked(Boolean isLocked) {
+        this.isLocked = isLocked;
+    }
+
+    
+    public String getLockedReason() {
+        return lockedReason;
+    }
+    public void setLockedReason(String lockedReason) {
+        this.lockedReason = lockedReason;
+    }
+
+    
+    public LocalDateTime getLockedAt() {
+        return lockedAt;
+    }
+    public void setLockedAt(LocalDateTime lockedAt) {
+        this.lockedAt = lockedAt;
+    }
+    
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -144,14 +169,12 @@ public class User {
     private String role;
     
     
-    /*
-    @Column(name = "IsLocked", columnDefinition = "BIT DEFAULT 0")
-    private Boolean isLocked;
+    @Column(name = "IsLocked")
+    private Boolean isLocked = false;
 
     @Column(name = "LockedReason")
     private String lockedReason;
 
     @Column(name = "LockedAt")
     private LocalDateTime lockedAt;
-    */
 }
