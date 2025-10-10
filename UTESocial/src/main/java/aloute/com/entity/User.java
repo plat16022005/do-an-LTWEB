@@ -10,6 +10,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 @Entity
 @Table(name = "Users")
 public class User {
@@ -107,9 +110,13 @@ public class User {
     private Integer userId;
 
     @Column(name = "Email", nullable = false, unique = true, length = 255)
+    @NotNull(message = "Email không được để trống")
+    @Size(max = 255, message = "Email không được vượt quá 255 ký tự")
     private String email;
 
     @Column(name = "PasswordHash", nullable = false, length = 255)
+    @NotNull(message = "Mật khẩu không được để trống")
+    @Size(min = 8, message = "Mật khẩu phải ít nhất 8 ký tự")
     private String passwordHash;
 
     @Column(name = "FullName", length = 100)

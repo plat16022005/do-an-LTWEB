@@ -1,6 +1,7 @@
 package aloute.com.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,8 @@ public class UserService {
     	user.setPasswordHash(PasswordUtil.hashPassword(passWord));
     	user.setBirthday(birthday);
     	user.setGender(gender);
+    	user.setRole("user"); 
+    	user.setCreatedAt(LocalDateTime.now());
     	userRepository.save(user);
     	return true;
     }

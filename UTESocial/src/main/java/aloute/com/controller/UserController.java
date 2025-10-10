@@ -4,12 +4,12 @@ import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import aloute.com.entity.User;
@@ -19,7 +19,8 @@ import aloute.com.service.UserService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-public class UserController {
+public class UserController 
+{
     @Autowired
     private EmailService emailService;
     @Autowired
@@ -28,7 +29,7 @@ public class UserController {
     private UserRepository userRepository;
     @GetMapping("/")
     public String showIndexForm() {
-        return "index"; // Tự động map tới /WEB-INF/jsp/index.jsp
+        return "index"; 
     }
     @GetMapping("/login")
     public String showLoginForm()

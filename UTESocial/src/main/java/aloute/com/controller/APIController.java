@@ -25,10 +25,17 @@ public class APIController {
     private UserRepository userRepository;
     
     @PostMapping("/send-otp")
-    public ResponseEntity<String> sendOtp(@RequestBody Map<String, String> body, HttpSession session) throws MessagingException {
+    public ResponseEntity<String> sendOtp(@RequestBody Map<String, String> body, HttpSession session) throws MessagingException 
+    {
         String email = body.get("email");
-
-        if (userRepository.findByEmail(email) != null) {
+        
+        if (email == null || email.trim().isEmpty()) 
+        {
+            return ResponseEntity.badRequest().body("Email không được để trống");
+        }
+        
+        if (userRepository.findByEmail(email) != null) 
+        {
             return ResponseEntity.status(409).body("Email đã có người sử dụng");  // 409 Conflict
         }
 

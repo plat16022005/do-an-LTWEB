@@ -8,7 +8,6 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.stereotype.Service;
 
-import java.util.Properties;
 import java.util.Random;
 
 @Service
