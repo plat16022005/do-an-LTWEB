@@ -30,15 +30,12 @@ public class PostModeration
     @Column(name = "Reason")
     private String reason;
 
-    
-    
-    
+
     
     
 	public Integer getModerationId() {
 		return moderationId;
 	}
-
 	public void setModerationId(Integer moderationId) {
 		this.moderationId = moderationId;
 	}
@@ -46,7 +43,6 @@ public class PostModeration
 	public Posts getPost() {
 		return post;
 	}
-
 	public void setPost(Posts post) {
 		this.post = post;
 	}
@@ -54,7 +50,6 @@ public class PostModeration
 	public String getStatus() {
 		return status;
 	}
-
 	public void setStatus(String status) {
 		this.status = status;
 	}
@@ -62,7 +57,6 @@ public class PostModeration
 	public User getModerator() {
 		return moderator;
 	}
-
 	public void setModerator(User moderator) {
 		this.moderator = moderator;
 	}
@@ -70,7 +64,6 @@ public class PostModeration
 	public LocalDateTime getReviewedAt() {
 		return reviewedAt;
 	}
-
 	public void setReviewedAt(LocalDateTime reviewedAt) {
 		this.reviewedAt = reviewedAt;
 	}
@@ -78,10 +71,9 @@ public class PostModeration
 	public String getReason() {
 		return reason;
 	}
-
 	public void setReason(String reason) {
 		this.reason = reason;
 	}
 
-   // Getters and Setters
+  
 }
