@@ -1,7 +1,7 @@
-/*package aloute.com.entity.admin;
+package aloute.com.entity.admin;
 
-import aloute.com.entity.Posts;
-import aloute.com.entity.Users;
+import aloute.com.entity.manager.*;
+import aloute.com.entity.User;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -22,7 +22,7 @@ public class PostModeration
 
     @ManyToOne
     @JoinColumn(name = "ModeratorID")
-    private Users moderator;
+    private User moderator;
 
     @Column(name = "ReviewedAt")
     private LocalDateTime reviewedAt;
@@ -59,11 +59,11 @@ public class PostModeration
 		this.status = status;
 	}
 
-	public Users getModerator() {
+	public User getModerator() {
 		return moderator;
 	}
 
-	public void setModerator(Users moderator) {
+	public void setModerator(User moderator) {
 		this.moderator = moderator;
 	}
 
@@ -83,6 +83,5 @@ public class PostModeration
 		this.reason = reason;
 	}
 
-   
+   // Getters and Setters
 }
-*/
