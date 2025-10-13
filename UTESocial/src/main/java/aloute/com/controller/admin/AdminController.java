@@ -1,8 +1,8 @@
 package aloute.com.controller.admin;
 
+import aloute.com.entity.Posts;
+import aloute.com.entity.Reports;
 import aloute.com.entity.User;
-import aloute.com.entity.manager.Posts;
-import aloute.com.entity.manager.Reports;
 import aloute.com.service.AdminService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class AdminController
     @GetMapping("/dashboard")
 	public String showAdminDashboard(Model model) 
 	{
-	    model.addAttribute("totalUsers", adminService.getTotalUsers());
+    	model.addAttribute("totalUsers", adminService.countManagedUsers());
 	    model.addAttribute("totalPosts", adminService.getTotalPosts());
 	    model.addAttribute("pendingReports", adminService.getPendingReportsCount());
 	    return "admin/dashboard";

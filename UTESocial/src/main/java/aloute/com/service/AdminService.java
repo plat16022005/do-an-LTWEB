@@ -1,11 +1,9 @@
 package aloute.com.service;
 
+import aloute.com.entity.Posts;
+import aloute.com.entity.Reports;
 import aloute.com.entity.User;
-import aloute.com.entity.manager.Posts;
-import aloute.com.entity.manager.Reports;
-import aloute.com.entity.admin.Statistics;
 import aloute.com.repository.UserRepository;
-import aloute.com.repository.admin.StatisticsRepository;
 import aloute.com.repository.common.PostsRepository;
 import aloute.com.repository.common.ReportsRepository;
 
@@ -15,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Arrays;
 
 @Service
 public class AdminService 
@@ -25,7 +24,7 @@ public class AdminService
 
     public List<User> getAllUsers() 
     {
-        return userRepository.findAll();
+    	return userRepository.findByRoleIn(Arrays.asList("user", "manager"));
     }
     
     //Khoá tài khoản
@@ -163,9 +162,9 @@ public class AdminService
     
    
 	 // Các phương thức thống kê
-    public long getTotalUsers() 
+    public long countManagedUsers() 
     {
-        return userRepository.count();
+        return userRepository.countByRoleIn(Arrays.asList("user", "manager"));
     }
     
     public long getTotalPosts() 
@@ -177,6 +176,8 @@ public class AdminService
     {
         return reportsRepository.countByStatus("pending");
     }
+    
+    
     
 }
    
