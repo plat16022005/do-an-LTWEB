@@ -86,46 +86,65 @@
             
             <div class="col-lg-9">
                 <div id="home-content">
-                    <main class="d-grid gap-3">
-                        <article class="card rounded-4 overflow-hidden">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center gap-3 mb-3">
-                                    <img class="rounded-circle" src="https://placehold.co/48x48/34d399/FFFFFF?text=A" alt="Avatar">
-                                    <div>
-                                        <p class="fw-bold mb-0">An Nhiên</p>
-                                        <p class="text-muted small mb-0">@annhien · 15 phút trước</p>
-                                    </div>
-                                </div>
-                                <p>Một buổi chiều thật đẹp để đi dạo bên bờ hồ. Không khí trong lành và cảnh hoàng hôn thật tuyệt vời! 🌅 #thiênnhiên #thưgiãn</p>
-                            </div>
-                            <img src="https://placehold.co/600x400/67e8f9/0f172a?text=Cảnh+Hoàng+Hôn" class="card-img-bottom" alt="Ảnh hoàng hôn bên hồ">
-                            <div class="card-body d-flex justify-content-between post-actions">
-                                <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-chat"></i> 15</button>
-                                <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-repeat"></i> 3</button>
-                                <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-heart"></i> 210</button>
-                                <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-upload"></i></button>
-                            </div>
-                        </article>
-                        
-                        <article class="card rounded-4 overflow-hidden">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center gap-3 mb-3">
-                                    <img class="rounded-circle" src="https://placehold.co/48x48/f9a8d4/FFFFFF?text=B" alt="Avatar">
-                                    <div>
-                                        <p class="fw-bold mb-0">Bảo Trân</p>
-                                        <p class="text-muted small mb-0">@baotran · 1 giờ trước</p>
-                                    </div>
-                                </div>
-                                <p>Vừa đọc xong một cuốn sách rất hay. "Atomic Habits" thực sự đã thay đổi cách tôi nhìn nhận về việc xây dựng thói quen tốt. Mọi người nên đọc thử nhé! Highly recommended. 👍</p>
-                            </div>
-                            <div class="card-body d-flex justify-content-between post-actions">
-                                <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-chat"></i> 98</button>
-                                <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-repeat"></i> 21</button>
-                                <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-heart"></i> 1.8K</button>
-                                <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-upload"></i></button>
-                            </div>
-                        </article>
-                    </main>
+					<main class="d-grid gap-3">
+					    <div th:each="post : ${posts}" class="card rounded-4 overflow-hidden">
+					        <div class="card-body">
+					            <div class="d-flex align-items-center gap-3 mb-3">
+					                <img class="rounded-circle" th:src="@{/uploads/avatars/test.jpg}" alt="Avatar" width="48" height="48">
+					                <div>
+					                    <p class="fw-bold mb-0" th:text="${post.user.fullName}">Tên người dùng</p>
+					                    <p class="text-muted small mb-0">
+					                        <span th:text="${#temporals.format(post.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+					                    </p>
+					                </div>
+					            </div>
+					            <p th:text="${post.content}"></p>
+					            <!-- Hiển thị file đính kèm -->
+								<div th:if="${post.attachments != null and !post.attachments.isEmpty()}" class="mt-3">
+								    <div class="d-flex flex-wrap gap-2">
+								        <div th:each="att : ${post.attachments}">
+								            <!-- Nếu là ảnh -->
+								            <img th:if="${att.fileType.startsWith('image')}"
+								                 th:src="${att.fileUrl}"
+								                 class="rounded-3"
+								                 style="width: 100%; max-width: 450px; object-fit: cover;" 
+								                 alt="Attachment">
+								
+								            <!-- Nếu là video -->
+								            <video th:if="${att.fileType.startsWith('video')}"
+								                   th:src="${att.fileUrl}"
+								                   controls
+								                   class="rounded-3"
+								                   style="width: 100%; max-width: 450px; object-fit: cover;">
+								            </video>
+								
+								            <!-- Nếu là file khác -->
+								            <a th:if="${!att.fileType.startsWith('image') and !att.fileType.startsWith('video')}"
+								               th:href="${att.fileUrl}"
+								               class="text-info d-block"
+								               target="_blank">
+								               <i class="bi bi-paperclip"></i> Tải tệp đính kèm
+								            </a>
+								        </div>
+								    </div>
+								</div>
+					            
+					        </div>
+					
+					        <div class="card-body d-flex justify-content-between post-actions">
+					            <button class="btn text-muted d-flex align-items-center gap-2">
+					                <i class="bi bi-chat"></i> <span th:text="${post.commentsCount}">0</span>
+					            </button>
+					            <button class="btn text-muted d-flex align-items-center gap-2">
+					                <i class="bi bi-repeat"></i> <span th:text="${post.shareCount}">0</span>
+					            </button>
+					            <button class="btn text-muted d-flex align-items-center gap-2">
+					                <i class="bi bi-heart"></i> <span th:text="${post.likesCount}">0</span>
+					            </button>
+					            <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-upload"></i></button>
+					        </div>
+					    </div>
+					</main>
                 </div>
 
                 <div id="policy-content" class="d-none">
@@ -195,5 +214,54 @@
             });
         });
     </script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const mainContainer = document.querySelector('main.d-grid');
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
+    }
+
+    function renderPost(post) {
+        const avatar = post.user?.avatar || "https://placehold.co/48x48/64748b/fff?text=U";
+        const fullName = post.user?.fullName || "Người dùng ẩn danh";
+
+        return `
+            <article class="card rounded-4 overflow-hidden">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <img class="rounded-circle" src="${avatar}" alt="Avatar" width="48" height="48">
+                        <div>
+                            <p class="fw-bold mb-0">${fullName}</p>
+                            <p class="text-muted small mb-0">${formatDate(post.createdAt)}</p>
+                        </div>
+                    </div>
+                    <p>${post.content || ''}</p>
+                </div>
+                <div class="card-body d-flex justify-content-between post-actions">
+                    <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-chat"></i> ${post.commentsCount}</button>
+                    <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-repeat"></i> ${post.shareCount}</button>
+                    <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-heart"></i> ${post.likesCount}</button>
+                    <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-upload"></i></button>
+                </div>
+            </article>
+        `;
+    }
+
+    async function loadRandomPosts() {
+        try {
+            const response = await fetch('/api/explore/random');
+            const posts = await response.json();
+            mainContainer.innerHTML = posts.map(renderPost).join('');
+        } catch (err) {
+            console.error("Không thể tải bài viết:", err);
+        }
+    }
+
+    loadRandomPosts(); // Tự động load khi trang mở
+});
+</script>
+
 </body>
 </html>
