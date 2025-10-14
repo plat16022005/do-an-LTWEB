@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="vi" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khám Phá - AloUTE</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        /* CSS đã được đồng bộ hóa từ trang upload.html */
+        body {
+            background-color: #0f172a; 
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .card {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+        }
+        .navbar {
+            background-color: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #334155;
+        }
+        /* CSS cho sidebar (quan trọng) */
+        aside .nav-link {
+            color: #adb5bd;
+        }
+        aside .nav-link:hover {
+            background-color: #334155;
+            color: #fff;
+        }
+        aside .nav-link.active {
+            background-color: #334155;
+            color: #fff;
+        }
+        /* CSS cho các thành phần khác */
+        .navbar-nav .nav-link.active {
+            color: #fff !important;
+        }
+        .post-actions .btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        /* --- Hiển thị file đính kèm --- */
+		/* ===== Horizontal Scroll Gallery ===== */
+		.attachment-scroll {
+		    display: flex;
+		    gap: 1rem;
+		    overflow-x: auto;
+		    scroll-snap-type: x mandatory;
+		    padding-bottom: 10px;
+		}
+		
+		.attachment-scroll::-webkit-scrollbar {
+		    height: 8px;
+		}
+		
+		.attachment-scroll::-webkit-scrollbar-thumb {
+		    background: #475569;
+		    border-radius: 4px;
+		}
+		
+		.attachment-scroll::-webkit-scrollbar-track {
+		    background: transparent;
+		}
+		
+		/* Mỗi file đính kèm là 1 "slide" */
+		.attachment-item {
+		    flex: 0 0 auto;
+		    scroll-snap-align: start;
+		    border-radius: 12px;
+		    background-color: #1e293b;
+		    border: 1px solid #334155;
+		    overflow: hidden;
+		    box-shadow: 0 0 8px rgba(30, 41, 59, 0.5);
+		    transition: transform 0.2s ease-in-out;
+		}
+		
+		.attachment-item:hover {
+		    transform: scale(1.03);
+		}
+		
+		.attachment-item img,
+		.attachment-item video {
+		    max-width: 400px;
+		    height: auto;
+		    display: block;
+		    object-fit: cover;
+		    border-radius: 12px;
+		}
+		
+		/* File đính kèm không phải ảnh/video */
+		.attachment-file {
+		    display: flex;
+		    align-items: center;
+		    justify-content: center;
+		    gap: 10px;
+		    width: 380px;
+		    padding: 1rem;
+		    background: rgba(148, 163, 184, 0.1);
+		    color: #e2e8f0;
+		    font-weight: 500;
+		    text-decoration: none;
+		    border-radius: 12px;
+		    transition: background 0.3s ease;
+		}
+		
+		.attachment-file:hover {
+		    background: rgba(148, 163, 184, 0.2);
+		    color: #fff;
+		}
+
+    </style>
+</head>
+<body class="text-light">
+
+    <nav class="navbar sticky-top">
+        <div class="container-xl">
+            <a class="navbar-brand fw-bold fs-4 d-flex align-items-center">
+                <svg class="bi me-2" width="32" height="32" fill="#0ea5e9"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18" stroke="currentColor"></path></svg>
+                AloUTE
+            </a>
+            
+            <ul class="navbar-nav flex-row gap-4 position-absolute start-50 translate-middle-x">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#" id="home-link">Trang chủ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="policy-link">Chính sách</a>
+                </li>
+            </ul>
+
+            <a th:href="@{/login}" class="btn btn-primary rounded-pill">
+                Đăng nhập
+            </a>
+        </div>
+    </nav>
+
+    <div class="container-xl mt-4">
+        <div class="row g-4">
+            <div class="col-lg-3 d-none d-lg-block">
+				<aside class="sticky-top" style="top: 80px;">
+				    <ul class="nav flex-column gap-1">
+						<li class="nav-item">
+				            <a id="home-sidebar-button" class="nav-link active bg-dark rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/home">
+				                <i class="bi bi-house-door-fill fs-3"></i>
+				                <span>Trang chủ</span>
+				            </a>
+				        </li>
+				    </ul>
+				</aside>
+
+            </div>
+            
+            <div class="col-lg-9">
+                <div id="home-content">
+					<main class="d-grid gap-3">
+					    <div th:each="post : ${posts}" class="card rounded-4 overflow-hidden">
+					        <div class="card-body">
+					            <div class="d-flex align-items-center gap-3 mb-3">
+					                <img class="rounded-circle" th:src="${post.user.avatarUrl}" alt="Avatar" width="48" height="48">
+
+					                <div>
+					                    <p class="fw-bold mb-0" th:text="${post.user.fullName}">Tên người dùng</p>
+					                    <p class="fw mb-0" th:text="${post.user.nameUser}"></p>
+					                    <p class="text-muted small mb-0">
+					                        <span th:text="${#temporals.format(post.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+					                    </p>
+					                </div>
+					            </div>
+					            <p th:text="${post.content}"></p>
+								<!-- Thư viện ảnh/video dạng thanh trượt -->
+								<div th:if="${post.attachments != null and !post.attachments.isEmpty()}" 
+								     class="attachment-scroll mt-3">
+								     
+								    <div th:each="att : ${post.attachments}" class="attachment-item text-center">
+								
+								        <!-- Nếu là ảnh -->
+								        <img th:if="${att.fileType.startsWith('image')}"
+								             th:src="${att.fileUrl}"
+								             alt="Ảnh đính kèm">
+								
+								        <!-- Nếu là video -->
+								        <video th:if="${att.fileType.startsWith('video')}"
+								               th:src="${att.fileUrl}"
+								               controls
+								               class="rounded-3">
+								        </video>
+								
+								        <!-- Nếu là file khác -->
+								        <a th:if="${!att.fileType.startsWith('image') and !att.fileType.startsWith('video')}"
+								           th:href="${att.fileUrl}"
+								           class="attachment-file"
+								           target="_blank">
+								           <i class="bi bi-paperclip"></i>
+								           <span th:text="${#strings.substring(att.fileUrl, att.fileUrl.lastIndexOf('/') + 1)}"></span>
+								        </a>
+								    </div>
+								</div>
+
+					        </div>
+					
+					        <div class="card-body d-flex justify-content-between post-actions">
+					            <button class="btn text-muted d-flex align-items-center gap-2">
+					                <i class="bi bi-chat"></i> <span th:text="${post.commentsCount}">0</span>
+					            </button>
+					            <button class="btn text-muted d-flex align-items-center gap-2">
+					                <i class="bi bi-repeat"></i> <span th:text="${post.shareCount}">0</span>
+					            </button>
+					            <button class="btn text-muted d-flex align-items-center gap-2">
+					                <i class="bi bi-heart"></i> <span th:text="${post.likesCount}">0</span>
+					            </button>
+					            <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-upload"></i></button>
+					        </div>
+					    </div>
+					</main>
+                </div>
+
+                <div id="policy-content" class="d-none">
+                    <div class="card rounded-4">
+                        <div class="card-body p-4 p-md-5">
+                            <h2>Chính sách và Điều khoản Sử dụng</h2>
+                            <p class="text-muted">Chào mừng bạn đến với trang web Khám Phá. Bằng việc truy cập và sử dụng trang web, bạn đồng ý tuân thủ các điều khoản và điều kiện được nêu dưới đây.</p>
+                            
+                            <h3 class="mt-4">1. Quyền sở hữu trí tuệ</h3>
+                            <p>Tất cả nội dung, hình ảnh, và thiết kế trên trang web này thuộc bản quyền của chúng tôi (trừ nội dung do người dùng đăng tải). Mọi hành vi sao chép, phân phối lại mà không có sự cho phép bằng văn bản đều bị nghiêm cấm.</p>
+
+                            <h3 class="mt-4">2. Nội dung người dùng</h3>
+                            <p>Bạn chịu hoàn toàn trách nhiệm về nội dung bạn đăng tải. Bạn không được phép đăng tải nội dung vi phạm pháp luật, có tính chất xúc phạm, hoặc vi phạm bản quyền của người khác. Chúng tôi có quyền xóa bất kỳ nội dung nào vi phạm mà không cần báo trước.</p>
+
+                            <h3 class="mt-4">3. Giới hạn trách nhiệm</h3>
+                            <p>Chúng tôi không chịu trách nhiệm cho bất kỳ thiệt hại nào phát sinh từ việc sử dụng hoặc không thể sử dụng trang web. Nội dung trên trang web chỉ mang tính chất tham khảo.</p>
+                            
+                            <p class="mt-4">Chúng tôi có thể thay đổi các điều khoản này bất cứ lúc nào. Vui lòng kiểm tra lại trang này thường xuyên để cập nhật. Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+document.addEventListener("click", e => {
+  const img = e.target.closest(".attachment-card img");
+  if (!img) return;
+  
+  const overlay = document.createElement("div");
+  overlay.style = `
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999;
+  `;
+  const fullImg = document.createElement("img");
+  fullImg.src = img.src;
+  fullImg.style = "max-width: 90%; max-height: 90%; border-radius: 8px;";
+
+  overlay.appendChild(fullImg);
+  document.body.appendChild(overlay);
+
+  overlay.addEventListener("click", () => overlay.remove());
+});
+</script>
+<script>
+function scrollGallery(btn, direction) {
+  const container = btn.parentElement.querySelector(".attachment-scroll");
+  container.scrollBy({
+    left: direction * 400,
+    behavior: "smooth"
+  });
+}
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const homeLink = document.getElementById('home-link');
+  const policyLink = document.getElementById('policy-link');
+
+  const homeContent = document.getElementById('home-content');
+  const policyContent = document.getElementById('policy-content');
+
+  // Khi click nút Trang chủ
+  homeLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    homeContent.classList.remove('d-none');
+    policyContent.classList.add('d-none');
+
+    // đổi trạng thái active
+    homeLink.classList.add('active');
+    policyLink.classList.remove('active');
+  });
+
+  // Khi click nút Chính sách
+  policyLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    homeContent.classList.add('d-none');
+    policyContent.classList.remove('d-none');
+
+    // đổi trạng thái active
+    policyLink.classList.add('active');
+    homeLink.classList.remove('active');
+  });
+});
+</script>
+
+</body>
+</html>
