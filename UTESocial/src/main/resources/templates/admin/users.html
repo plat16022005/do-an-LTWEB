@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="vi" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Người dùng - AloUTE Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --sidebar-bg: #1e293b;
+            --border-color: #334155;
+            --text-light: #e2e8f0;
+            --text-muted: #94a3b8;
+            --primary-color: #0ea5e9;
+            --shadow-medium: rgba(0, 0, 0, 0.4);
+        }
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Montserrat', sans-serif;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .main-wrapper {
+            display: flex;
+            width: 100%;
+            padding: 20px;
+            gap: 20px;
+        }
+        .sidebar-container {
+            flex-shrink: 0;
+            width: 280px;
+            position: sticky;
+            top: 20px;
+            height: calc(100vh - 40px);
+        }
+        .sidebar {
+            background-color: var(--sidebar-bg);
+            border-radius: 15px;
+            padding: 20px 0;
+            box-shadow: 0 10px 30px var(--shadow-medium);
+            border: 1px solid var(--border-color);
+            height: 100%;
+            
+        }
+        .sidebar .navbar-brand {
+            padding: 10px 20px;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            display: block;
+            text-align: center;
+        }
+        .sidebar .nav-link {
+            color: var(--text-muted);
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: background-color 0.2s, color 0.2s, transform 0.3s ease;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background-color: rgba(14, 165, 233, 0.1);
+            color: var(--text-light);
+            border-left: 4px solid var(--primary-color);
+            padding-left: 21px;
+            transform: translateX(5px);
+        }
+        .sidebar .nav-link.active {
+            font-weight: bold;
+        }
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .main-header {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px 30px;
+            box-shadow: 0 10px 30px var(--shadow-medium);
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .main-header .form-control {
+            background-color: var(--bg-dark);
+            border-color: var(--border-color);
+            color: var(--text-light);
+            max-width: 300px;
+            border-radius: 50rem;
+        }
+        .main-header .form-control::placeholder {
+            color: var(--text-muted);
+        }
+        .main-header .input-group {
+            flex-grow: 1;
+            max-width: 400px;
+        }
+        .main-header .search-icon {
+            color: var(--text-muted);
+            font-size: 1.25rem;
+        }
+        .main-header .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+        }
+        .content-card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px var(--shadow-medium);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px var(--shadow-medium);
+        }
+        .bi {
+            font-size: 1.25rem;
+            width: 25px;
+            text-align: center;
+        }
+        .nav-link.active .bi {
+            color: var(--primary-color);
+        }
+        .nav-link .bi {
+            color: var(--text-muted);
+        }
+        .table {
+            color: var(--text-light);
+            background-color: transparent;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .table thead th {
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-muted);
+        }
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .table tbody td {
+            border-top: 1px solid var(--border-color);
+        }
+        .form-select-sm {
+            background-color: var(--bg-dark);
+            border-color: var(--border-color);
+            color: var(--text-light);
+            border-radius: 8px;
+        }
+        .form-select-sm:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(14, 165, 233, 0.25);
+        }
+        @media (max-width: 992px) {
+            .main-wrapper {
+                flex-direction: column;
+            }
+            .sidebar-container {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 20px;
+                position: static;
+            }
+            .sidebar {
+                height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .main-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .main-header .input-group {
+                width: 100%;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+        <div class="sidebar-container">
+            <div class="sidebar">
+                <a class="navbar-brand fw-bold fs-4 d-flex align-items-center justify-content-center gap-2" th:href="@{/admin/dashboard}">
+                    <svg class="bi me-2" width="32" height="32" fill="var(--primary-color)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18" stroke="currentColor"></path></svg>
+                    AloUTE Admin
+                </a>
+                <ul class="nav flex-column mt-4">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/admin/dashboard}">
+                            <i class="bi bi-speedometer2"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/admin/users}">
+                            <i class="bi bi-people-fill"></i>
+                            <span>Quản lý Người dùng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/admin/posts}">
+                            <i class="bi bi-journals"></i>
+                            <span>Quản lý Bài đăng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/admin/reports}">
+                            <i class="bi bi-flag-fill"></i>
+                            <span>Khiếu nại</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-gear-fill"></i>
+                            <span>Cài đặt</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Đăng xuất</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="main-header">
+                <div>
+                    <h2 class="mb-0">Quản lý Người dùng</h2>
+                    <p class="text-muted mb-0">Xem và quản lý tất cả người dùng hệ thống.</p>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Tìm kiếm người dùng..." aria-label="Tìm kiếm">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    </div>
+                    <img src="https://placehold.co/40x40/0ea5e9/FFFFFF?text=A" alt="Admin Avatar" class="profile-avatar">
+                </div>
+            </div>
+            <div class="content-card p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th class="py-3 px-4">ID</th>
+                                <th class="py-3 px-4">Email</th>
+                                <th class="py-3 px-4">Họ và Tên</th>
+                                <th class="py-3 px-4">Role</th>
+                                <th class="py-3 px-4">Trạng thái</th>
+                                <th class="py-3 px-4">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="user : ${users}">
+                                <td class="py-3 px-4" th:text="${user.userId}"></td>
+                                <td class="py-3 px-4" th:text="${user.email}"></td>
+                                <td class="py-3 px-4" th:text="${user.fullName}"></td>
+                                <td class="py-3 px-4" th:text="${user.role}"></td>
+                                <td class="py-3 px-4">
+                                    <span th:if="${user.isLocked}" class="badge bg-danger">Đã khóa</span>
+                                    <span th:unless="${user.isLocked}" class="badge bg-success">Hoạt động</span>
+                                </td>
+                                <td class="py-3 px-4">
+                                    <form th:if="${!user.isLocked}" th:action="@{/admin/users/lock}" method="get" style="display:inline-block; margin-right: 5px;">
+                                        <input type="hidden" name="userId" th:value="${user.userId}" />
+                                        <button type="submit" class="btn btn-sm btn-danger">Khóa</button>
+                                    </form>
+                                    <form th:if="${user.isLocked}" th:action="@{/admin/users/unlock}" method="post" style="display:inline-block; margin-right: 5px;">
+                                        <input type="hidden" name="userId" th:value="${user.userId}" />
+                                        <button type="submit" class="btn btn-sm btn-success">Mở khóa</button>
+                                    </form>
+                                    <form th:if="${user.role != 'admin'}" th:action="@{/admin/users/change-role}" method="post" style="display:inline-block;">
+                                        <input type="hidden" name="userId" th:value="${user.userId}" />
+                                        <select name="newRole" class="form-select-sm" onchange="this.form.submit()">
+                                            <option value="user" th:selected="${user.role == 'user'}">User</option>
+                                            <option value="manager" th:selected="${user.role == 'manager'}">Manager</option>
+                                        </select>
+                                    </form>
+                                </td>
+                            </tr>
+                            <tr th:if="${users.isEmpty()}">
+                                <td colspan="6" class="text-center py-3 px-4">Không có người dùng nào được tìm thấy.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
