@@ -122,7 +122,15 @@
 		    background: rgba(148, 163, 184, 0.2);
 		    color: #fff;
 		}
+.user-link {
+  text-decoration: none;    /* ❌ bỏ gạch dưới */
+  color: #adb5bd;           /* 🎨 màu xám nhạt */
+}
 
+.user-link:hover {
+  color: #ffffff;           /* ✨ đổi màu khi rê chuột nếu muốn */
+  text-decoration: underline; /* hoặc bỏ underline luôn */
+}
     </style>
 </head>
 <body class="text-light">
@@ -151,7 +159,7 @@
 				<aside class="sticky-top" style="top: 80px;">
 				    <ul class="nav flex-column gap-1">
 						<li class="nav-item">
-				            <a id="home-sidebar-button" class="nav-link active bg-dark rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/home">
+				            <a id="home-sidebar-button" class="nav-link active rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/home">
 				                <i class="bi bi-house-door-fill fs-3"></i>
 				                <span>Trang chủ</span>
 				            </a>
@@ -194,7 +202,8 @@
 				            </a>
 				        </li>
 				        <li class="nav-item">
-				            <a id="nav-profile" class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="#">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" 
+   																		th:href="@{/{username}(username=${user.nameUser})}">
 				                <i class="bi bi-person-circle fs-3"></i>
 				                <span>Cá nhân</span>
 				            </a>
@@ -220,13 +229,37 @@
                 <div id="home-content">
 					<main class="d-grid gap-3">
 					    <div th:each="post : ${posts}" class="card rounded-4 overflow-hidden">
+				    		<!-- Modal báo cáo bài viết -->
+							<div class="modal fade" th:id="'reportPostModal__' + ${post.postId}" tabindex="-1" aria-labelledby="reportPostLabel" aria-hidden="true">
+							  <div class="modal-dialog modal-dialog-centered">
+							    <div class="modal-content bg-dark text-light">
+							      <div class="modal-header border-secondary">
+							        <h5 class="modal-title" id="reportPostLabel">Báo cáo bài viết</h5>
+							        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+							      </div>
+							      <div class="modal-body">
+							        <form method="post" th:action="@{/report-post}">
+							          <input type="hidden" name="postId" th:value="${post.postId}">
+							          <div class="mb-3">
+							            <label for="reason" class="form-label">Lý do báo cáo</label>
+							            <textarea name="reason" class="form-control bg-dark text-light border-secondary" rows="4" placeholder="Nhập lý do..."></textarea>
+							          </div>
+							          <div class="d-flex justify-content-end">
+							            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Hủy</button>
+							            <button type="submit" class="btn btn-danger">Gửi báo cáo</button>
+							          </div>
+							        </form>
+							      </div>
+							    </div>
+							  </div>
+							</div>
 					        <div class="card-body">
 					            <div class="d-flex align-items-center gap-3 mb-3">
 					                <img class="rounded-circle" th:src="${post.user.avatarUrl}" alt="Avatar" width="48" height="48">
 
 					                <div>
 					                    <p class="fw-bold mb-0" th:text="${post.user.fullName}">Tên người dùng</p>
-					                    <p class="fw mb-0" th:text="${post.user.nameUser}"></p>
+					                    <a class="fw mb-0 user-link" th:text="${post.user.nameUser}" th:href="@{/{username}(username=${post.user.nameUser})}"></a>
 					                    <p class="text-muted small mb-0">
 					                        <span th:text="${#temporals.format(post.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
 					                    </p>
@@ -275,6 +308,9 @@
 					                <i class="bi bi-heart"></i> <span th:text="${post.likesCount}">0</span>
 					            </button>
 					            <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-upload"></i></button>
+								<button th:if="${post.user.userId != user.userId}" class="btn text-muted d-flex align-items-center gap-2" data-bs-toggle="modal" th:attr="data-bs-target='#reportPostModal__' + ${post.postId}">
+							        <i class="bi bi-flag"></i>
+							    </button>					            
 					        </div>
 					    </div>
 					</main>

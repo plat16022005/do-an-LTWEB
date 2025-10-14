@@ -122,7 +122,15 @@
 		    background: rgba(148, 163, 184, 0.2);
 		    color: #fff;
 		}
+.user-link {
+  text-decoration: none;    /* ❌ bỏ gạch dưới */
+  color: #adb5bd;           /* 🎨 màu xám nhạt */
+}
 
+.user-link:hover {
+  color: #ffffff;           /* ✨ đổi màu khi rê chuột nếu muốn */
+  text-decoration: underline; /* hoặc bỏ underline luôn */
+}
     </style>
 </head>
 <body class="text-light">
@@ -169,13 +177,14 @@
                 <div id="home-content">
 					<main class="d-grid gap-3">
 					    <div th:each="post : ${posts}" class="card rounded-4 overflow-hidden">
+					    
 					        <div class="card-body">
 					            <div class="d-flex align-items-center gap-3 mb-3">
 					                <img class="rounded-circle" th:src="${post.user.avatarUrl}" alt="Avatar" width="48" height="48">
 
 					                <div>
 					                    <p class="fw-bold mb-0" th:text="${post.user.fullName}">Tên người dùng</p>
-					                    <p class="fw mb-0" th:text="${post.user.nameUser}"></p>
+					                    <a class="fw mb-0 user-link" th:text="${post.user.nameUser}"></a>
 					                    <p class="text-muted small mb-0">
 					                        <span th:text="${#temporals.format(post.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
 					                    </p>
@@ -223,7 +232,7 @@
 					            <button class="btn text-muted d-flex align-items-center gap-2">
 					                <i class="bi bi-heart"></i> <span th:text="${post.likesCount}">0</span>
 					            </button>
-					            <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-upload"></i></button>
+					            <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-upload"></i></button>					            
 					        </div>
 					    </div>
 					</main>

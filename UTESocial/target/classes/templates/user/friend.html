@@ -52,6 +52,15 @@
         .friend-item:hover {
             background-color: #334155;
         }
+.user-link {
+  text-decoration: none;    /* ❌ bỏ gạch dưới */
+  color: #adb5bd;           /* 🎨 màu xám nhạt */
+}
+
+.user-link:hover {
+  color: #ffffff;           /* ✨ đổi màu khi rê chuột nếu muốn */
+  text-decoration: underline; /* hoặc bỏ underline luôn */
+}
     </style>
 </head>
 <body class="text-light">
@@ -71,10 +80,6 @@
                     <a class="nav-link" href="#">Bạn bè</a>
                 </li>
             </ul>
-
-            <a th:href="@{/login}" class="btn btn-primary rounded-pill">
-                Đăng nhập
-            </a>
         </div>
     </nav>
 
@@ -126,7 +131,8 @@
 				            </a>
 				        </li>
 				        <li class="nav-item">
-				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="#">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" 
+   																		th:href="@{/{username}(username=${user.nameUser})}">
 				                <i class="bi bi-person-circle fs-3"></i>
 				                <span>Cá nhân</span>
 				            </a>
@@ -172,53 +178,48 @@
                                 <!-- Tab Tất cả bạn bè -->
                                 <div class="tab-pane fade show active" id="all-friends">
                                     <div class="d-flex flex-column gap-3">
-                                        <!-- Ví dụ 1 -->
-                                        <div class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item">
-                                            <div class="d-flex align-items-center gap-3">
-                                                <img src="https://placehold.co/56x56/64748b/fff?text=L" class="rounded-circle" alt="Avatar">
-                                                <div>
-                                                    <h6 class="mb-0 fw-bold">Lê Văn An</h6>
-                                                    <p class="mb-0 text-muted small">@anle</p>
-                                                </div>
-                                            </div>
-                                            <div class="d-flex gap-2">
-                                                <button class="btn btn-sm btn-primary rounded-pill">Nhắn tin</button>
-                                                <button class="btn btn-sm btn-outline-danger rounded-pill">Hủy kết bạn</button>
-                                            </div>
-                                        </div>
-                                        <!-- Ví dụ 2 -->
-                                        <div class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item">
-                                            <div class="d-flex align-items-center gap-3">
-                                                <img src="https://placehold.co/56x56/64748b/fff?text=B" class="rounded-circle" alt="Avatar">
-                                                <div>
-                                                    <h6 class="mb-0 fw-bold">Bùi Thị Cúc</h6>
-                                                    <p class="mb-0 text-muted small">@cucbui</p>
-                                                </div>
-                                            </div>
-                                            <div class="d-flex gap-2">
-                                                <button class="btn btn-sm btn-primary rounded-pill">Nhắn tin</button>
-                                                <button class="btn btn-sm btn-outline-danger rounded-pill">Hủy kết bạn</button>
-                                            </div>
-                                        </div>
+										<div th:each="friend : ${friends}"						
+											class="card rounded-4 overflow-hidden mb-4">                                    
+	                                        <div class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item">
+	                                            <div class="d-flex align-items-center gap-3">
+	                                                <img th:src="${friend.avatarUrl}" class="rounded-circle" alt="Avatar" width="48" height="48">
+	                                                <div>
+	                                                    <h6 th:text="${friend.fullName}" class="mb-0 fw-bold"></h6>
+	                                                    <a class="fw mb-0 user-link" th:text="${friend.nameUser}" th:href="@{/{username}(username=${friend.nameUser})}"></a>
+	                                                </div>
+	                                            </div>
+	                                            <div class="d-flex gap-2">
+	                                                <button class="btn btn-sm btn-primary rounded-pill">Nhắn tin</button>
+	                                            </div>
+	                                        </div>
+	                                    </div>    
                                     </div>
                                 </div>
 
                                 <!-- Tab Lời mời đã nhận -->
                                 <div class="tab-pane fade" id="requests-received">
                                     <div class="d-flex flex-column gap-3">
-                                        <!-- Ví dụ 1 -->
-                                        <div class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item">
-                                            <div class="d-flex align-items-center gap-3">
-                                                <img src="https://placehold.co/56x56/64748b/fff?text=D" class="rounded-circle" alt="Avatar">
-                                                <div>
-                                                    <h6 class="mb-0 fw-bold">Dương Văn Dũng</h6>
-                                                    <p class="mb-0 text-muted small">@dungduong</p>
-                                                </div>
-                                            </div>
-                                            <div class="d-flex gap-2">
-                                                <button class="btn btn-sm btn-success rounded-pill">Chấp nhận</button>
-                                                <button class="btn btn-sm btn-secondary rounded-pill">Xóa</button>
-                                            </div>
+										<div th:each="friend : ${beRequestFriends}"						
+											class="card rounded-4 overflow-hidden mb-4">                                         
+	                                        <div class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item">
+	                                            <div class="d-flex align-items-center gap-3">
+	                                                <img th:src="${friend.avatarUrl}" class="rounded-circle" alt="Avatar" width="48" height="48">
+	                                                <div>
+	                                                    <h6 th:text="${friend.fullName}" class="mb-0 fw-bold"></h6>
+	                                                    <a class="fw mb-0 user-link" th:text="${friend.nameUser}" th:href="@{/{username}(username=${friend.nameUser})}"></a>
+	                                                </div>
+	                                            </div>
+	                                            <div class="d-flex gap-2">
+	                                            	<form action="/friend/accept" method="post">
+	                                            		<input type="hidden" name="friendId" th:value="${friend.userId}">		
+	                                                	<button type="submit" class="btn btn-sm btn-success rounded-pill">Chấp nhận</button>
+	                                                </form>
+	                                                <form action="/friend/deny" method="post">
+	                                                	<input type="hidden" name="friendId" th:value="${friend.userId}">
+	                                                	<button type="submit" class="btn btn-sm btn-danger rounded-pill">Từ chối</button>
+	                                                </form>
+	                                            </div>
+	                                        </div>
                                         </div>
                                     </div>
                                 </div>
@@ -226,19 +227,24 @@
                                 <!-- Tab Lời mời đã gửi -->
                                 <div class="tab-pane fade" id="requests-sent">
                                      <div class="d-flex flex-column gap-3">
-                                        <!-- Ví dụ 1 -->
-                                        <div class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item">
-                                            <div class="d-flex align-items-center gap-3">
-                                                <img src="https://placehold.co/56x56/64748b/fff?text=E" class="rounded-circle" alt="Avatar">
-                                                <div>
-                                                    <h6 class="mb-0 fw-bold">Eren Yeager</h6>
-                                                    <p class="mb-0 text-muted small">@freedom</p>
-                                                </div>
-                                            </div>
-                                            <div class="d-flex gap-2">
-                                                 <button class="btn btn-sm btn-outline-warning rounded-pill">Hủy lời mời</button>
-                                            </div>
-                                        </div>
+										<div th:each="friend : ${requestFriends}"						
+											class="card rounded-4 overflow-hidden mb-4">                                         
+	                                        <div class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item">
+	                                            <div class="d-flex align-items-center gap-3">
+	                                                <img th:src="${friend.avatarUrl}" class="rounded-circle" alt="Avatar" width="48" height="48">
+	                                                <div>
+	                                                    <h6 th:text="${friend.fullName}" class="mb-0 fw-bold"></h6>
+	                                                    <a class="fw mb-0 user-link" th:text="${friend.nameUser}" th:href="@{/{username}(username=${friend.nameUser})}"></a>
+	                                                </div>
+	                                            </div>
+	                                            <div class="d-flex gap-2">
+	                                            	<form action="/friend/deny" method="post">
+	                                            		<input type="hidden" name="friendId" th:value="${friend.userId}">
+	                                                	<button type="submit" class="btn btn-sm btn-outline-warning rounded-pill">Hủy lời mời</button>
+	                                                </form>
+	                                            </div>
+	                                        </div>
+                                       	</div>
                                     </div>
                                 </div>
                             </div>

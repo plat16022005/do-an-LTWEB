@@ -71,10 +71,6 @@
                     <a class="nav-link" href="#">Bạn bè</a>
                 </li>
             </ul>
-
-            <a th:href="@{/login}" class="btn btn-primary rounded-pill">
-                Đăng nhập
-            </a>
         </div>
     </nav>
 
@@ -108,7 +104,7 @@
 				            </a>
 				        </li>
 				        <li class="nav-item">
-						  <a id="nav-group" class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="#">
+						  <a id="nav-group" class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/${user.nameUser}">
 						      <i class="bi bi-globe2 fs-3"></i>
 						      <span>Nhóm</span>
 						  </a>
@@ -126,7 +122,8 @@
 				            </a>
 				        </li>
 				        <li class="nav-item">
-				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="#">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" 
+   																		th:href="@{/{username}(username=${user.nameUser})}">
 				                <i class="bi bi-person-circle fs-3"></i>
 				                <span>Cá nhân</span>
 				            </a>
