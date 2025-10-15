@@ -15,6 +15,7 @@ import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "Users")
+
 public class User 
 {
     public Integer getUserId() {

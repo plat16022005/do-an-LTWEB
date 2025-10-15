@@ -9,10 +9,6 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
 
-        .search-result-item:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
     </style>
 </head>
 <body class="text-light">
@@ -23,12 +19,14 @@
                 <svg class="bi me-2" width="32" height="32" fill="#0ea5e9"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18" stroke="currentColor"></path></svg>
                 AloUTE
             </a>
+
         </div>
     </nav>
 
     <div class="container-xl mt-4">
         <div class="row g-4">
             <div class="col-lg-3 d-none d-lg-block">
+
                 <aside class="sticky-top" style="top: 80px;">
                     <ul class="nav flex-column gap-1">
                         <li class="nav-item"><a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/home"><i class="bi bi-house-door-fill fs-3"></i><span>Trang chủ</span></a></li>
@@ -56,24 +54,98 @@
                             </div>
 
 
-                            <div id="resultsArea" style="display: none;">
-                                <h4 id="resultsHeader" class="mb-3"></h4>
-                                
-                                <ul class="nav nav-pills mb-3">
-                                    <li class="nav-item">
-                                        <a class="nav-link active" href="#" data-filter="all">Tất cả</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#" data-filter="POST">Bài viết</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#" data-filter="USER">Người dùng</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link disabled" href="#" data-filter="GROUP">Nhóm</a>
-                                    </li>
-                                </ul>
+								<div id="resultsArea" style="display: none;">
+								    <h4 id="resultsHeader" class="mb-3"></h4>
+								    
+								    <ul class="nav nav-pills mb-3">
+								        <li class="nav-item">
+								            <a class="nav-link active" data-bs-toggle="tab" href="#all-result">Tất cả</a>
+								        </li>
+								        <li class="nav-item">
+								            <a class="nav-link" data-bs-toggle="tab" href="#result-post">Bài viết</a>
+								        </li>
+								        <li class="nav-item">
+								            <a class="nav-link" data-bs-toggle="tab" href="#result-user">Người dùng</a>
+								        </li>
+								        <li class="nav-item">
+								            <a class="nav-link enable" data-bs-toggle="tab" href="#result-group">Nhóm</a>
+								        </li>
+								    </ul>
+                            <div class="tab-content">
+                                <!-- Tab Tất cả kết quả -->
+                                <div class="tab-pane fade show active" id="all-result">
+                                    <div class="d-flex flex-column gap-3">
 
+	                                        
+                                    </div>
+                                </div>
+
+                                <!-- Tab Lời mời đã nhận -->
+                                <div class="tab-pane fade" id="result-post">
+                                    <div class="d-flex flex-column gap-3">
+										<div th:each="friend : ${beRequestFriends}" class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item">                                         
+	                                        <div class="d-flex align-items-center gap-3">
+	                                            <img th:src="${friend.avatarUrl}" class="rounded-circle" alt="Avatar" width="48" height="48">
+	                                            <div>
+	                                                <h6 th:text="${friend.fullName}" class="mb-0 fw-bold"></h6>
+	                                                <a class="fw mb-0 user-link" th:text="${friend.nameUser}" th:href="@{/{username}(username=${friend.nameUser})}"></a>
+	                                            </div>
+	                                        </div>
+	                                        <div class="d-flex gap-2">
+	                                            <form action="/friend/accept" method="post">
+	                                                <input type="hidden" name="friendId" th:value="${friend.userId}">		
+	                                                <button type="submit" class="btn btn-sm btn-success rounded-pill">Chấp nhận</button>
+	                                            </form>
+	                                            <form action="/friend/deny" method="post">
+	                                                <input type="hidden" name="friendId" th:value="${friend.userId}">
+	                                                <button type="submit" class="btn btn-sm btn-danger rounded-pill">Từ chối</button>
+	                                            </form>
+	                                        </div>
+	                                    </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tab Lời mời đã gửi -->
+                                <div class="tab-pane fade" id="result-user">
+                                     <div class="d-flex flex-column gap-3">
+										<div th:each="friend : ${requestFriends}" class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item">                                         
+	                                        <div class="d-flex align-items-center gap-3">
+	                                            <img th:src="${friend.avatarUrl}" class="rounded-circle" alt="Avatar" width="48" height="48">
+	                                            <div>
+	                                                <h6 th:text="${friend.fullName}" class="mb-0 fw-bold"></h6>
+	                                                <a class="fw mb-0 user-link" th:text="${friend.nameUser}" th:href="@{/{username}(username=${friend.nameUser})}"></a>
+	                                            </div>
+	                                        </div>
+	                                        <div class="d-flex gap-2">
+	                                            <form action="/friend/deny" method="post">
+	                                                <input type="hidden" name="friendId" th:value="${friend.userId}">
+	                                                <button type="submit" class="btn btn-sm btn-outline-warning rounded-pill">Hủy lời mời</button>
+	                                            </form>
+	                                        </div>
+	                                    </div>
+                                    </div>
+                                </div>
+                                <!-- Tab Lời mời đã gửi -->
+                                <div class="tab-pane fade" id="result-post">
+                                     <div class="d-flex flex-column gap-3">
+										<div th:each="friend : ${requestFriends}" class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item">                                         
+	                                        <div class="d-flex align-items-center gap-3">
+	                                            <img th:src="${friend.avatarUrl}" class="rounded-circle" alt="Avatar" width="48" height="48">
+	                                            <div>
+	                                                <h6 th:text="${friend.fullName}" class="mb-0 fw-bold"></h6>
+	                                                <a class="fw mb-0 user-link" th:text="${friend.nameUser}" th:href="@{/{username}(username=${friend.nameUser})}"></a>
+	                                            </div>
+	                                        </div>
+	                                        <div class="d-flex gap-2">
+	                                            <form action="/friend/deny" method="post">
+	                                                <input type="hidden" name="friendId" th:value="${friend.userId}">
+	                                                <button type="submit" class="btn btn-sm btn-outline-warning rounded-pill">Hủy lời mời</button>
+	                                            </form>
+	                                        </div>
+	                                    </div>
+                                    </div>
+                                </div>                                
+                            </div>
                                 <div id="resultsContainer" class="d-flex flex-column gap-3"></div>
                                 
                                 <p id="noResultsMessage" class="text-muted text-center mt-4" style="display: none;">Không tìm thấy kết quả nào.</p>
@@ -89,130 +161,106 @@
 
     <script th:src="@{/js/theme-toggle.js}"></script>
     
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const searchInput = document.getElementById('searchInput');
+  const resultsArea = document.getElementById('resultsArea');
+  const resultsHeader = document.getElementById('resultsHeader');
 
+  // 🟡 Các khu vực hiển thị kết quả theo tab
+  const allResult = document.querySelector('#all-result .d-flex');
+  const userResult = document.querySelector('#result-user .d-flex');
+  const postResult = document.querySelector('#result-post .d-flex');
+  // ❌ KHÔNG động tới tab nhóm (result-group)
 
-            // === Lấy các phần tử HTML ===
-            const searchInput = document.getElementById('searchInput');
-            const resultsArea = document.getElementById('resultsArea');
-            const resultsContainer = document.getElementById('resultsContainer');
-            const resultsHeader = document.getElementById('resultsHeader');
-            const noResultsMessage = document.getElementById('noResultsMessage');
-            const filterTabs = document.querySelectorAll('.nav-pills .nav-link[data-filter]');
+  searchInput.addEventListener('keyup', (event) => {
+    if (event.key === 'Enter') {
+      const query = searchInput.value.trim();
+      if (query) {
+        fetch('/search/result', {
+          method: 'POST',
+          body: new URLSearchParams({ keyword: query })
+        })
+        .then(res => res.json())
+        .then(data => {
+          resultsArea.style.display = 'block';
+          resultsHeader.textContent = `Kết quả cho "${query}"`;
 
-            // === Biến để lưu trữ kết quả ===
-            let currentResults = [];
-            let currentQuery = '';
+          // Xóa nội dung cũ
+          allResult.innerHTML = '';
+          userResult.innerHTML = '';
+          postResult.innerHTML = '';
 
-            // === Xử lý sự kiện tìm kiếm ===
-            searchInput.addEventListener('keyup', function (event) {
-                if (event.key === 'Enter') {
-                    const query = searchInput.value.trim();
-                    if (query) {
-                        currentQuery = query;
-                        performSearch(query);
-                    } else {
-                        resultsArea.style.display = 'none';
-                        currentResults = [];
-                    }
-                }
+          // === 🧍 Render Người dùng ===
+          if (data.users && data.users.length > 0) {
+            data.users.forEach(u => {
+              const userHtml = `
+                <div class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item">                                    
+                  <div class="d-flex align-items-center gap-3">
+                      <img src="${u.avatarUrl}" class="rounded-circle" alt="Avatar" width="48" height="48">
+                      <div>
+                          <h6 class="mb-0 fw-bold">${u.fullName}</h6>
+                          <a class="fw mb-0 user-link" href="/${u.nameUser}">${u.nameUser}</a>
+                      </div>
+                  </div>
+                </div>`;
+              // đưa vào tất cả & tab riêng user
+              allResult.innerHTML += userHtml;
+              userResult.innerHTML += userHtml;
             });
+          }
 
-            // === Xử lý sự kiện click tab lọc ===
-            filterTabs.forEach(tab => {
-                tab.addEventListener('click', function (event) {
-                    event.preventDefault(); // Ngăn trang tải lại
-                    const filterType = this.dataset.filter;
-                    
-                    if(this.classList.contains('disabled')) return; // Không làm gì nếu tab bị vô hiệu hóa
-
-                    // Cập nhật trạng thái active cho tab
-                    filterTabs.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-
-                    // Vẽ lại kết quả với bộ lọc mới
-                    renderResults(filterType);
+          // === 📝 Render Bài viết ===
+          if (data.posts && data.posts.length > 0) {
+            data.posts.forEach(post => {
+              let attachmentsHTML = '';
+              if (post.attachments && post.attachments.length > 0) {
+                post.attachments.forEach(att => {
+                  if (att.fileType.startsWith('image')) {
+                    attachmentsHTML += `<img src="${att.fileUrl}" alt="Ảnh" class="img-fluid rounded-3">`;
+                  } else if (att.fileType.startsWith('video')) {
+                    attachmentsHTML += `<video src="${att.fileUrl}" controls class="rounded-3"></video>`;
+                  } else {
+                    const filename = att.fileUrl.substring(att.fileUrl.lastIndexOf('/') + 1);
+                    attachmentsHTML += `<a href="${att.fileUrl}" target="_blank"><i class="bi bi-paperclip"></i> ${filename}</a>`;
+                  }
                 });
+              }
+
+              const postHtml = `
+                <div class="card rounded-4 overflow-hidden mb-4">
+                  <div class="card-body">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                      <img class="rounded-circle" src="${post.user.avatarUrl}" alt="Avatar" width="48" height="48">
+                      <div>
+                        <p class="fw-bold mb-0">${post.user.fullName}</p>
+                        <a class="fw mb-0 user-link" href="/${post.user.nameUser}">${post.user.nameUser}</a>
+                        <p class="text-muted small mb-0">${new Date(post.createdAt).toLocaleString('vi-VN')}</p>
+                      </div>
+                    </div>
+                    <p>${post.content}</p>
+                    <div class="attachment-scroll mt-3">${attachmentsHTML}</div>
+                  </div>
+                </div>`;
+              // đưa vào tất cả & tab riêng post
+              allResult.innerHTML += postHtml;
+              postResult.innerHTML += postHtml;
             });
+          }
 
-            // === Hàm gọi API ===
-            async function performSearch(query) {
-                resultsArea.style.display = 'block';
-                resultsHeader.textContent = `Đang tìm kiếm cho "${query}"...`;
-                resultsContainer.innerHTML = '';
-                noResultsMessage.style.display = 'none';
+          // Nếu không có gì
+          if ((!data.users || data.users.length === 0) && (!data.posts || data.posts.length === 0)) {
+            allResult.innerHTML = `<p class="text-muted text-center">Không tìm thấy kết quả nào.</p>`;
+          }
 
-                // Reset tab về "Tất cả" mỗi khi có tìm kiếm mới
-                filterTabs.forEach(t => t.classList.remove('active'));
-                document.querySelector('.nav-pills .nav-link[data-filter="all"]').classList.add('active');
+        })
+        .catch(err => console.error(err));
+      }
+    }
+  });
+});
+</script>
 
 
-                try {
-                    const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    
-                    currentResults = await response.json(); // Lưu kết quả vào biến
-                    renderResults('all'); // Hiển thị tất cả kết quả ban đầu
-
-                } catch (error) {
-                    console.error('Lỗi khi tìm kiếm:', error);
-                    resultsHeader.textContent = 'Lỗi khi tìm kiếm';
-                }
-            }
-
-            // === Hàm "vẽ" kết quả lên giao diện ===
-            function renderResults(filterType) {
-                resultsContainer.innerHTML = '';
-                resultsHeader.textContent = `Kết quả cho "${currentQuery}"`;
-                
-                // Lọc kết quả dựa trên filterType
-                const filteredResults = (filterType === 'all')
-                    ? currentResults
-                    : currentResults.filter(item => item.type === filterType);
-
-                if (filteredResults.length === 0) {
-                    noResultsMessage.style.display = 'block';
-                } else {
-                    noResultsMessage.style.display = 'none';
-                    
-                    filteredResults.forEach(item => {
-                        let resultHtml = '';
-                        // Chú ý: Backend cần trả về username (nameUser) để link hoạt động đúng
-                        const profileUrl = item.subtitle ? `/${item.subtitle.replace('@', '')}` : '#';
-
-                        if (item.type === 'USER') {
-                             resultHtml = `
-                                <a href="${profileUrl}" class="text-decoration-none text-light">
-                                    <div class="p-3 rounded-3 d-flex align-items-center gap-3 search-result-item">
-                                        <img src="${item.avatarUrl || 'https://placehold.co/56x56/64748b/fff?text=' + item.title.charAt(0)}" class="rounded-circle" alt="Avatar" width="56" height="56">
-                                        <div>
-                                            <h6 class="mb-0 fw-bold">${item.title}</h6>
-                                            <p class="mb-0 text-muted small">${item.subtitle}</p>
-                                        </div>
-                                    </div>
-                                </a>`;
-                        } else if (item.type === 'POST') {
-                            const postDate = new Date(item.createdAt).toLocaleString('vi-VN');
-                            resultHtml = `
-                                <div class="card rounded-4 overflow-hidden">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-center gap-3 mb-3">
-                                            <img class="rounded-circle" src="${item.avatarUrl || 'https://placehold.co/48x48/64748b/fff?text=' + item.title.charAt(0)}" alt="Avatar" width="48" height="48">
-                                            <div>
-                                                <p class="fw-bold mb-0">${item.title}</p>
-                                                <p class="text-muted small mb-0">${postDate}</p>
-                                            </div>
-                                        </div>
-                                        <p>${item.content}</p>
-                                    </div>
-                                </div>`;
-                        }
-                        resultsContainer.innerHTML += resultHtml;
-                    });
-                }
-            }
-        });
-    </script>
 </body>
 </html>

@@ -28,13 +28,16 @@ public interface PostsRepository extends JpaRepository<Posts, Integer> {
 		""")
 		List<Posts> findPostsOfUser(@Param("userId") Integer userId);
 
-		@Query("""
-            SELECT p FROM Posts p 
-            WHERE LOWER(CAST(p.content AS string)) LIKE LOWER(CONCAT('%', :keyword, '%')) 
-            AND p.status = 'approved' 
-            AND p.isDeleted = false 
-            AND p.visibility = 'public'
-            """)
-    List<Posts> searchPublicPostsByContent(@Param("keyword") String keyword);
+	@Query("""
+		    SELECT DISTINCT p FROM Posts p
+		    LEFT JOIN FETCH p.attachments a
+		    JOIN FETCH p.user u
+		    WHERE p.content LIKE CONCAT('%', :keyword, '%')
+		    AND p.status = 'approved'
+		    AND p.isDeleted = false
+		    AND p.visibility = 'public'
+		""")
+		List<Posts> searchPublicPostsByContent(@Param("keyword") String keyword);
+
 
 }

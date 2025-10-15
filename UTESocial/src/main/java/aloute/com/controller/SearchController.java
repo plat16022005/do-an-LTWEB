@@ -20,21 +20,21 @@ public class SearchController {
     @Autowired
     private SearchService searchService;
 
-    @GetMapping
-    public ResponseEntity<?> search(@RequestParam("q") String query, HttpSession session) {
-        
-        // BƯỚC 1: Thêm đoạn kiểm tra session quen thuộc
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Vui lòng đăng nhập để thực hiện chức năng này."));
-        }
-        
-        // BƯỚC 2: Xử lý logic như cũ nếu đã đăng nhập
-        if (query == null || query.trim().isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        List<Map<String, Object>> results = searchService.searchAll(query);
-        return ResponseEntity.ok(results);
-    }
+//    @GetMapping
+//    public ResponseEntity<?> search(@RequestParam("q") String query, HttpSession session) {
+//        
+//        // BƯỚC 1: Thêm đoạn kiểm tra session quen thuộc
+//        User user = (User) session.getAttribute("user");
+//        if (user == null) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Vui lòng đăng nhập để thực hiện chức năng này."));
+//        }
+//        
+//        // BƯỚC 2: Xử lý logic như cũ nếu đã đăng nhập
+//        if (query == null || query.trim().isEmpty()) {
+//            return ResponseEntity.badRequest().build();
+//        }
+//
+//        List<Map<String, Object>> results = searchService.searchAll(query);
+//        return ResponseEntity.ok(results);
+//    }
 }
