@@ -28,12 +28,17 @@ public class UserProfileController {
 	{
     	User user = (User) session.getAttribute("user");
     	User information = userRepository.findByNameUser(nameUser);
+    	if (information == null) {
+    	    return "redirect:/access-deniel";
+    	}
     	List<Posts> posts = postRepository.findPostsOfUser(information.getUserId());
+    	List<User> friends = friendService.getFriendList(information.getUserId());
+    	
     	if (user == null)
     	{
     		return "redirect:/access-deniel";
     	}
-    	List<User> friends = friendService.getFriendList(information.getUserId());
+    	
     	boolean isOwner = user != null && user.getNameUser().equals(information.getNameUser());
     	boolean isFriend = friendService.checkFriend(user.getUserId(), information.getUserId());
     	boolean isBeRequest = friendService.checkBeRequest(information.getUserId(), user.getUserId());
