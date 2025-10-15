@@ -8,73 +8,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
-        /* CSS được đồng bộ từ trang home.html */
-        body {
-            background-color: #0f172a; 
-        }
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0f172a;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
-        }
-        .card {
-            background-color: #1e293b;
-            border: 1px solid #334155;
-        }
-        .navbar {
-            background-color: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid #334155;
-        }
-        aside .nav-link {
-            color: #adb5bd;
-        }
-        aside .nav-link:hover {
-            background-color: #334155;
-            color: #fff;
-        }
-        aside .nav-link.active {
-            background-color: #334155;
-            color: #fff;
-        }
-        .navbar-nav .nav-link.active {
-            color: #fff !important;
-        }
-        /* CSS cho khu vực xem trước file */
-        .preview-item {
-            position: relative;
-        }
-        .preview-item .remove-btn {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            line-height: 1;
-            padding: 0.2rem 0.45rem;
-            font-size: 0.8rem;
-            z-index: 10;  
-        }
-        .preview-item img, .preview-item video {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-        }
-        .preview-item .file-placeholder {
-             width: 100px;
-            height: 100px;
-            background-color: #334155;
-        }
-        .preview-item .file-placeholder small {
-            max-width: 90px;
-        }
+
     </style>
 </head>
 <body class="text-light">
@@ -85,7 +21,6 @@
                 <svg class="bi me-2" width="32" height="32" fill="#0ea5e9"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18" stroke="currentColor"></path></svg>
                 AloUTE
             </a>
-
         </div>
     </nav>
 
@@ -119,7 +54,7 @@
 				            </a>
 				        </li>
 				        <li class="nav-item">
-						  <a id="nav-group" class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="#">
+						  <a id="nav-group" class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/group">
 						      <i class="bi bi-globe2 fs-3"></i>
 						      <span>Nhóm</span>
 						  </a>
@@ -176,13 +111,13 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <textarea id="post-content" class="form-control bg-dark border-secondary text-light" name="content" rows="5" placeholder="Bạn đang nghĩ gì?" aria-label="Nội dung bài viết"></textarea>
+                                    <textarea id="post-content" class="form-control" name="content" rows="5" placeholder="Bạn đang nghĩ gì?" aria-label="Nội dung bài viết"></textarea>
                                 </div>
                                 
                                 <!-- Khu vực xem trước file -->
                                 <div id="file-preview" class="mt-3 d-flex flex-wrap gap-3"></div>
                                 
-                                <hr class="border-secondary my-4">
+                                <hr class="my-4">
 
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="d-flex gap-2">
@@ -216,14 +151,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Khi người dùng chọn file
     fileInput.addEventListener('change', (e) => {
         handleFiles(e.target.files);
-        // ❌ Không reset value ở đây nếu bạn không cần chọn lại cùng 1 file
-        // Nếu bạn muốn chọn cùng file nhiều lần thì giữ lại dòng này
         e.target.value = ''; 
     });
 
     // ✅ Khi submit form
     postForm.addEventListener('submit', (e) => {
-        // Gán danh sách file đã lưu trong fileStore vào input
         fileInput.files = fileStore.files;
     });
 
@@ -258,11 +190,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     mediaElement.muted = true;
                     mediaElement.controls = true;
                     mediaElement.playsInline = true;
-                    mediaElement.style.width = '100px';
-                    mediaElement.style.height = '100px';
                 } else {
                     mediaElement = document.createElement('div');
-                    mediaElement.className = 'file-placeholder d-flex flex-column align-items-center justify-content-center bg-dark rounded p-2 text-center';
+                    mediaElement.className = 'file-placeholder d-flex flex-column align-items-center justify-content-center rounded p-2 text-center';
                     mediaElement.innerHTML = `
                         <i class="bi bi-file-earmark-text fs-1"></i>
                         <small class="text-truncate">${file.name}</small>
@@ -304,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
-
+<script th:src="@{/js/theme-toggle.js}"></script>
 </body>
 </html>
 

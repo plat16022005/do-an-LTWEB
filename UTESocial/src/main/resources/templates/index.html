@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
         /* CSS đã được đồng bộ hóa từ trang upload.html */
         body {
@@ -139,9 +140,9 @@
         <div class="container-xl">
             <a class="navbar-brand fw-bold fs-4 d-flex align-items-center">
                 <svg class="bi me-2" width="32" height="32" fill="#0ea5e9"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18" stroke="currentColor"></path></svg>
-                AloUTE
-            </a>
-            
+				AloUTE 
+			</a>
+
             <ul class="navbar-nav flex-row gap-4 position-absolute start-50 translate-middle-x">
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="#" id="home-link">Trang chủ</a>
@@ -155,6 +156,7 @@
                 Đăng nhập
             </a>
         </div>
+        
     </nav>
 
     <div class="container-xl mt-4">
@@ -166,8 +168,8 @@
 				            <a id="home-sidebar-button" class="nav-link active bg-dark rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/home">
 				                <i class="bi bi-house-door-fill fs-3"></i>
 				                <span>Trang chủ</span>
-				            </a>
-				        </li>
+				            </a> 
+						</li>
 				    </ul>
 				</aside>
 
@@ -325,6 +327,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 </script>
-
+<script th:src="@{/js/theme-toggle.js}"></script>
 </body>
 </html>

@@ -8,61 +8,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
-        /* CSS được đồng bộ từ các trang trước */
-        body {
-            background-color: #0f172a; 
-        }
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0f172a;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
-        }
-        .card {
-            background-color: #1e293b;
-            border: 1px solid #334155;
-        }
-        .navbar {
-            background-color: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid #334155;
-        }
-        aside .nav-link {
-            color: #adb5bd;
-        }
-        aside .nav-link:hover {
-            background-color: #334155;
-            color: #fff;
-        }
-        aside .nav-link.active {
-            background-color: #334155;
-            color: #fff;
-        }
-        .navbar-nav .nav-link.active {
-            color: #fff !important;
-        }
-        .form-control {
-            background-color: #334155;
-            border-color: #475569;
-            color: #fff;
-        }
-        .form-control:focus {
-            background-color: #334155;
-            border-color: #0ea5e9;
-            color: #fff;
-            box-shadow: none;
-        }
-        .form-label {
-            font-weight: 600;
-        }
+
     </style>
 </head>
 <body class="text-light">
@@ -73,19 +21,14 @@
                 <svg class="bi me-2" width="32" height="32" fill="#0ea5e9"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18" stroke="currentColor"></path></svg>
                 AloUTE
             </a>
-            
-            <ul class="navbar-nav flex-row gap-4 position-absolute start-50 translate-middle-x">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Cộng đồng</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Bạn bè</a>
-                </li>
-            </ul>
+			<!-- 🌗 Nút Switch chuyển theme -->
+			<label class="theme-switch" for="theme-toggle">
+			  <input type="checkbox" id="theme-toggle" />
+			  <span class="slider">
+			    <span class="switch-icon">🌙</span>
+			  </span>
+			</label>            
 
-            <a th:href="@{/login}" class="btn btn-primary rounded-pill">
-                Đăng nhập
-            </a>
         </div>
     </nav>
 
@@ -119,7 +62,7 @@
 				            </a>
 				        </li>
 				        <li class="nav-item">
-						  <a id="nav-group" class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="#">
+						  <a id="nav-group" class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/group">
 						      <i class="bi bi-globe2 fs-3"></i>
 						      <span>Nhóm</span>
 						  </a>
@@ -247,6 +190,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-
+<script th:src="@{/js/theme-toggle.js}"></script>
 </body>
 </html>

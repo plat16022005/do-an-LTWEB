@@ -3,144 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang cá nhân - AloUTE</title>
+    <title>Cá nhân - AloUTE</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
-        /* CSS được đồng bộ từ các trang trước */
-        body {
-            background-color: #0f172a; 
-        }
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0f172a;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
-        }
-        .card {
-            background-color: #1e293b;
-            border: 1px solid #334155;
-        }
-        .navbar {
-            background-color: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid #334155;
-        }
-        aside .nav-link {
-            color: #adb5bd;
-        }
-        aside .nav-link:hover {
-            background-color: #334155;
-            color: #fff;
-        }
-        aside .nav-link.active {
-            background-color: #334155;
-            color: #fff;
-        }
-        .navbar-nav .nav-link.active {
-            color: #fff !important;
-        }
-        .profile-header {
-            position: relative;
-        }
-        .profile-cover {
-            height: 250px;
-            object-fit: cover;
-            width: 100%;
-        }
-        .profile-avatar {
-            width: 150px;
-            height: 150px;
-            border: 5px solid #1e293b;
-            position: absolute;
-            bottom: -75px;
-            left: 2rem;
-        }
-		/* ===== Horizontal Scroll Gallery ===== */
-		.attachment-scroll {
-		    display: flex;
-		    gap: 1rem;
-		    overflow-x: auto;
-		    scroll-snap-type: x mandatory;
-		    padding-bottom: 10px;
-		}
-		
-		.attachment-scroll::-webkit-scrollbar {
-		    height: 8px;
-		}
-		
-		.attachment-scroll::-webkit-scrollbar-thumb {
-		    background: #475569;
-		    border-radius: 4px;
-		}
-		
-		.attachment-scroll::-webkit-scrollbar-track {
-		    background: transparent;
-		}
-		
-		/* Mỗi file đính kèm là 1 "slide" */
-		.attachment-item {
-		    flex: 0 0 auto;
-		    scroll-snap-align: start;
-		    border-radius: 12px;
-		    background-color: #1e293b;
-		    border: 1px solid #334155;
-		    overflow: hidden;
-		    box-shadow: 0 0 8px rgba(30, 41, 59, 0.5);
-		    transition: transform 0.2s ease-in-out;
-		}
-		
-		.attachment-item:hover {
-		    transform: scale(1.03);
-		}
-		
-		.attachment-item img,
-		.attachment-item video {
-		    max-width: 400px;
-		    height: auto;
-		    display: block;
-		    object-fit: cover;
-		    border-radius: 12px;
-		}
-		
-		/* File đính kèm không phải ảnh/video */
-		.attachment-file {
-		    display: flex;
-		    align-items: center;
-		    justify-content: center;
-		    gap: 10px;
-		    width: 380px;
-		    padding: 1rem;
-		    background: rgba(148, 163, 184, 0.1);
-		    color: #e2e8f0;
-		    font-weight: 500;
-		    text-decoration: none;
-		    border-radius: 12px;
-		    transition: background 0.3s ease;
-		}
-		
-		.attachment-file:hover {
-		    background: rgba(148, 163, 184, 0.2);
-		    color: #fff;
-		}
-.user-link {
-  text-decoration: none;    /* ❌ bỏ gạch dưới */
-  color: #adb5bd;           /* 🎨 màu xám nhạt */
-}
 
-.user-link:hover {
-  color: #ffffff;           /* ✨ đổi màu khi rê chuột nếu muốn */
-  text-decoration: underline; /* hoặc bỏ underline luôn */
-}
     </style>
 </head>
 <body class="text-light">
@@ -187,7 +57,7 @@
 				            </a>
 				        </li>
 				        <li class="nav-item">
-						  <a id="nav-group" class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="#">
+						  <a id="nav-group" class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/group">
 						      <i class="bi bi-globe2 fs-3"></i>
 						      <span>Nhóm</span>
 						  </a>
@@ -246,9 +116,11 @@
 
                         <!-- Thông tin và nút hành động -->
                         <div class="p-4" style="margin-top: 75px;">
-                            <div class="d-flex justify-content-end" th:if="${isOwner}">
-                                <button class="btn btn-outline-light rounded-pill">Chỉnh sửa trang cá nhân</button>
-                            </div>
+							<div class="d-flex justify-content-end" th:if="${isOwner}">
+							    <a th:href="@{/setting}" class="btn btn-gray-custom rounded-pill fw-semibold">
+							        Chỉnh sửa trang cá nhân
+							    </a>
+							</div>
 							 <div class="d-flex justify-content-end gap-2" th:if="${!isOwner}">
 							    <!-- Kết bạn -->
 							    <form action="/friend/pending" method="post">
@@ -288,7 +160,7 @@
 								    </button>
 								</form>
 							    <!-- Nhắn tin -->
-							    <button class="btn btn-outline-light rounded-pill">
+							    <button class="btn btn-gray-custom rounded-pill">
 							        <i class="bi bi-chat-dots-fill me-1"></i>
 							        Nhắn tin
 							    </button>
@@ -314,9 +186,9 @@
 
                             <h3 class="fw-bold mb-0" th:text="${info.fullName}"></h3>
                             <p class="text-muted" th:text="${info.nameUser}"></p>
-                            <p th:text="${info.introduce}">Hahaha</p>
+                            <p th:text="${info.introduce}"></p>
                             <div class="d-flex gap-4 text-muted small">
-                                <span><i class="bi bi-geo-alt" th:text="${info.location}"></i></span>
+                                <span><i class="bi bi-geo-alt"></i> <span th:text="${info.location}"></span></span>
                                 <span>
 								  <i class="bi bi-calendar3"></i>
 								  <span th:text="'Đã tham gia ' + ${#temporals.format(info.createdAt, 'MMMM yyyy')}"></span>
@@ -345,22 +217,21 @@
                     <div class="tab-content mt-4">
                         <!-- Tab bài viết -->
 						<div class="tab-pane fade show active" id="posts">
-							<div th:each="post : ${posts}"						
-								class="card rounded-4 overflow-hidden mb-4">
+							<div th:each="post : ${posts}" class="card rounded-4 overflow-hidden mb-4">
 								<!-- Modal báo cáo bài viết -->
 								<div class="modal fade" th:id="'reportPostModal__' + ${post.postId}" tabindex="-1" aria-labelledby="reportPostLabel" aria-hidden="true">
 								  <div class="modal-dialog modal-dialog-centered">
-								    <div class="modal-content bg-dark text-light">
-								      <div class="modal-header border-secondary">
+								    <div class="modal-content">
+								      <div class="modal-header">
 								        <h5 class="modal-title" id="reportPostLabel">Báo cáo bài viết</h5>
-								        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+								        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
 								      </div>
 								      <div class="modal-body">
 								        <form method="post" th:action="@{/report-post}">
 								          <input type="hidden" name="postId" th:value="${post.postId}">
 								          <div class="mb-3">
 								            <label for="reason" class="form-label">Lý do báo cáo</label>
-								            <textarea name="reason" class="form-control bg-dark text-light border-secondary" rows="4" placeholder="Nhập lý do..."></textarea>
+								            <textarea name="reason" class="form-control" rows="4" placeholder="Nhập lý do..."></textarea>
 								          </div>
 								          <div class="d-flex justify-content-end">
 								            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Hủy</button>
@@ -380,7 +251,7 @@
 										<div>
 											<p class="fw-bold mb-0" th:text="${post.user.fullName}">Tên
 												người dùng</p>
-											<p class="fw mb-0" th:text="${post.user.nameUser}"></p>
+											<a class="fw mb-0 user-link" th:text="${post.user.nameUser}" th:href="@{/{username}(username=${post.user.nameUser})}"></a>
 											<p class="text-muted small mb-0">
 												<span
 													th:text="${#temporals.format(post.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
@@ -474,22 +345,19 @@
                         </div>
 						<!-- Tab bạn bè-->
 						<div class="tab-pane fade" id="all-friends">
-							<div class="d-flex flex-column gap-3">
+							<div class="d-grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
 								<div th:each="friend : ${friends}"
-									class="card rounded-4 overflow-hidden mb-4">
+									class="card rounded-4 overflow-hidden">
 									<div
-										class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item">
-										<div class="d-flex align-items-center gap-3">
-											<img th:src="${friend.avatarUrl}" class="rounded-circle"
-												alt="Avatar" width="48" height="48">
-											<div>
-												<h6 th:if="${!(user.nameUser==friend.nameUser)}" th:text="${friend.fullName}" class="mb-0 fw-bold"></h6>
-												<h6 th:if="${(user.nameUser==friend.nameUser)}" class="mb-0 fw-bold">Bạn</h6>
-												<a class="fw mb-0 user-link" th:text="${friend.nameUser}"
-													th:href="@{/{username}(username=${friend.nameUser})}"></a>
-											</div>
+										class="d-flex align-items-center p-3">
+										<img th:src="${friend.avatarUrl}" class="rounded-circle me-3"
+											alt="Avatar" width="48" height="48">
+										<div>
+											<h6 th:if="${!(user.nameUser==friend.nameUser)}" th:text="${friend.fullName}" class="mb-0 fw-bold"></h6>
+											<h6 th:if="${(user.nameUser==friend.nameUser)}" class="mb-0 fw-bold">Bạn</h6>
+											<a class="fw mb-0 user-link" th:text="${friend.nameUser}"
+												th:href="@{/{username}(username=${friend.nameUser})}"></a>
 										</div>
-
 									</div>
 								</div>
 							</div>
@@ -503,17 +371,17 @@
 <!-- Modal báo cáo -->
 <div class="modal fade" id="reportUserModal" tabindex="-1" aria-labelledby="reportUserLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content bg-dark text-light">
-      <div class="modal-header border-secondary">
+    <div class="modal-content">
+      <div class="modal-header">
         <h5 class="modal-title" id="reportUserLabel">Báo cáo người dùng</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
       </div>
       <div class="modal-body">
         <form id="reportUserForm" method="post" th:action="@{/report-user}">
           <input type="hidden" name="username" th:value="${info.nameUser}">
           <div class="mb-3">
             <label for="reason" class="form-label">Lý do báo cáo</label>
-            <textarea id="reason" name="reason" class="form-control bg-dark text-light border-secondary" rows="4" placeholder="Nhập lý do..."></textarea>
+            <textarea id="reason" name="reason" class="form-control" rows="4" placeholder="Nhập lý do..."></textarea>
           </div>
           <div class="d-flex justify-content-end">
             <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Hủy</button>
@@ -571,8 +439,8 @@
 </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Các script đã bị thiếu -->
     <script>
-       
         document.addEventListener('DOMContentLoaded', () => 
         {
             const homeLink = document.getElementById('home-link');
@@ -582,70 +450,73 @@
             const homeContent = document.getElementById('home-content');
             const policyContent = document.getElementById('policy-content');
 
-            function showHome() {
-                homeContent.classList.remove('d-none');
-                policyContent.classList.add('d-none');
+            // Các hàm và sự kiện này có thể không cần thiết cho trang cá nhân,
+            // nhưng được giữ lại theo yêu cầu
+            if(homeLink && policyLink && homeContent && policyContent) {
+                function showHome() {
+                    homeContent.classList.remove('d-none');
+                    policyContent.classList.add('d-none');
+                    homeLink.classList.add('active');
+                    policyLink.classList.remove('active');
+                }
+
+                function showPolicy() {
+                    homeContent.classList.add('d-none');
+                    policyContent.classList.remove('d-none');
+                    homeLink.classList.remove('active');
+                    policyLink.classList.add('active');
+                }
+
+                homeLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showHome();
+                });
                 
-                homeLink.classList.add('active');
-                policyLink.classList.remove('active');
+                homeSidebarButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showHome();
+                });
+
+                policyLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showPolicy();
+                });
             }
-
-            function showPolicy() {
-                homeContent.classList.add('d-none');
-                policyContent.classList.remove('d-none');
-
-                homeLink.classList.remove('active');
-                policyLink.classList.add('active');
-            }
-
-            homeLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                showHome();
-            });
-            
-            homeSidebarButton.addEventListener('click', (e) => {
-                e.preventDefault();
-                showHome();
-            });
-
-            policyLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                showPolicy();
-            });
         });
     </script>
+    <script>
+        document.addEventListener("click", e => {
+          const img = e.target.closest(".attachment-item img");
+          if (!img) return;
+          
+          const overlay = document.createElement("div");
+          overlay.style = `
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.85);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9999;
+          `;
+          const fullImg = document.createElement("img");
+          fullImg.src = img.src;
+          fullImg.style = "max-width: 90%; max-height: 90%; border-radius: 8px;";
 
-<script>
-document.addEventListener("click", e => {
-  const img = e.target.closest(".attachment-card img");
-  if (!img) return;
-  
-  const overlay = document.createElement("div");
-  overlay.style = `
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.85);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 9999;
-  `;
-  const fullImg = document.createElement("img");
-  fullImg.src = img.src;
-  fullImg.style = "max-width: 90%; max-height: 90%; border-radius: 8px;";
+          overlay.appendChild(fullImg);
+          document.body.appendChild(overlay);
 
-  overlay.appendChild(fullImg);
-  document.body.appendChild(overlay);
-
-  overlay.addEventListener("click", () => overlay.remove());
-});
-</script>
-<script>
-function scrollGallery(btn, direction) {
-  const container = btn.parentElement.querySelector(".attachment-scroll");
-  container.scrollBy({
-    left: direction * 400,
-    behavior: "smooth"
-  });
-}
-</script>
+          overlay.addEventListener("click", () => overlay.remove());
+        });
+    </script>
+    <script>
+        function scrollGallery(btn, direction) {
+          const container = btn.parentElement.querySelector(".attachment-scroll");
+          container.scrollBy({
+            left: direction * 400,
+            behavior: "smooth"
+          });
+        }
+    </script>
+    <script th:src="@{/js/theme-toggle.js}"></script>
 
 </body>
 </html>
+
