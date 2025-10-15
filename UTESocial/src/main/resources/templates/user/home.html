@@ -8,120 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
-        /* CSS đã được đồng bộ hóa từ trang upload.html */
-        body {
-            background-color: #0f172a; 
-        }
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0f172a;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
-        }
-        .card {
-            background-color: #1e293b;
-            border: 1px solid #334155;
-        }
-        .navbar {
-            background-color: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid #334155;
-        }
-        /* CSS cho sidebar (quan trọng) */
-        aside .nav-link {
-            color: #adb5bd;
-        }
-        aside .nav-link:hover {
-            background-color: #334155;
-            color: #fff;
-        }
-        aside .nav-link.active {
-            background-color: #334155;
-            color: #fff;
-        }
-        /* CSS cho các thành phần khác */
-        .navbar-nav .nav-link.active {
-            color: #fff !important;
-        }
-        .post-actions .btn:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        /* --- Hiển thị file đính kèm --- */
-		/* ===== Horizontal Scroll Gallery ===== */
-		.attachment-scroll {
-		    display: flex;
-		    gap: 1rem;
-		    overflow-x: auto;
-		    scroll-snap-type: x mandatory;
-		    padding-bottom: 10px;
-		}
-		
-		.attachment-scroll::-webkit-scrollbar {
-		    height: 8px;
-		}
-		
-		.attachment-scroll::-webkit-scrollbar-thumb {
-		    background: #475569;
-		    border-radius: 4px;
-		}
-		
-		.attachment-scroll::-webkit-scrollbar-track {
-		    background: transparent;
-		}
-		
-		/* Mỗi file đính kèm là 1 "slide" */
-		.attachment-item {
-		    flex: 0 0 auto;
-		    scroll-snap-align: start;
-		    border-radius: 12px;
-		    background-color: #1e293b;
-		    border: 1px solid #334155;
-		    overflow: hidden;
-		    box-shadow: 0 0 8px rgba(30, 41, 59, 0.5);
-		    transition: transform 0.2s ease-in-out;
-		}
-		
-		.attachment-item:hover {
-		    transform: scale(1.03);
-		}
-		
-		.attachment-item img,
-		.attachment-item video {
-		    max-width: 400px;
-		    height: auto;
-		    display: block;
-		    object-fit: cover;
-		    border-radius: 12px;
-		}
-		
-		/* File đính kèm không phải ảnh/video */
-		.attachment-file {
-		    display: flex;
-		    align-items: center;
-		    justify-content: center;
-		    gap: 10px;
-		    width: 380px;
-		    padding: 1rem;
-		    background: rgba(148, 163, 184, 0.1);
-		    color: #e2e8f0;
-		    font-weight: 500;
-		    text-decoration: none;
-		    border-radius: 12px;
-		    transition: background 0.3s ease;
-		}
-		
-		.attachment-file:hover {
-		    background: rgba(148, 163, 184, 0.2);
-		    color: #fff;
-		}
 
     </style>
 </head>
@@ -133,7 +21,8 @@
                 <svg class="bi me-2" width="32" height="32" fill="#0ea5e9"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18" stroke="currentColor"></path></svg>
                 AloUTE
             </a>
-            
+
+
             <ul class="navbar-nav flex-row gap-4 position-absolute start-50 translate-middle-x">
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="#" id="home-link">Cộng đồng</a>
@@ -151,7 +40,7 @@
 				<aside class="sticky-top" style="top: 80px;">
 				    <ul class="nav flex-column gap-1">
 						<li class="nav-item">
-				            <a id="home-sidebar-button" class="nav-link active bg-dark rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/home">
+				            <a id="home-sidebar-button" class="nav-link active rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/home">
 				                <i class="bi bi-house-door-fill fs-3"></i>
 				                <span>Trang chủ</span>
 				            </a>
@@ -175,7 +64,7 @@
 				            </a>
 				        </li>
 				        <li class="nav-item">
-						  <a id="nav-group" class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="#">
+						  <a id="nav-group" class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/group">
 						      <i class="bi bi-globe2 fs-3"></i>
 						      <span>Nhóm</span>
 						  </a>
@@ -194,13 +83,14 @@
 				            </a>
 				        </li>
 				        <li class="nav-item">
-				            <a id="nav-profile" class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="#">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" 
+   																		th:href="@{/{username}(username=${user.nameUser})}">
 				                <i class="bi bi-person-circle fs-3"></i>
 				                <span>Cá nhân</span>
 				            </a>
 				        </li>
 				        <li class="nav-item">
-				            <a id="nav-setting" class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="#">
+				            <a id="nav-setting" class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/setting">
 				                <i class="bi bi-gear fs-3"></i>
 				                <span>Cài đặt</span>
 				            </a>
@@ -220,13 +110,37 @@
                 <div id="home-content">
 					<main class="d-grid gap-3">
 					    <div th:each="post : ${posts}" class="card rounded-4 overflow-hidden">
+				    		<!-- Modal báo cáo bài viết -->
+							<div class="modal fade" th:id="'reportPostModal__' + ${post.postId}" tabindex="-1" aria-labelledby="reportPostLabel" aria-hidden="true">
+							  <div class="modal-dialog modal-dialog-centered">
+							    <div class="modal-content">
+							      <div class="modal-header">
+							        <h5 class="modal-title" id="reportPostLabel">Báo cáo bài viết</h5>
+							        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+							      </div>
+							      <div class="modal-body">
+							        <form method="post" th:action="@{/report-post}">
+							          <input type="hidden" name="postId" th:value="${post.postId}">
+							          <div class="mb-3">
+							            <label for="reason" class="form-label">Lý do báo cáo</label>
+							            <textarea name="reason" class="form-control" rows="4" placeholder="Nhập lý do..."></textarea>
+							          </div>
+							          <div class="d-flex justify-content-end">
+							            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Hủy</button>
+							            <button type="submit" class="btn btn-danger">Gửi báo cáo</button>
+							          </div>
+							        </form>
+							      </div>
+							    </div>
+							  </div>
+							</div>
 					        <div class="card-body">
 					            <div class="d-flex align-items-center gap-3 mb-3">
 					                <img class="rounded-circle" th:src="${post.user.avatarUrl}" alt="Avatar" width="48" height="48">
 
 					                <div>
 					                    <p class="fw-bold mb-0" th:text="${post.user.fullName}">Tên người dùng</p>
-					                    <p class="fw mb-0" th:text="${post.user.nameUser}"></p>
+					                    <a class="fw mb-0 user-link" th:text="${post.user.nameUser}" th:href="@{/{username}(username=${post.user.nameUser})}"></a>
 					                    <p class="text-muted small mb-0">
 					                        <span th:text="${#temporals.format(post.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
 					                    </p>
@@ -275,6 +189,9 @@
 					                <i class="bi bi-heart"></i> <span th:text="${post.likesCount}">0</span>
 					            </button>
 					            <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-upload"></i></button>
+								<button th:if="${post.user.userId != user.userId}" class="btn text-muted d-flex align-items-center gap-2" data-bs-toggle="modal" th:attr="data-bs-target='#reportPostModal__' + ${post.postId}">
+							        <i class="bi bi-flag"></i>
+							    </button>					            
 					        </div>
 					    </div>
 					</main>
@@ -350,7 +267,7 @@
 
 <script>
 document.addEventListener("click", e => {
-  const img = e.target.closest(".attachment-card img");
+  const img = e.target.closest(".attachment-item img");
   if (!img) return;
   
   const overlay = document.createElement("div");
@@ -379,6 +296,9 @@ function scrollGallery(btn, direction) {
   });
 }
 </script>
+<script th:src="@{/js/theme-toggle.js}"></script>
+
 
 </body>
 </html>
+

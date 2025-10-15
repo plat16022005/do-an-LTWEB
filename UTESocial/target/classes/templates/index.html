@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
         /* CSS đã được đồng bộ hóa từ trang upload.html */
         body {
@@ -122,7 +123,15 @@
 		    background: rgba(148, 163, 184, 0.2);
 		    color: #fff;
 		}
+.user-link {
+  text-decoration: none;    /* ❌ bỏ gạch dưới */
+  color: #adb5bd;           /* 🎨 màu xám nhạt */
+}
 
+.user-link:hover {
+  color: #ffffff;           /* ✨ đổi màu khi rê chuột nếu muốn */
+  text-decoration: underline; /* hoặc bỏ underline luôn */
+}
     </style>
 </head>
 <body class="text-light">
@@ -131,9 +140,9 @@
         <div class="container-xl">
             <a class="navbar-brand fw-bold fs-4 d-flex align-items-center">
                 <svg class="bi me-2" width="32" height="32" fill="#0ea5e9"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18" stroke="currentColor"></path></svg>
-                AloUTE
-            </a>
-            
+				AloUTE 
+			</a>
+
             <ul class="navbar-nav flex-row gap-4 position-absolute start-50 translate-middle-x">
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="#" id="home-link">Trang chủ</a>
@@ -147,6 +156,7 @@
                 Đăng nhập
             </a>
         </div>
+        
     </nav>
 
     <div class="container-xl mt-4">
@@ -158,8 +168,8 @@
 				            <a id="home-sidebar-button" class="nav-link active bg-dark rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/home">
 				                <i class="bi bi-house-door-fill fs-3"></i>
 				                <span>Trang chủ</span>
-				            </a>
-				        </li>
+				            </a> 
+						</li>
 				    </ul>
 				</aside>
 
@@ -169,13 +179,14 @@
                 <div id="home-content">
 					<main class="d-grid gap-3">
 					    <div th:each="post : ${posts}" class="card rounded-4 overflow-hidden">
+					    
 					        <div class="card-body">
 					            <div class="d-flex align-items-center gap-3 mb-3">
 					                <img class="rounded-circle" th:src="${post.user.avatarUrl}" alt="Avatar" width="48" height="48">
 
 					                <div>
 					                    <p class="fw-bold mb-0" th:text="${post.user.fullName}">Tên người dùng</p>
-					                    <p class="fw mb-0" th:text="${post.user.nameUser}"></p>
+					                    <a class="fw mb-0 user-link" th:text="${post.user.nameUser}"></a>
 					                    <p class="text-muted small mb-0">
 					                        <span th:text="${#temporals.format(post.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
 					                    </p>
@@ -223,7 +234,7 @@
 					            <button class="btn text-muted d-flex align-items-center gap-2">
 					                <i class="bi bi-heart"></i> <span th:text="${post.likesCount}">0</span>
 					            </button>
-					            <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-upload"></i></button>
+					            <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-upload"></i></button>					            
 					        </div>
 					    </div>
 					</main>
@@ -316,6 +327,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 </script>
-
+<script th:src="@{/js/theme-toggle.js}"></script>
 </body>
 </html>

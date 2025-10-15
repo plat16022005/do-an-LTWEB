@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import aloute.com.entity.Posts;
@@ -18,4 +19,12 @@ public interface PostsRepository extends JpaRepository<Posts, Integer> {
 		    ORDER BY FUNCTION('RAND')
 		""")
         List<Posts> findAllWithUserAndAttachments();
+	@Query("""
+		    SELECT DISTINCT p FROM Posts p
+		    LEFT JOIN FETCH p.user u
+		    LEFT JOIN FETCH p.attachments
+		    WHERE u.userId = :userId
+		    ORDER BY p.createdAt DESC
+		""")
+		List<Posts> findPostsOfUser(@Param("userId") Integer userId);
 }

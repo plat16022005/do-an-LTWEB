@@ -1,0 +1,396 @@
+/* =========================================================
+   🌑 DARK MODE (MẶC ĐỊNH)
+   ========================================================= */
+body {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+.card {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+.navbar {
+  background-color: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #334155;
+}
+
+aside .nav-link {
+  color: #adb5bd;
+}
+aside .nav-link:hover,
+aside .nav-link.active {
+  background-color: #334155;
+  color: #fff;
+}
+
+.navbar-nav .nav-link.active {
+  color: #fff !important;
+}
+
+.post-actions .btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 🔍 Search & Form Control - Dark Mode */
+.form-control-search,
+.form-control {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  color: #e2e8f0;
+}
+.form-control-search:focus,
+.form-control:focus {
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 0.25rem rgba(14, 165, 233, 0.25);
+}
+.form-control-search::placeholder,
+.form-control::placeholder {
+  color: #64748b;
+}
+.input-group-text-search {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  color: #e2e8f0;
+}
+
+/* =========================================================
+   📸 Attachment Gallery (Dark Mode)
+   ========================================================= */
+.attachment-scroll {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 10px;
+}
+.attachment-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+.attachment-scroll::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+.attachment-item {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  border-radius: 12px;
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  overflow: hidden;
+  box-shadow: 0 0 8px rgba(30, 41, 59, 0.5);
+  transition: transform 0.2s ease-in-out;
+}
+.attachment-item:hover {
+  transform: scale(1.03);
+}
+.attachment-item img,
+.attachment-item video {
+  max-width: 400px;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  border-radius: 12px;
+}
+.attachment-file {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 380px;
+  padding: 1rem;
+  background: rgba(148, 163, 184, 0.1);
+  color: #e2e8f0;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 12px;
+  transition: background 0.3s ease;
+}
+.attachment-file:hover {
+  background: rgba(148, 163, 184, 0.2);
+  color: #fff;
+}
+
+/* =========================================================
+   👤 Profile Header
+   ========================================================= */
+.profile-header {
+  position: relative;
+}
+.profile-cover {
+  height: 250px;
+  object-fit: cover;
+  width: 100%;
+}
+.profile-avatar {
+  width: 150px;
+  height: 150px;
+  border: 5px solid #1e293b;
+  position: absolute;
+  bottom: -75px;
+  left: 2rem;
+}
+
+/* =========================================================
+   🔗 Link & User
+   ========================================================= */
+.user-link {
+  text-decoration: none;
+  color: #adb5bd;
+}
+.user-link:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+/* =========================================================
+   🌞 LIGHT MODE
+   ========================================================= */
+.light-theme body {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
+/* Scrollbar */
+.light-theme ::-webkit-scrollbar-track {
+  background: #e2e8f0;
+}
+.light-theme ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+.light-theme ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Navbar */
+.light-theme .navbar {
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #e2e8f0;
+}
+.light-theme .navbar .navbar-brand {
+  color: #0f172a !important;
+}
+.light-theme .navbar .navbar-brand:hover {
+  color: #0ea5e9 !important;
+}
+.light-theme .navbar-nav .nav-link {
+  color: #334155 !important;
+}
+.light-theme .navbar-nav .nav-link:hover {
+  color: #0ea5e9 !important;
+}
+.light-theme .navbar-nav .nav-link.active {
+  color: #0ea5e9 !important;
+  font-weight: 600;
+}
+
+/* Sidebar */
+.light-theme aside .nav-link {
+  color: #334155;
+}
+.light-theme aside .nav-link:hover {
+  background-color: #f0f9ff;
+  color: #0c4a6e;
+}
+.light-theme aside .nav-link.active {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  font-weight: 600;
+}
+
+/* 🔍 Search & Form Control - Light Mode (ĐỐI LẬP) */
+.light-theme .form-control-search,
+.light-theme .form-control {
+  background-color: #ffffff;           /* nền trắng rõ */
+  border: 1px solid #94a3b8;           /* viền đậm hơn */
+  color: #0f172a !important;
+  transition: all 0.25s ease-in-out;
+}
+.light-theme .form-control-search:focus,
+.light-theme .form-control:focus {
+  background-color: #ffffff;
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 0.25rem rgba(14, 165, 233, 0.25);
+}
+.light-theme .form-control-search::placeholder,
+.light-theme .form-control::placeholder {
+  color: #94a3b8;
+}
+.light-theme .input-group-text-search {
+  background-color: #ffffff;
+  border: 1px solid #94a3b8;
+  color: #0f172a;
+}
+
+/* Text & Link */
+.light-theme .text-muted {
+  color: #64748b !important;
+}
+.light-theme .text-light {
+  color: #1e293b !important;
+}
+.light-theme .user-link {
+  color: #334155;
+}
+.light-theme .user-link:hover {
+  color: #0f172a;
+}
+
+/* Card & Gallery */
+.light-theme .card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #1e293b;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.07),
+    0 1px 2px -1px rgb(0 0 0 / 0.07);
+}
+.light-theme .attachment-item {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+.light-theme .attachment-file {
+  background: rgba(0, 0, 0, 0.05);
+  color: #0f172a;
+}
+.light-theme .attachment-file:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #000;
+}
+
+/* Profile */
+.light-theme .profile-avatar {
+  border-color: #ffffff;
+}
+
+/* =========================================================
+   🩶 CUSTOM BUTTON: Gray Button for Light Mode
+   ========================================================= */
+.btn-gray-custom {
+  color: #333;
+  border: 1px solid #999;
+  background-color: #f1f1f1;
+  transition: 0.3s;
+}
+.btn-gray-custom:hover {
+  background-color: #e2e2e2;
+  border-color: #666;
+  color: #000;
+}
+/* ===========================================
+   📄 PROFILE INFO - LIGHT MODE
+   =========================================== */
+.light-theme .list-group-item strong {
+  color: #1e293b !important;     /* xám đậm, dễ đọc trên nền sáng */
+  font-weight: 600;              /* in đậm vừa phải */
+}
+
+.light-theme .list-group-item span {
+  color: #334155 !important;     /* chữ đậm hơn để nổi rõ */
+  font-weight: 500;
+}
+/* ============================
+   🌗 SWITCH CHUYỂN GIAO DIỆN
+   ============================ */
+.theme-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 32px;
+}
+
+.theme-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #cbd5e1; /* Light mode nền xám nhạt */
+  transition: background-color 0.4s;
+  border-radius: 34px;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+}
+
+.slider .switch-icon {
+  display: inline-block;
+  height: 24px;
+  width: 24px;
+  background-color: white;
+  border-radius: 50%;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.4s ease, background-color 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Khi bật (Dark Mode) */
+.theme-switch input:checked + .slider {
+  background-color: #475569; /* Nền tối */
+}
+
+.theme-switch input:checked + .slider .switch-icon {
+  transform: translateX(28px);
+}
+
+/* Hiệu ứng hover */
+.theme-switch:hover .slider .switch-icon {
+  background-color: #f1f5f9;
+}
+
+.dark-theme .theme-switch input:not(:checked) + .slider {
+  background-color: #334155;
+}
+
+.dark-theme .theme-switch .switch-icon {
+  color: #0f172a;
+}
+.cover-frame-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 240px;
+  border: 2px dashed white;
+  cursor: grab; /* 👈 thêm để thể hiện có thể kéo */
+  pointer-events: auto; /* 👈 Bật lại để nhận sự kiện chuột */
+  border-radius: 0.5rem;
+  box-sizing: border-box;
+}
+.cover-frame-overlay:active {
+  cursor: grabbing;
+}
+#background-preview {
+  width: 100%;               /* phủ kín chiều ngang */
+  height: 100%;             /* chiều cao khung ảnh tổng (tuỳ chỉnh) */
+  object-fit: cover;         /* tự động crop chiều dọc nếu ảnh không đủ tỉ lệ */
+  object-position: center top; /* giữ phần trên cùng */
+  display: block;
+  border-radius: 0.5rem;
+}
+
+

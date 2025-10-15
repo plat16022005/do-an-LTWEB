@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="vi" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cài đặt - AloUTE</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+
+    </style>
+</head>
+<body class="text-light">
+    <div th:if="${errorPass != null}" class="alert alert-danger alert-dismissible fade show" role="alert"
+         style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+        <strong>Lỗi!</strong> <span th:text="${errorPass}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <nav class="navbar sticky-top">
+        <div class="container-xl">
+            <a class="navbar-brand fw-bold fs-4 d-flex align-items-center" th:href="@{/home}">
+                <svg class="bi me-2" width="32" height="32" fill="#0ea5e9"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18" stroke="currentColor"></path></svg>
+                AloUTE
+            </a>
+			<!-- 🌗 Nút Switch chuyển theme -->
+			<label class="theme-switch" for="theme-toggle">
+			  <input type="checkbox" id="theme-toggle" />
+			  <span class="slider">
+			    <span class="switch-icon">🌙</span>
+			  </span>
+			</label>            
+
+        </div>
+    </nav>
+
+    <div class="container-xl mt-4">
+        <div class="row g-4">
+            <div class="col-lg-3 d-none d-lg-block">
+				<aside class="sticky-top" style="top: 80px;">
+				    <ul class="nav flex-column gap-1">
+						<li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/home">
+				                <i class="bi bi-house-door-fill fs-3"></i>
+				                <span>Trang chủ</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/upload">
+				                <i class="bi bi-upload fs-3"></i>
+				                <span>Đăng tải</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/search">
+				                <i class="bi bi-search fs-3"></i>
+				                <span>Tìm kiếm</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/friend">
+				                <i class="bi bi-people fs-3"></i>
+				                <span>Bạn bè</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+						  <a id="nav-group" class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/group">
+						      <i class="bi bi-globe2 fs-3"></i>
+						      <span>Nhóm</span>
+						  </a>
+						</li>				        
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="#">
+				                <i class="bi bi-envelope fs-3"></i>
+				                <span>Tin nhắn</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="#">
+				                <i class="bi bi-bell fs-3"></i>
+				                <span>Thông báo</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" th:href="@{/{username}(username=${user.nameUser})}">
+				                <i class="bi bi-person-circle fs-3"></i>
+				                <span>Cá nhân</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link active rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/setting">
+				                <i class="bi bi-gear fs-3"></i>
+				                <span>Cài đặt</span>
+				            </a>
+				        </li>
+				        <li class="nav-item mt-2">
+				            <a class="nav-link text-danger rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/logout">
+				                <i class="bi bi-box-arrow-right fs-3"></i>
+				                <span>Đăng xuất</span>
+				            </a>
+				        </li>
+				    </ul>
+				</aside>
+
+            </div>
+            
+            <div class="col-lg-9">
+                <main>
+                    <h2 class="mb-4">Cài đặt</h2>
+                    <div class="card rounded-4">
+                        <div class="card-header bg-transparent border-0 p-0">
+                             <!-- Tabs điều hướng -->
+                            <ul class="nav nav-pills nav-fill">
+                              <li class="nav-item">
+                                <a class="nav-link active rounded-top-4 rounded-bottom-0" data-bs-toggle="tab" href="#edit-profile">Chỉnh sửa hồ sơ</a>
+                              </li>
+                              <li class="nav-item">
+                                <a class="nav-link rounded-0" data-bs-toggle="tab" href="#edit-images">Ảnh đại diện & ảnh bìa</a>
+                              </li>
+                               <li class="nav-item">
+                                <a class="nav-link rounded-top-4 rounded-bottom-0" data-bs-toggle="tab" href="#security">Bảo mật</a>
+                              </li>
+                            </ul>
+                        </div>
+                        <div class="card-body p-4">
+                             <!-- Nội dung các tab -->
+                            <div class="tab-content">
+                                <!-- Tab Chỉnh sửa hồ sơ -->
+                                <div class="tab-pane fade show active" id="edit-profile">
+                                    <form action="/setting/info" method="post">
+                                        <div class="mb-3">
+                                            <label for="fullName" class="form-label">Họ và tên</label>
+                                            <input  type="text" class="form-control" id="fullName" name="fullName" th:value="${user.fullName}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="bio" class="form-label">Giới thiệu</label>
+                                            <textarea class="form-control" id="bio" name="introduce" rows="3" th:text="${user.introduce}"></textarea>
+                                        </div>
+                                         <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="location" class="form-label">Đến từ</label>
+                                                <input type="text" class="form-control" id="location" name="location" th:value="${user.location}">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="birthday" class="form-label">Ngày sinh</label>
+                                                <input type="date" class="form-control" id="birthday" name="birthday" th:value="${user.birthday}">
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary rounded-pill px-4">Lưu thay đổi</button>
+                                    </form>
+                                </div>
+                                <!-- Tab Ảnh -->
+                                <div class="tab-pane fade" id="edit-images">
+										<!-- Ảnh đại diện -->
+										<div class="mb-4">
+										    <label class="form-label d-block">Ảnh đại diện</label>
+										    <img id="avatar-preview" 
+										         th:src="${user.avatarUrl}" 
+										         class="rounded-circle mb-3" 
+										         alt="Avatar hiện tại"
+										         width="150" height="150">
+										    <input type="file" class="form-control" id="avatar-input" accept="image/*">
+										</div>
+										
+										<!-- Ảnh bìa -->
+										<div class="mb-3">
+										  <label class="form-label d-block">Ảnh bìa</label>
+										  
+										  <div class="position-relative" style="max-width: 100%;">
+										    <img id="background-preview" 
+										         th:src="${user.backgroundUrl}" 
+										         class="img-fluid rounded-3 mb-3" 
+										         alt="Ảnh bìa hiện tại">
+										         
+										    <!-- 🔲 Khung hiển thị thực tế -->
+										    <div class="cover-frame-overlay"></div>
+										  </div>
+										  
+										  <input type="file" name="file" class="form-control" id="background-input" accept="image/*">
+										</div>
+
+                                        <button class="btn btn-primary" id="save-cover-btn">Đặt ảnh</button>
+                                </div>
+                                <!-- Tab Bảo mật -->
+                                <div class="tab-pane fade" id="security">
+                                    <form action="/setting/password" method="post">
+                                        <div class="mb-3">
+                                            <label for="currentPassword" class="form-label">Mật khẩu hiện tại</label>
+                                            <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="newPassword" class="form-label">Mật khẩu mới</label>
+                                            <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="confirmPassword" class="form-label">Xác nhận mật khẩu mới</label>
+                                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary rounded-pill px-4">Đổi mật khẩu</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+	  const avatarInput = document.getElementById('avatar-input');
+	  const backgroundInput = document.getElementById('background-input');
+
+	  const avatarPreview = document.getElementById('avatar-preview');
+	  const avatarPreviewDisplay = document.getElementById('avatar-preview-display');
+
+	  const backgroundPreview = document.getElementById('background-preview');
+	  const coverPreviewDisplay = document.getElementById('cover-preview-display');
+
+	  // Cập nhật ảnh đại diện
+	  avatarInput.addEventListener('change', (e) => {
+	    const file = e.target.files[0];
+	    if (file) {
+	      const url = URL.createObjectURL(file);
+	      avatarPreview.src = url;
+	      avatarPreviewDisplay.src = url;
+	    }
+	  });
+
+	  // Cập nhật ảnh bìa
+	  backgroundInput.addEventListener('change', (e) => {
+	    const file = e.target.files[0];
+	    if (file) {
+	      const url = URL.createObjectURL(file);
+	      backgroundPreview.src = url;
+	      coverPreviewDisplay.src = url;
+	    }
+	  });
+	});
+
+</script>
+<script>
+const fileInput = document.getElementById('background-input');
+const avatarInput = document.getElementById('avatar-input'); // 👈 thêm input avatar
+const preview = document.getElementById('background-preview');
+const overlay = document.querySelector('.cover-frame-overlay');
+const saveBtn = document.getElementById('save-cover-btn');
+
+let imageFile = null;
+let croppedBlob = null; // 👈 giữ blob sau khi crop
+let isDragging = false;
+let startY = 0;
+let startTop = 0;
+
+// 🖼 Upload ảnh bìa
+fileInput.addEventListener('change', (e) => {
+  imageFile = e.target.files[0];
+  if (imageFile) {
+    const url = URL.createObjectURL(imageFile);
+    preview.src = url;
+  }
+});
+
+// 🧭 Kéo khung chọn vùng
+overlay.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  startY = e.clientY;
+  startTop = overlay.offsetTop;
+});
+document.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+  const deltaY = e.clientY - startY;
+  let newTop = startTop + deltaY;
+
+  const overlayHeight = overlay.offsetHeight;
+  const imgHeight = preview.offsetHeight;
+
+  if (newTop < 0) newTop = 0;
+  if (newTop + overlayHeight > imgHeight) newTop = imgHeight - overlayHeight;
+
+  overlay.style.top = `${newTop}px`;
+  overlay.style.transform = 'translateX(-50%)';
+});
+document.addEventListener('mouseup', () => {
+  isDragging = false;
+});
+
+// ✂️ Xử lý crop ảnh bìa thành Blob
+function cropCover(callback) {
+  if (!imageFile) {
+    callback(null);
+    return;
+  }
+
+  const img = new Image();
+  img.src = URL.createObjectURL(imageFile);
+
+  img.onload = () => {
+    const scale = img.naturalWidth / preview.clientWidth;
+    const cropTop = overlay.offsetTop * scale;
+    const cropHeight = overlay.offsetHeight * scale;
+    const cropWidth = img.naturalWidth;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = cropWidth;
+    canvas.height = cropHeight;
+    const ctx = canvas.getContext('2d');
+
+    ctx.drawImage(
+      img,
+      0, cropTop, cropWidth, cropHeight,
+      0, 0, cropWidth, cropHeight
+    );
+
+    canvas.toBlob((blob) => {
+      croppedBlob = blob;
+      callback(blob);
+    }, "image/jpeg");
+  };
+}
+
+// 📨 Khi bấm nút Lưu
+saveBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+
+  cropCover((coverBlob) => {
+    const formData = new FormData();
+
+    // 🟡 Thêm ảnh đại diện nếu có
+    if (avatarInput.files[0]) {
+      formData.append("avatar", avatarInput.files[0]);
+    }
+
+    // 🟡 Thêm ảnh bìa đã crop nếu có
+    if (coverBlob) {
+      formData.append("cover", coverBlob, "cover.jpg");
+    }
+
+    fetch("/setting/images", { // 👈 dùng 1 API xử lý cả 2 ảnh
+      method: "POST",
+      body: formData
+    })
+    .then(res => res.text())
+    .then(msg => {
+
+      // 🔁 Redirect về trang cá nhân
+      const username = document.body.dataset.username;
+      window.location.href = "/profile";
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Lỗi khi cập nhật ảnh ❌");
+    });
+  });
+});
+
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const hash = window.location.hash;
+  if (hash) {
+    const tabTrigger = document.querySelector(`a[href="${hash}"]`);
+    if (tabTrigger) {
+      const tab = new bootstrap.Tab(tabTrigger);
+      tab.show();
+    }
+
+    // 🧽 Ẩn hash sau khi đã kích hoạt tab
+    history.replaceState(null, null, window.location.pathname);
+  }
+});
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/theme-toggle.js}"></script>
+</body>
+</html>

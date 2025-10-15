@@ -133,6 +133,19 @@ public class User
 	public void setNameUser(String nameUser) {
 		this.nameUser = nameUser;
 	}
+    public String getIntroduce() {
+		return introduce;
+	}
+	public void setIntroduce(String introduce) {
+		this.introduce = introduce;
+	}
+	public String getBackground() {
+		return background;
+	}
+	public void setBackground(String background) {
+		this.background = background;
+	}
+
 
     
 
@@ -188,6 +201,13 @@ public class User
 
     @Column(name = "LockedAt")
     private LocalDateTime lockedAt;
+    
+
+	@Column(name = "Introduce", length = 255)
+    private String introduce;
+    
+    @Column(name = "Background", length = 255)
+    private String background;
  // Trả về đường dẫn hợp lệ cho frontend
     @jakarta.persistence.Transient // Không lưu cột này vào DB
     public String getAvatarUrl() {
@@ -203,5 +223,18 @@ public class User
 
         return avatar;
     }
+    @jakarta.persistence.Transient // Không lưu cột này vào DB
+    public String getBackgroundUrl() {
+        if (background == null || background.isBlank()) {
+            // fallback ảnh mặc định nếu user chưa có avatar
+            return "/uploads/backgrounds/default.jpg";
+        }
 
+        // Nếu thiếu dấu "/" ở đầu → thêm vào
+        if (!background.startsWith("/")) {
+            return "/" + background;
+        }
+
+        return background;
+    }
 }

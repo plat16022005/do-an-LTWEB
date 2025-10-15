@@ -237,4 +237,10 @@ public class UserController
     public User addUserToModel(HttpSession session) {
         return (User) session.getAttribute("user");
     }
+    @GetMapping("/profile")
+    public String showProfileForm(HttpSession session)
+    {
+    	User user = (User) session.getAttribute("user");
+    	return "redirect:/" + user.getNameUser();
+    }
 }

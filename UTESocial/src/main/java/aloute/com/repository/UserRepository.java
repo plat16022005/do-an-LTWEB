@@ -7,6 +7,7 @@ import aloute.com.entity.User;
 import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
+	User findByUserId(Integer userId);
 	User findByNameUser(String nameUser);
     User findByEmail(String email);
     List<User> findByRoleIn(List<String> roles);  // Tìm tất cả người dùng có vai trò trong danh sách được cung cấp
