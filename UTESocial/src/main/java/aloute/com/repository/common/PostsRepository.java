@@ -36,4 +36,5 @@ public interface PostsRepository extends JpaRepository<Posts, Integer> {
             AND p.visibility = 'public'
             """)
     List<Posts> searchPublicPostsByContent(@Param("keyword") String keyword);
+
 }

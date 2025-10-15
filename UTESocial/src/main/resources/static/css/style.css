@@ -368,3 +368,29 @@ aside .nav-link.active {
 .dark-theme .theme-switch .switch-icon {
   color: #0f172a;
 }
+
+.cover-frame-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 240px;
+  border: 2px dashed white;
+  cursor: grab; /* 👈 thêm để thể hiện có thể kéo */
+  pointer-events: auto; /* 👈 Bật lại để nhận sự kiện chuột */
+  border-radius: 0.5rem;
+  box-sizing: border-box;
+}
+.cover-frame-overlay:active {
+  cursor: grabbing;
+}
+#background-preview {
+  width: 100%;               /* phủ kín chiều ngang */
+  height: 100%;             /* chiều cao khung ảnh tổng (tuỳ chỉnh) */
+  object-fit: cover;         /* tự động crop chiều dọc nếu ảnh không đủ tỉ lệ */
+  object-position: center top; /* giữ phần trên cùng */
+  display: block;
+  border-radius: 0.5rem;
+}
+

@@ -15,6 +15,12 @@
 </head>
 <body class="text-light">
 
+    <div th:if="${errorPass != null}" class="alert alert-danger alert-dismissible fade show" role="alert"
+         style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+        <strong>Lỗi!</strong> <span th:text="${errorPass}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
     <nav class="navbar sticky-top">
         <div class="container-xl">
             <a class="navbar-brand fw-bold fs-4 d-flex align-items-center" th:href="@{/home}">
@@ -125,23 +131,24 @@
                             <div class="tab-content">
                                 <!-- Tab Chỉnh sửa hồ sơ -->
                                 <div class="tab-pane fade show active" id="edit-profile">
-                                    <form>
+
+                                    <form action="/setting/info" method="post">
                                         <div class="mb-3">
                                             <label for="fullName" class="form-label">Họ và tên</label>
-                                            <input type="text" class="form-control" id="fullName" value="Trần Văn A">
+                                            <input  type="text" class="form-control" id="fullName" name="fullName" th:value="${user.fullName}">
                                         </div>
                                         <div class="mb-3">
                                             <label for="bio" class="form-label">Giới thiệu</label>
-                                            <textarea class="form-control" id="bio" rows="3">Lập trình viên yêu thích khám phá công nghệ mới và chia sẻ kiến thức.</textarea>
+                                            <textarea class="form-control" id="bio" name="introduce" rows="3" th:text="${user.introduce}"></textarea>
                                         </div>
                                          <div class="row">
                                             <div class="col-md-6 mb-3">
                                                 <label for="location" class="form-label">Đến từ</label>
-                                                <input type="text" class="form-control" id="location" value="TP. Hồ Chí Minh">
+                                                <input type="text" class="form-control" id="location" name="location" th:value="${user.location}">
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label for="birthday" class="form-label">Ngày sinh</label>
-                                                <input type="date" class="form-control" id="birthday" value="2000-01-01">
+                                                <input type="date" class="form-control" id="birthday" name="birthday" th:value="${user.birthday}">
                                             </div>
                                         </div>
                                         <button type="submit" class="btn btn-primary rounded-pill px-4">Lưu thay đổi</button>
@@ -149,34 +156,51 @@
                                 </div>
                                 <!-- Tab Ảnh -->
                                 <div class="tab-pane fade" id="edit-images">
-                                    <form>
-                                        <div class="mb-4">
-                                            <label class="form-label d-block">Ảnh đại diện</label>
-                                            <img src="https://placehold.co/150x150/64748b/fff?text=T" class="rounded-circle mb-3" alt="Avatar hiện tại">
-                                            <input type="file" class="form-control">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label d-block">Ảnh bìa</label>
-                                            <img src="https://placehold.co/1200x400/0f172a/334155?text=+" class="img-fluid rounded-3 mb-3" alt="Ảnh bìa hiện tại">
-                                            <input type="file" class="form-control">
-                                        </div>
-                                        <button type="submit" class="btn btn-primary rounded-pill px-4 mt-2">Lưu thay đổi</button>
-                                    </form>
+
+										<!-- Ảnh đại diện -->
+										<div class="mb-4">
+										    <label class="form-label d-block">Ảnh đại diện</label>
+										    <img id="avatar-preview" 
+										         th:src="${user.avatarUrl}" 
+										         class="rounded-circle mb-3" 
+										         alt="Avatar hiện tại"
+										         width="150" height="150">
+										    <input type="file" class="form-control" id="avatar-input" accept="image/*">
+										</div>
+										
+										<!-- Ảnh bìa -->
+										<div class="mb-3">
+										  <label class="form-label d-block">Ảnh bìa</label>
+										  
+										  <div class="position-relative" style="max-width: 100%;">
+										    <img id="background-preview" 
+										         th:src="${user.backgroundUrl}" 
+										         class="img-fluid rounded-3 mb-3" 
+										         alt="Ảnh bìa hiện tại">
+										         
+										    <!-- 🔲 Khung hiển thị thực tế -->
+										    <div class="cover-frame-overlay"></div>
+										  </div>
+										  
+										  <input type="file" name="file" class="form-control" id="background-input" accept="image/*">
+										</div>
+
+                                        <button class="btn btn-primary" id="save-cover-btn">Đặt ảnh</button>
                                 </div>
                                 <!-- Tab Bảo mật -->
                                 <div class="tab-pane fade" id="security">
-                                    <form>
+                                    <form action="/setting/password" method="post">
                                         <div class="mb-3">
                                             <label for="currentPassword" class="form-label">Mật khẩu hiện tại</label>
-                                            <input type="password" class="form-control" id="currentPassword">
+                                            <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
                                         </div>
                                         <div class="mb-3">
                                             <label for="newPassword" class="form-label">Mật khẩu mới</label>
-                                            <input type="password" class="form-control" id="newPassword">
+                                            <input type="password" class="form-control" id="newPassword" name="newPassword" required>
                                         </div>
                                         <div class="mb-3">
                                             <label for="confirmPassword" class="form-label">Xác nhận mật khẩu mới</label>
-                                            <input type="password" class="form-control" id="confirmPassword">
+                                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
                                         </div>
                                         <button type="submit" class="btn btn-primary rounded-pill px-4">Đổi mật khẩu</button>
                                     </form>
@@ -189,6 +213,170 @@
         </div>
     </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+	  const avatarInput = document.getElementById('avatar-input');
+	  const backgroundInput = document.getElementById('background-input');
+
+	  const avatarPreview = document.getElementById('avatar-preview');
+	  const avatarPreviewDisplay = document.getElementById('avatar-preview-display');
+
+	  const backgroundPreview = document.getElementById('background-preview');
+	  const coverPreviewDisplay = document.getElementById('cover-preview-display');
+
+	  // Cập nhật ảnh đại diện
+	  avatarInput.addEventListener('change', (e) => {
+	    const file = e.target.files[0];
+	    if (file) {
+	      const url = URL.createObjectURL(file);
+	      avatarPreview.src = url;
+	      avatarPreviewDisplay.src = url;
+	    }
+	  });
+
+	  // Cập nhật ảnh bìa
+	  backgroundInput.addEventListener('change', (e) => {
+	    const file = e.target.files[0];
+	    if (file) {
+	      const url = URL.createObjectURL(file);
+	      backgroundPreview.src = url;
+	      coverPreviewDisplay.src = url;
+	    }
+	  });
+	});
+
+</script>
+<script>
+const fileInput = document.getElementById('background-input');
+const avatarInput = document.getElementById('avatar-input'); // 👈 thêm input avatar
+const preview = document.getElementById('background-preview');
+const overlay = document.querySelector('.cover-frame-overlay');
+const saveBtn = document.getElementById('save-cover-btn');
+
+let imageFile = null;
+let croppedBlob = null; // 👈 giữ blob sau khi crop
+let isDragging = false;
+let startY = 0;
+let startTop = 0;
+
+// 🖼 Upload ảnh bìa
+fileInput.addEventListener('change', (e) => {
+  imageFile = e.target.files[0];
+  if (imageFile) {
+    const url = URL.createObjectURL(imageFile);
+    preview.src = url;
+  }
+});
+
+// 🧭 Kéo khung chọn vùng
+overlay.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  startY = e.clientY;
+  startTop = overlay.offsetTop;
+});
+document.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+  const deltaY = e.clientY - startY;
+  let newTop = startTop + deltaY;
+
+  const overlayHeight = overlay.offsetHeight;
+  const imgHeight = preview.offsetHeight;
+
+  if (newTop < 0) newTop = 0;
+  if (newTop + overlayHeight > imgHeight) newTop = imgHeight - overlayHeight;
+
+  overlay.style.top = `${newTop}px`;
+  overlay.style.transform = 'translateX(-50%)';
+});
+document.addEventListener('mouseup', () => {
+  isDragging = false;
+});
+
+// ✂️ Xử lý crop ảnh bìa thành Blob
+function cropCover(callback) {
+  if (!imageFile) {
+    callback(null);
+    return;
+  }
+
+  const img = new Image();
+  img.src = URL.createObjectURL(imageFile);
+
+  img.onload = () => {
+    const scale = img.naturalWidth / preview.clientWidth;
+    const cropTop = overlay.offsetTop * scale;
+    const cropHeight = overlay.offsetHeight * scale;
+    const cropWidth = img.naturalWidth;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = cropWidth;
+    canvas.height = cropHeight;
+    const ctx = canvas.getContext('2d');
+
+    ctx.drawImage(
+      img,
+      0, cropTop, cropWidth, cropHeight,
+      0, 0, cropWidth, cropHeight
+    );
+
+    canvas.toBlob((blob) => {
+      croppedBlob = blob;
+      callback(blob);
+    }, "image/jpeg");
+  };
+}
+
+// 📨 Khi bấm nút Lưu
+saveBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+
+  cropCover((coverBlob) => {
+    const formData = new FormData();
+
+    // 🟡 Thêm ảnh đại diện nếu có
+    if (avatarInput.files[0]) {
+      formData.append("avatar", avatarInput.files[0]);
+    }
+
+    // 🟡 Thêm ảnh bìa đã crop nếu có
+    if (coverBlob) {
+      formData.append("cover", coverBlob, "cover.jpg");
+    }
+
+    fetch("/setting/images", { // 👈 dùng 1 API xử lý cả 2 ảnh
+      method: "POST",
+      body: formData
+    })
+    .then(res => res.text())
+    .then(msg => {
+
+      // 🔁 Redirect về trang cá nhân
+      const username = document.body.dataset.username;
+      window.location.href = "/profile";
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Lỗi khi cập nhật ảnh ❌");
+    });
+  });
+});
+
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const hash = window.location.hash;
+  if (hash) {
+    const tabTrigger = document.querySelector(`a[href="${hash}"]`);
+    if (tabTrigger) {
+      const tab = new bootstrap.Tab(tabTrigger);
+      tab.show();
+    }
+
+    // 🧽 Ẩn hash sau khi đã kích hoạt tab
+    history.replaceState(null, null, window.location.pathname);
+  }
+});
+</script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/theme-toggle.js}"></script>
 </body>

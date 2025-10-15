@@ -8,9 +8,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
+
         .search-result-item:hover {
             background-color: rgba(255, 255, 255, 0.1);
         }
+
     </style>
 </head>
 <body class="text-light">
@@ -47,10 +49,12 @@
                 <main>
                     <div class="card rounded-4">
                         <div class="card-body p-4">
+
                             <div class="input-group mb-4">
                                 <span class="input-group-text"><i class="bi bi-search"></i></span>
                                 <input id="searchInput" type="text" class="form-control form-control-search form-control-lg" placeholder="Tìm kiếm bài viết hoặc người dùng...">
                             </div>
+
 
                             <div id="resultsArea" style="display: none;">
                                 <h4 id="resultsHeader" class="mb-3"></h4>
@@ -82,10 +86,12 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
     <script th:src="@{/js/theme-toggle.js}"></script>
     
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+
 
             // === Lấy các phần tử HTML ===
             const searchInput = document.getElementById('searchInput');
