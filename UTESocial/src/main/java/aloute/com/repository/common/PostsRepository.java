@@ -23,8 +23,7 @@ public interface PostsRepository extends JpaRepository<Posts, Integer> {
 		      AND p.status = 'approved'
 		""")
         List<Posts> findAllWithUserAndAttachments();
-<<<<<<< Updated upstream
-=======
+
 	@Query("""
 		    SELECT DISTINCT p
 		    FROM Posts p
@@ -75,7 +74,6 @@ public interface PostsRepository extends JpaRepository<Posts, Integer> {
 		""")
         List<Posts> findFriendPosts(@Param("currentUserId") Integer currentUserId);
 
->>>>>>> Stashed changes
 	@Query("""
 		    SELECT DISTINCT p
 		    FROM Posts p
@@ -126,15 +124,12 @@ public interface PostsRepository extends JpaRepository<Posts, Integer> {
 		    AND p.visibility = 'public'
 		""")
 		List<Posts> searchPublicPostsByContent(@Param("keyword") String keyword);
-<<<<<<< Updated upstream
 
-
-=======
 	@Query("""
 		    SELECT DISTINCT p FROM Posts p
 		    LEFT JOIN FETCH p.attachments
 		    WHERE p.postId = :postId
 		""")
 		Optional<Posts> findByIdWithAttachments(@Param("postId") Integer postId);
->>>>>>> Stashed changes
+
 }

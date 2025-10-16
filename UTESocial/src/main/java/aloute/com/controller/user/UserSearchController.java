@@ -16,12 +16,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import aloute.com.entity.User;
 import aloute.com.entity.Posts;
 import aloute.com.service.SearchService;
+import aloute.com.service.PostLikeService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class UserSearchController {
 	@Autowired
 	private SearchService searchService;
+	@Autowired
+	private PostLikeService postLikeService;	
 	@GetMapping("/search")
 	public String showSearchForm(@RequestParam(required = false) String keyword,
 	                             Model model,
@@ -38,6 +41,7 @@ public class UserSearchController {
 	        List<Posts> resultPosts = searchService.searchPost(keyword);
 	        model.addAttribute("resultUsers", resultUsers);
 	        model.addAttribute("resultPosts", resultPosts);
+	        model.addAttribute("likedPostIds", postLikeService.getLikedPostIdsByUser(user, resultPosts));
 	        model.addAttribute("hasResults", true);
 	    } else {
 	        model.addAttribute("hasResults", false);

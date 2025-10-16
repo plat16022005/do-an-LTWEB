@@ -16,6 +16,10 @@ import jakarta.servlet.http.HttpSession;
 public class UserHomeController {
     @Autowired
     private PostsRepository postRepository;
+	@Autowired
+	private aloute.com.service.PostLikeService postLikeService;
+	@Autowired
+	private aloute.com.service.PostRepostService postRepostService;
 	@GetMapping("/home")
 	public String showHomeForm(Model model, HttpSession session)
 	{
@@ -24,18 +28,14 @@ public class UserHomeController {
     	{
     		return "redirect:/access-deniel";
     	}
-<<<<<<< Updated upstream
-        List<Posts> posts = postRepository.findAllWithUserAndAttachments();
-        model.addAttribute("posts", posts);
-=======
+
         List<Posts> posts = postRepository.findAllVisiblePosts(user.getUserId());
+
         List<Posts> friendPosts = postRepository.findFriendPosts(user.getUserId());
 		model.addAttribute("posts", posts);
 		model.addAttribute("friendPosts", friendPosts);
 		model.addAttribute("likedPostIds", postLikeService.getLikedPostIdsByUser(user, posts));
 		model.addAttribute("repostedPostIds", postRepostService.getRepostedPostIdsByUser(user, posts));
-
->>>>>>> Stashed changes
 		return "user/home";
 	}
 }

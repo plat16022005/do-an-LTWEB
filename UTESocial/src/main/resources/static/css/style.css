@@ -650,10 +650,11 @@ aside .nav-link.active {
   display: flex;
   align-items: center;
   justify-content: center;
-<<<<<<< Updated upstream
-=======
   border-radius: 50%;   /* làm nút tròn */
->>>>>>> Stashed changes
+
+  cursor: pointer;
+  z-index: 5;
+
 }
 
 .btn-icon i {

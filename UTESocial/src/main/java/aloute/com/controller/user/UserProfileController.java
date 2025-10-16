@@ -7,16 +7,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-<<<<<<< Updated upstream
-=======
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
->>>>>>> Stashed changes
+
 
 import aloute.com.entity.Posts;
 import aloute.com.entity.User;
+import aloute.com.repository.SharesRepository;
 import aloute.com.repository.UserRepository;
 import aloute.com.repository.common.PostsRepository;
 import aloute.com.service.AttachmentService;
@@ -28,49 +28,20 @@ import jakarta.servlet.http.HttpSession;
 public class UserProfileController {
 	@Autowired
 	private UserRepository userRepository;
-<<<<<<< Updated upstream
-    @Autowired
-    private PostsRepository postRepository;
-    @Autowired
-    private FriendService friendService;
-	@GetMapping("/{nameUser}")
-	public String showProfileForm(@PathVariable String nameUser, Model model, HttpSession session)
-	{
-    	User user = (User) session.getAttribute("user");
-    	User information = userRepository.findByNameUser(nameUser);
-    	if (information == null) {
-    	    return "redirect:/access-deniel";
-    	}
-    	List<Posts> posts = postRepository.findPostsOfUser(information.getUserId());
-    	List<User> friends = friendService.getFriendList(information.getUserId());
-    	
-    	if (user == null)
-    	{
-    		return "redirect:/access-deniel";
-    	}
-    	
-    	boolean isOwner = user != null && user.getNameUser().equals(information.getNameUser());
-    	boolean isFriend = friendService.checkFriend(user.getUserId(), information.getUserId());
-    	boolean isBeRequest = friendService.checkBeRequest(information.getUserId(), user.getUserId());
-    	boolean isPending = friendService.checkPending(user.getUserId(), information.getUserId());
-    	model.addAttribute("isBeRequest", isBeRequest);
-    	model.addAttribute("isPending", isPending);
-    	model.addAttribute("isFriend", isFriend);
-    	model.addAttribute("info", information);
-    	model.addAttribute("isOwner", isOwner);
-        model.addAttribute("posts", posts);
-        model.addAttribute("friends", friends);
-=======
+
+	@Autowired
+	private PostService postService;
+
+	@Autowired
+	private AttachmentService attachmentService;	
+
+
 	@Autowired
 	private PostsRepository postRepository;
 	@Autowired
-	private PostService postService;
-	@Autowired
 	private SharesRepository sharesRepository;	
 	@Autowired
-	private FriendService friendService;
-	@Autowired
-	private AttachmentService attachmentService;	
+	private FriendService friendService;	
 	@Autowired
 	private aloute.com.service.PostLikeService postLikeService;
 	@Autowired
@@ -89,20 +60,23 @@ public class UserProfileController {
 	@GetMapping("/{nameUser}")
 	public String showProfileForm(@PathVariable String nameUser, Model model, HttpSession session)
 	{
+
 		User user = (User) session.getAttribute("user");
 		User information = userRepository.findByNameUser(nameUser);
+		
 		if (information == null) {
 			return "redirect:/access-deniel";
 		}
+
 		if (user == null)
 		{
 			return "redirect:/access-deniel";
 		}
+
 		List<Posts> posts = postRepository.findPostsOfUserWithVisibility(user.getUserId(),information.getUserId());
 		List<Posts> reposts = sharesRepository.findRepostedPostsOfUser(information.getUserId());
 		List<User> friends = friendService.getFriendList(information.getUserId());
         
-
         
 		boolean isOwner = user != null && user.getNameUser().equals(information.getNameUser());
 		boolean isFriend = friendService.checkFriend(user.getUserId(), information.getUserId());
@@ -118,7 +92,6 @@ public class UserProfileController {
 		model.addAttribute("likedPostIds", postLikeService.getLikedPostIdsByUser(user, posts));
 		model.addAttribute("repostedPostIds", postRepostService.getRepostedPostIdsByUser(user, reposts));
 		model.addAttribute("friends", friends);
->>>>>>> Stashed changes
 		return "user/profile";
 	}
 	@GetMapping("/posts/{id}/edit")
