@@ -56,7 +56,7 @@ public class UserUploadController {
 	    post.setLikesCount(0);
 	    post.setShareCount(0);
 	    post.setCommentsCount(0);
-	    post.setVisibility("0");
+	    post.setVisibility("public");
 	    post.setDeleted(false);
 	    post.setStatus("not approved");
 	    postRepository.save(post);

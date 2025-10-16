@@ -23,25 +23,39 @@ public class UserSearchController {
 	@Autowired
 	private SearchService searchService;
 	@GetMapping("/search")
-	public String showUploadForm(Model model, HttpSession session)
-	{
-    	User user = (User) session.getAttribute("user");
-    	if (user == null)
-    	{
-    		return "redirect:/access-deniel";
-    	}
-		return "user/search";
+	public String showSearchForm(@RequestParam(required = false) String keyword,
+	                             Model model,
+	                             HttpSession session) {
+	    User user = (User) session.getAttribute("user");
+	    if (user == null) {
+	        return "redirect:/access-deniel";
+	    }
+
+	    model.addAttribute("keyword", keyword);
+
+	    if (keyword != null && !keyword.isBlank()) {
+	        List<User> resultUsers = searchService.searchUser(keyword);
+	        List<Posts> resultPosts = searchService.searchPost(keyword);
+	        model.addAttribute("resultUsers", resultUsers);
+	        model.addAttribute("resultPosts", resultPosts);
+	        model.addAttribute("hasResults", true);
+	    } else {
+	        model.addAttribute("hasResults", false);
+	    }
+
+	    return "user/search";
 	}
+
 	@PostMapping("/search/result")
 	@ResponseBody
-	public Map<String, Object> handleSearch(@RequestParam("keyword") String keyword) {
+	public String handleSearch(@RequestParam("keyword") String keyword, RedirectAttributes redirectAttributes) {
 	    List<User> resultUsers = searchService.searchUser(keyword);
 	    List<Posts> resultPosts = searchService.searchPost(keyword);
 
 	    Map<String, Object> response = new HashMap<>();
-	    response.put("users", resultUsers);
-	    response.put("posts", resultPosts);
-	    return response;
+	    redirectAttributes.addFlashAttribute("resultUsers", resultUsers);
+	    redirectAttributes.addFlashAttribute("resultPosts", resultPosts);
+	    return "redirect:/search";
 	}
 
 }
