@@ -19,6 +19,23 @@ public interface PostsRepository extends JpaRepository<Posts, Integer> {
 		    ORDER BY FUNCTION('RAND')
 		""")
         List<Posts> findAllWithUserAndAttachments();
+    @Query("""
+            SELECT DISTINCT p FROM Posts p
+            LEFT JOIN FETCH p.user
+            LEFT JOIN FETCH p.attachments
+            WHERE p.user.userId IN (
+                SELECT CASE
+                           WHEN f.user1.userId = :currentUserId THEN f.user2.userId
+                           ELSE f.user1.userId
+                       END
+                FROM Friend f
+                WHERE (f.user1.userId = :currentUserId OR f.user2.userId = :currentUserId)
+                  AND f.status = 'Accepted'
+            )
+            ORDER BY p.createdAt DESC
+        """)
+        List<Posts> findFriendPosts(@Param("currentUserId") Integer currentUserId);
+
 	@Query("""
 		    SELECT DISTINCT p FROM Posts p
 		    LEFT JOIN FETCH p.user u
@@ -38,6 +55,4 @@ public interface PostsRepository extends JpaRepository<Posts, Integer> {
 		    AND p.visibility = 'public'
 		""")
 		List<Posts> searchPublicPostsByContent(@Param("keyword") String keyword);
-
-
 }

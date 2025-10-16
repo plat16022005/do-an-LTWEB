@@ -35,6 +35,7 @@ public class PostLikeController {
     @PostMapping(path = "/post/toggle-like/json", produces = "application/json")
     @ResponseBody
     public Map<String, Object> toggleLikeJson(@org.springframework.web.bind.annotation.RequestBody Map<String, Object> payload, HttpSession session) {
+    	System.out.println("📦 Payload nhận được: " + payload);
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return Map.of("success", false, "message", "Bạn cần đăng nhập để thích bài viết.");

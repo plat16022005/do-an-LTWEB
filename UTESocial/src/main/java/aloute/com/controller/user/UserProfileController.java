@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import aloute.com.entity.Posts;
 import aloute.com.entity.User;
+import aloute.com.repository.SharesRepository;
 import aloute.com.repository.UserRepository;
 import aloute.com.repository.common.PostsRepository;
 import aloute.com.service.FriendService;
@@ -23,9 +24,13 @@ public class UserProfileController {
 	@Autowired
 	private PostsRepository postRepository;
 	@Autowired
-	private FriendService friendService;
+	private SharesRepository sharesRepository;	
+	@Autowired
+	private FriendService friendService;	
 	@Autowired
 	private aloute.com.service.PostLikeService postLikeService;
+	@Autowired
+	private aloute.com.service.PostRepostService postRepostService;
 
 	@GetMapping("/api/posts/{postId}/like")
 	public @ResponseBody String toggleLike(@PathVariable Integer postId, HttpSession session) {
@@ -46,6 +51,7 @@ public class UserProfileController {
 			return "redirect:/access-deniel";
 		}
 		List<Posts> posts = postRepository.findPostsOfUser(information.getUserId());
+		List<Posts> reposts = sharesRepository.findRepostedPostsOfUser(information.getUserId());
 		List<User> friends = friendService.getFriendList(information.getUserId());
         
 		if (user == null)
@@ -63,7 +69,9 @@ public class UserProfileController {
 		model.addAttribute("info", information);
 		model.addAttribute("isOwner", isOwner);
 		model.addAttribute("posts", posts);
+		model.addAttribute("reposts", reposts);
 		model.addAttribute("likedPostIds", postLikeService.getLikedPostIdsByUser(user, posts));
+		model.addAttribute("repostedPostIds", postRepostService.getRepostedPostIdsByUser(user, reposts));
 		model.addAttribute("friends", friends);
 		return "user/profile";
 	}

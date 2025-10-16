@@ -18,6 +18,8 @@ public class UserHomeController {
     private PostsRepository postRepository;
 	@Autowired
 	private aloute.com.service.PostLikeService postLikeService;
+	@Autowired
+	private aloute.com.service.PostRepostService postRepostService;
 	@GetMapping("/home")
 	public String showHomeForm(Model model, HttpSession session)
 	{
@@ -27,8 +29,12 @@ public class UserHomeController {
     		return "redirect:/access-deniel";
     	}
         List<Posts> posts = postRepository.findAllWithUserAndAttachments();
+        List<Posts> friendPosts = postRepository.findFriendPosts(user.getUserId());
 		model.addAttribute("posts", posts);
+		model.addAttribute("friendPosts", friendPosts);
 		model.addAttribute("likedPostIds", postLikeService.getLikedPostIdsByUser(user, posts));
+		model.addAttribute("repostedPostIds", postRepostService.getRepostedPostIdsByUser(user, posts));
+
 		return "user/home";
 	}
 }

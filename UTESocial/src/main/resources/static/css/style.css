@@ -427,6 +427,8 @@ aside .nav-link.active {
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  z-index: 5;
 }
 #file-preview .remove-btn:hover {
   background: rgba(220,38,38,0.9); /* đỏ đậm khi hover */
