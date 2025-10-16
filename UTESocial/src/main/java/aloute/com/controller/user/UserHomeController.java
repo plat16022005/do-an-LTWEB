@@ -16,6 +16,8 @@ import jakarta.servlet.http.HttpSession;
 public class UserHomeController {
     @Autowired
     private PostsRepository postRepository;
+	@Autowired
+	private aloute.com.service.PostLikeService postLikeService;
 	@GetMapping("/home")
 	public String showHomeForm(Model model, HttpSession session)
 	{
@@ -25,7 +27,8 @@ public class UserHomeController {
     		return "redirect:/access-deniel";
     	}
         List<Posts> posts = postRepository.findAllWithUserAndAttachments();
-        model.addAttribute("posts", posts);
+		model.addAttribute("posts", posts);
+		model.addAttribute("likedPostIds", postLikeService.getLikedPostIdsByUser(user, posts));
 		return "user/home";
 	}
 }

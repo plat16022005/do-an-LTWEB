@@ -16,11 +16,21 @@ public class UserService {
     private UserRepository userRepository;
 	
     public User login(String email, String password) {
-        User user = userRepository.findByEmail(email);
-        if (user != null && PasswordUtil.hashPassword(password).equals(user.getPasswordHash())) {
-            return user;
-        }
-        return null;
+		// Allow login with either email or username (templates say 'Email hoặc tên người dùng')
+		User user = userRepository.findByEmail(email);
+		if (user == null) {
+			// try by nameUser; accept values like '@name' or 'name'
+			String maybeName = email;
+			if (!maybeName.startsWith("@")) {
+				maybeName = "@" + maybeName;
+			}
+			user = userRepository.findByNameUser(maybeName);
+		}
+
+		if (user != null && PasswordUtil.hashPassword(password).equals(user.getPasswordHash())) {
+			return user;
+		}
+		return null;
     }
     
     public boolean register(String hoten, String queQuan, String email, String passWord, LocalDate birthday, String gender)

@@ -40,26 +40,27 @@ public class UserUploadController {
 	
 	@PostMapping("/upload/post")
 	public String handleUpload(@RequestParam("content") String content,
-	                            @RequestParam(value = "files", required = false) List<MultipartFile> files,
-	                            HttpSession session) throws IOException {
-	    if ((content == null || content.isBlank()) && (files == null || files.isEmpty())) {
-	        return "redirect:/upload";
-	    }
+							  @RequestParam(value = "files", required = false) List<MultipartFile> files,
+							  @RequestParam(value = "visibility", defaultValue = "public") String visibility,
+							  HttpSession session) throws IOException {
+		if ((content == null || content.isBlank()) && (files == null || files.isEmpty())) {
+			return "redirect:/upload";
+		}
 
-	    User user = (User) session.getAttribute("user");
+		User user = (User) session.getAttribute("user");
 
-	    // ✅ Tạo bài viết
-	    Posts post = new Posts();
-	    post.setUser(user);
-	    post.setContent(content);
-	    post.setCreatedAt(LocalDateTime.now());
-	    post.setLikesCount(0);
-	    post.setShareCount(0);
-	    post.setCommentsCount(0);
-	    post.setVisibility("0");
-	    post.setDeleted(false);
-	    post.setStatus("not approved");
-	    postRepository.save(post);
+		// ✅ Tạo bài viết
+		Posts post = new Posts();
+		post.setUser(user);
+		post.setContent(content);
+		post.setCreatedAt(LocalDateTime.now());
+		post.setLikesCount(0);
+		post.setShareCount(0);
+		post.setCommentsCount(0);
+		post.setVisibility(visibility);
+		post.setDeleted(false);
+		post.setStatus("not approved");
+		postRepository.save(post);
 
 	    // ✅ Xử lý file đính kèm
 	    if (files != null && !files.isEmpty()) {
