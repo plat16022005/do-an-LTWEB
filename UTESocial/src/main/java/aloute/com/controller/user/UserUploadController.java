@@ -49,18 +49,18 @@ public class UserUploadController {
 
 		User user = (User) session.getAttribute("user");
 
-		// ✅ Tạo bài viết
-		Posts post = new Posts();
-		post.setUser(user);
-		post.setContent(content);
-		post.setCreatedAt(LocalDateTime.now());
-		post.setLikesCount(0);
-		post.setShareCount(0);
-		post.setCommentsCount(0);
-		post.setVisibility(visibility);
-		post.setDeleted(false);
-		post.setStatus("not approved");
-		postRepository.save(post);
+	    Posts post = new Posts();
+	    post.setUser(user);
+	    post.setContent(content);
+	    post.setCreatedAt(LocalDateTime.now());
+	    post.setLikesCount(0);
+	    post.setShareCount(0);
+	    post.setCommentsCount(0);
+	    post.setVisibility("public");
+	    post.setDeleted(false);
+	    post.setStatus("not approved");
+	    postRepository.save(post);
+
 
 	    // ✅ Xử lý file đính kèm
 	    if (files != null && !files.isEmpty()) {

@@ -47,80 +47,238 @@
                 <main>
                     <div class="card rounded-4">
                         <div class="card-body p-4">
+							<form method="get" action="/search">
+							  <div class="input-group mb-4">
+							    <span class="input-group-text"><i class="bi bi-search"></i></span>
+							    <input name="keyword"
+							           id="searchInput"
+							           type="text"
+							           class="form-control form-control-search form-control-lg"
+							           placeholder="Tìm kiếm bài viết hoặc người dùng..."
+							           th:value="${keyword}">
+							  </div>
+							</form>
 
-                            <div class="input-group mb-4">
-                                <span class="input-group-text"><i class="bi bi-search"></i></span>
-                                <input id="searchInput" type="text" class="form-control form-control-search form-control-lg" placeholder="Tìm kiếm bài viết hoặc người dùng...">
-                            </div>
-
-
-								<div id="resultsArea" style="display: none;">
-								    <h4 id="resultsHeader" class="mb-3"></h4>
-								    
-								    <ul class="nav nav-pills mb-3">
-								        <li class="nav-item">
-								            <a class="nav-link active" data-bs-toggle="tab" href="#all-result">Tất cả</a>
-								        </li>
-								        <li class="nav-item">
-								            <a class="nav-link" data-bs-toggle="tab" href="#result-post">Bài viết</a>
-								        </li>
-								        <li class="nav-item">
-								            <a class="nav-link" data-bs-toggle="tab" href="#result-user">Người dùng</a>
-								        </li>
-								        <li class="nav-item">
-								            <a class="nav-link enable" data-bs-toggle="tab" href="#result-group">Nhóm</a>
-								        </li>
-								    </ul>
+								<div id="resultsArea" th:if="${hasResults}" style="display: block;">
+								  <h4 id="resultsHeader" class="mb-3"
+								      th:text="'Kết quả cho &quot;' + ${keyword} + '&quot;'"></h4>
+								
+								  <ul class="nav nav-pills mb-3">
+								    <li class="nav-item">
+								      <a class="nav-link active" data-bs-toggle="tab" href="#all-result">Tất cả</a>
+								    </li>
+								    <li class="nav-item">
+								      <a class="nav-link" data-bs-toggle="tab" href="#result-post">Bài viết</a>
+								    </li>
+								    <li class="nav-item">
+								      <a class="nav-link" data-bs-toggle="tab" href="#result-user">Người dùng</a>
+								    </li>
+								    <li class="nav-item">
+								      <a class="nav-link enable" data-bs-toggle="tab" href="#result-group">Nhóm</a>
+								    </li>
+								  </ul>
                             <div class="tab-content">
                                 <!-- Tab Tất cả kết quả -->
                                 <div class="tab-pane fade show active" id="all-result">
                                     <div class="d-flex flex-column gap-3">
-
-	                                        
+										<div th:each="rsUser : ${resultUsers}" class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item">                                         
+	                                        <div class="d-flex align-items-center gap-3">
+	                                            <img th:src="${rsUser.avatarUrl}" class="rounded-circle" alt="Avatar" width="48" height="48">
+	                                            <div>
+	                                                <h6 th:text="${rsUser.fullName}" class="mb-0 fw-bold"></h6>
+	                                                <a class="fw mb-0 user-link" th:text="${rsUser.nameUser}" th:href="@{/{username}(username=${rsUser.nameUser})}"></a>
+	                                            </div>
+	                                        </div>
+	                                    </div>
+					                      <div th:each="rsPost : ${resultPosts}" class="card rounded-4 overflow-hidden">
+								    		<!-- Modal báo cáo bài viết -->
+											<div class="modal fade" th:id="'reportPostModal__' + ${rsPost.postId}" tabindex="-1" aria-labelledby="reportPostLabel" aria-hidden="true">
+											  <div class="modal-dialog modal-dialog-centered">
+											    <div class="modal-content">
+											      <div class="modal-header">
+											        <h5 class="modal-title" id="reportPostLabel">Báo cáo bài viết</h5>
+											        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+											      </div>
+											      <div class="modal-body">
+											        <form method="post" th:action="@{/report-post}">
+											          <input type="hidden" name="postId" th:value="${rsPost.postId}">
+											          <div class="mb-3">
+											            <label for="reason" class="form-label">Lý do báo cáo</label>
+											            <textarea name="reason" class="form-control" rows="4" placeholder="Nhập lý do..."></textarea>
+											          </div>
+											          <div class="d-flex justify-content-end">
+											            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Hủy</button>
+											            <button type="submit" class="btn btn-danger">Gửi báo cáo</button>
+											          </div>
+											        </form>
+											      </div>
+											    </div>
+											  </div>
+											</div>
+									        <div class="card-body">
+									            <div class="d-flex align-items-center gap-3 mb-3">
+									                <img class="rounded-circle" th:src="${rsPost.user.avatarUrl}" alt="Avatar" width="48" height="48">
+				
+									                <div>
+									                    <p class="fw-bold mb-0" th:text="${rsPost.user.fullName}">Tên người dùng</p>
+									                    <a class="fw mb-0 user-link" th:text="${rsPost.user.nameUser}" th:href="@{/{username}(username=${rsPost.user.nameUser})}"></a>
+									                    <p class="text-muted small mb-0">
+									                        <span th:text="${#temporals.format(rsPost.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+									                    </p>
+									                </div>
+									            </div>
+									            <p th:text="${rsPost.content}"></p>
+												<!-- Thư viện ảnh/video dạng thanh trượt -->
+												<div th:if="${rsPost.attachments != null and !rsPost.attachments.isEmpty()}" 
+												     class="attachment-scroll mt-3">
+												     
+												    <div th:each="att : ${rsPost.attachments}" class="attachment-item text-center">
+												
+												        <!-- Nếu là ảnh -->
+												        <img th:if="${att.fileType.startsWith('image')}"
+												             th:src="${att.fileUrl}"
+												             alt="Ảnh đính kèm">
+												
+												        <!-- Nếu là video -->
+												        <video th:if="${att.fileType.startsWith('video')}"
+												               th:src="${att.fileUrl}"
+												               controls
+												               class="rounded-3">
+												        </video>
+												
+												        <!-- Nếu là file khác -->
+												        <a th:if="${!att.fileType.startsWith('image') and !att.fileType.startsWith('video')}"
+												           th:href="${att.fileUrl}"
+												           class="attachment-file"
+												           target="_blank">
+												           <i class="bi bi-paperclip"></i>
+												           <span th:text="${#strings.substring(att.fileUrl, att.fileUrl.lastIndexOf('/') + 1)}"></span>
+												        </a>
+												    </div>
+												</div>
+				
+									        </div>
+									
+									        <div class="card-body d-flex justify-content-between post-actions">
+									            <button class="btn text-muted d-flex align-items-center gap-2">
+									                <i class="bi bi-chat"></i> <span th:text="${rsPost.commentsCount}">0</span>
+									            </button>
+									            <button class="btn text-muted d-flex align-items-center gap-2">
+									                <i class="bi bi-repeat"></i> <span th:text="${rsPost.shareCount}">0</span>
+									            </button>
+									            <button class="btn text-muted d-flex align-items-center gap-2">
+									                <i class="bi bi-heart"></i> <span th:text="${rsPost.likesCount}">0</span>
+									            </button>
+									            <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-upload"></i></button>
+												<button th:if="${rsPost.user.userId != user.userId}" class="btn text-muted d-flex align-items-center gap-2" data-bs-toggle="modal" th:attr="data-bs-target='#reportPostModal__' + ${rsPost.postId}">
+											        <i class="bi bi-flag"></i>
+											    </button>					            
+									        </div>
+									    </div>    
                                     </div>
                                 </div>
 
                                 <!-- Tab Lời mời đã nhận -->
                                 <div class="tab-pane fade" id="result-post">
                                     <div class="d-flex flex-column gap-3">
-										<div th:each="friend : ${beRequestFriends}" class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item">                                         
-	                                        <div class="d-flex align-items-center gap-3">
-	                                            <img th:src="${friend.avatarUrl}" class="rounded-circle" alt="Avatar" width="48" height="48">
-	                                            <div>
-	                                                <h6 th:text="${friend.fullName}" class="mb-0 fw-bold"></h6>
-	                                                <a class="fw mb-0 user-link" th:text="${friend.nameUser}" th:href="@{/{username}(username=${friend.nameUser})}"></a>
-	                                            </div>
-	                                        </div>
-	                                        <div class="d-flex gap-2">
-	                                            <form action="/friend/accept" method="post">
-	                                                <input type="hidden" name="friendId" th:value="${friend.userId}">		
-	                                                <button type="submit" class="btn btn-sm btn-success rounded-pill">Chấp nhận</button>
-	                                            </form>
-	                                            <form action="/friend/deny" method="post">
-	                                                <input type="hidden" name="friendId" th:value="${friend.userId}">
-	                                                <button type="submit" class="btn btn-sm btn-danger rounded-pill">Từ chối</button>
-	                                            </form>
-	                                        </div>
-	                                    </div>
+					                      <div th:each="rsPost : ${resultPosts}" class="card rounded-4 overflow-hidden">
+								    		<!-- Modal báo cáo bài viết -->
+											<div class="modal fade" th:id="'reportPostModal__' + ${rsPost.postId}" tabindex="-1" aria-labelledby="reportPostLabel" aria-hidden="true">
+											  <div class="modal-dialog modal-dialog-centered">
+											    <div class="modal-content">
+											      <div class="modal-header">
+											        <h5 class="modal-title" id="reportPostLabel">Báo cáo bài viết</h5>
+											        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+											      </div>
+											      <div class="modal-body">
+											        <form method="post" th:action="@{/report-post}">
+											          <input type="hidden" name="postId" th:value="${rsPost.postId}">
+											          <div class="mb-3">
+											            <label for="reason" class="form-label">Lý do báo cáo</label>
+											            <textarea name="reason" class="form-control" rows="4" placeholder="Nhập lý do..."></textarea>
+											          </div>
+											          <div class="d-flex justify-content-end">
+											            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Hủy</button>
+											            <button type="submit" class="btn btn-danger">Gửi báo cáo</button>
+											          </div>
+											        </form>
+											      </div>
+											    </div>
+											  </div>
+											</div>
+									        <div class="card-body">
+									            <div class="d-flex align-items-center gap-3 mb-3">
+									                <img class="rounded-circle" th:src="${rsPost.user.avatarUrl}" alt="Avatar" width="48" height="48">
+				
+									                <div>
+									                    <p class="fw-bold mb-0" th:text="${rsPost.user.fullName}">Tên người dùng</p>
+									                    <a class="fw mb-0 user-link" th:text="${rsPost.user.nameUser}" th:href="@{/{username}(username=${rsPost.user.nameUser})}"></a>
+									                    <p class="text-muted small mb-0">
+									                        <span th:text="${#temporals.format(rsPost.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+									                    </p>
+									                </div>
+									            </div>
+									            <p th:text="${rsPost.content}"></p>
+												<!-- Thư viện ảnh/video dạng thanh trượt -->
+												<div th:if="${rsPost.attachments != null and !rsPost.attachments.isEmpty()}" 
+												     class="attachment-scroll mt-3">
+												     
+												    <div th:each="att : ${rsPost.attachments}" class="attachment-item text-center">
+												
+												        <!-- Nếu là ảnh -->
+												        <img th:if="${att.fileType.startsWith('image')}"
+												             th:src="${att.fileUrl}"
+												             alt="Ảnh đính kèm">
+												
+												        <!-- Nếu là video -->
+												        <video th:if="${att.fileType.startsWith('video')}"
+												               th:src="${att.fileUrl}"
+												               controls
+												               class="rounded-3">
+												        </video>
+												
+												        <!-- Nếu là file khác -->
+												        <a th:if="${!att.fileType.startsWith('image') and !att.fileType.startsWith('video')}"
+												           th:href="${att.fileUrl}"
+												           class="attachment-file"
+												           target="_blank">
+												           <i class="bi bi-paperclip"></i>
+												           <span th:text="${#strings.substring(att.fileUrl, att.fileUrl.lastIndexOf('/') + 1)}"></span>
+												        </a>
+												    </div>
+												</div>
+				
+									        </div>
+									
+									        <div class="card-body d-flex justify-content-between post-actions">
+									            <button class="btn text-muted d-flex align-items-center gap-2">
+									                <i class="bi bi-chat"></i> <span th:text="${rsPost.commentsCount}">0</span>
+									            </button>
+									            <button class="btn text-muted d-flex align-items-center gap-2">
+									                <i class="bi bi-repeat"></i> <span th:text="${rsPost.shareCount}">0</span>
+									            </button>
+									            <button class="btn text-muted d-flex align-items-center gap-2">
+									                <i class="bi bi-heart"></i> <span th:text="${rsPost.likesCount}">0</span>
+									            </button>
+									            <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-upload"></i></button>
+												<button th:if="${rsPost.user.userId != user.userId}" class="btn text-muted d-flex align-items-center gap-2" data-bs-toggle="modal" th:attr="data-bs-target='#reportPostModal__' + ${rsPost.postId}">
+											        <i class="bi bi-flag"></i>
+											    </button>					            
+									        </div>
+									    </div>  
                                     </div>
                                 </div>
 
                                 <!-- Tab Lời mời đã gửi -->
                                 <div class="tab-pane fade" id="result-user">
                                      <div class="d-flex flex-column gap-3">
-										<div th:each="friend : ${requestFriends}" class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item">                                         
+										<div th:each="rsUser : ${resultUsers}" class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item">                                         
 	                                        <div class="d-flex align-items-center gap-3">
-	                                            <img th:src="${friend.avatarUrl}" class="rounded-circle" alt="Avatar" width="48" height="48">
+	                                            <img th:src="${rsUser.avatarUrl}" class="rounded-circle" alt="Avatar" width="48" height="48">
 	                                            <div>
-	                                                <h6 th:text="${friend.fullName}" class="mb-0 fw-bold"></h6>
-	                                                <a class="fw mb-0 user-link" th:text="${friend.nameUser}" th:href="@{/{username}(username=${friend.nameUser})}"></a>
+	                                                <h6 th:text="${rsUser.fullName}" class="mb-0 fw-bold"></h6>
+	                                                <a class="fw mb-0 user-link" th:text="${rsUser.nameUser}" th:href="@{/{username}(username=${rsUser.nameUser})}"></a>
 	                                            </div>
-	                                        </div>
-	                                        <div class="d-flex gap-2">
-	                                            <form action="/friend/deny" method="post">
-	                                                <input type="hidden" name="friendId" th:value="${friend.userId}">
-	                                                <button type="submit" class="btn btn-sm btn-outline-warning rounded-pill">Hủy lời mời</button>
-	                                            </form>
 	                                        </div>
 	                                    </div>
                                     </div>
@@ -163,102 +321,29 @@
     
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const searchInput = document.getElementById('searchInput');
-  const resultsArea = document.getElementById('resultsArea');
-  const resultsHeader = document.getElementById('resultsHeader');
+	  const searchInput = document.getElementById('searchInput');
+	  const resultsArea = document.getElementById('resultsArea');
+	  const resultsHeader = document.getElementById('resultsHeader');
 
-  // 🟡 Các khu vực hiển thị kết quả theo tab
-  const allResult = document.querySelector('#all-result .d-flex');
-  const userResult = document.querySelector('#result-user .d-flex');
-  const postResult = document.querySelector('#result-post .d-flex');
-  // ❌ KHÔNG động tới tab nhóm (result-group)
+	  // Nếu có từ khóa trong localStorage thì hiển thị lại
+	  const savedKeyword = localStorage.getItem('searchKeyword');
+	  if (savedKeyword) {
+	    searchInput.value = savedKeyword;
+	    resultsArea.style.display = 'block';
+	    resultsHeader.textContent = `Kết quả cho "${savedKeyword}"`;
+	  }
 
-  searchInput.addEventListener('keyup', (event) => {
-    if (event.key === 'Enter') {
-      const query = searchInput.value.trim();
-      if (query) {
-        fetch('/search/result', {
-          method: 'POST',
-          body: new URLSearchParams({ keyword: query })
-        })
-        .then(res => res.json())
-        .then(data => {
-          resultsArea.style.display = 'block';
-          resultsHeader.textContent = `Kết quả cho "${query}"`;
+	  searchInput.addEventListener('keyup', (event) => {
+	    if (event.key === 'Enter') {
+	      const query = searchInput.value.trim();
+	      if (query) {
+	        localStorage.setItem('searchKeyword', query);
+	        location.reload(); // reload trang
+	      }
+	    }
+	  });
+	});
 
-          // Xóa nội dung cũ
-          allResult.innerHTML = '';
-          userResult.innerHTML = '';
-          postResult.innerHTML = '';
-
-          // === 🧍 Render Người dùng ===
-          if (data.users && data.users.length > 0) {
-            data.users.forEach(u => {
-              const userHtml = `
-                <div class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item">                                    
-                  <div class="d-flex align-items-center gap-3">
-                      <img src="${u.avatarUrl}" class="rounded-circle" alt="Avatar" width="48" height="48">
-                      <div>
-                          <h6 class="mb-0 fw-bold">${u.fullName}</h6>
-                          <a class="fw mb-0 user-link" href="/${u.nameUser}">${u.nameUser}</a>
-                      </div>
-                  </div>
-                </div>`;
-              // đưa vào tất cả & tab riêng user
-              allResult.innerHTML += userHtml;
-              userResult.innerHTML += userHtml;
-            });
-          }
-
-          // === 📝 Render Bài viết ===
-          if (data.posts && data.posts.length > 0) {
-            data.posts.forEach(post => {
-              let attachmentsHTML = '';
-              if (post.attachments && post.attachments.length > 0) {
-                post.attachments.forEach(att => {
-                  if (att.fileType.startsWith('image')) {
-                    attachmentsHTML += `<img src="${att.fileUrl}" alt="Ảnh" class="img-fluid rounded-3">`;
-                  } else if (att.fileType.startsWith('video')) {
-                    attachmentsHTML += `<video src="${att.fileUrl}" controls class="rounded-3"></video>`;
-                  } else {
-                    const filename = att.fileUrl.substring(att.fileUrl.lastIndexOf('/') + 1);
-                    attachmentsHTML += `<a href="${att.fileUrl}" target="_blank"><i class="bi bi-paperclip"></i> ${filename}</a>`;
-                  }
-                });
-              }
-
-              const postHtml = `
-                <div class="card rounded-4 overflow-hidden mb-4">
-                  <div class="card-body">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                      <img class="rounded-circle" src="${post.user.avatarUrl}" alt="Avatar" width="48" height="48">
-                      <div>
-                        <p class="fw-bold mb-0">${post.user.fullName}</p>
-                        <a class="fw mb-0 user-link" href="/${post.user.nameUser}">${post.user.nameUser}</a>
-                        <p class="text-muted small mb-0">${new Date(post.createdAt).toLocaleString('vi-VN')}</p>
-                      </div>
-                    </div>
-                    <p>${post.content}</p>
-                    <div class="attachment-scroll mt-3">${attachmentsHTML}</div>
-                  </div>
-                </div>`;
-              // đưa vào tất cả & tab riêng post
-              allResult.innerHTML += postHtml;
-              postResult.innerHTML += postHtml;
-            });
-          }
-
-          // Nếu không có gì
-          if ((!data.users || data.users.length === 0) && (!data.posts || data.posts.length === 0)) {
-            allResult.innerHTML = `<p class="text-muted text-center">Không tìm thấy kết quả nào.</p>`;
-          }
-
-        })
-        .catch(err => console.error(err));
-      }
-    }
-  });
-});
 </script>
 
 

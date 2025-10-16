@@ -394,3 +394,40 @@ aside .nav-link.active {
   border-radius: 0.5rem;
 }
 
+/* 📸 Giới hạn kích thước preview ảnh & video khi upload */
+#file-preview .preview-item {
+  position: relative;
+  max-width: 300px;          /* 🔸 Giới hạn chiều rộng preview */
+  max-height: 300px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+#file-preview img,
+#file-preview video {
+  width: 100%;               /* 🔸 tự co theo khung */
+  height: auto;
+  display: block;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* 🗑️ Nút xóa file */
+#file-preview .remove-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.6);
+  border: none;
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#file-preview .remove-btn:hover {
+  background: rgba(220,38,38,0.9); /* đỏ đậm khi hover */
+}

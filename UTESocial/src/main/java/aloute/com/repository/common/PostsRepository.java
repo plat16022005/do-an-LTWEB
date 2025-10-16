@@ -30,8 +30,8 @@ public interface PostsRepository extends JpaRepository<Posts, Integer> {
 
 	@Query("""
 		    SELECT DISTINCT p FROM Posts p
-		    LEFT JOIN FETCH p.attachments a
-		    JOIN FETCH p.user u
+		    LEFT JOIN FETCH p.user u
+		    LEFT JOIN FETCH p.attachments
 		    WHERE p.content LIKE CONCAT('%', :keyword, '%')
 		    AND p.status = 'approved'
 		    AND p.isDeleted = false
