@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="vi" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tin nhắn - AloUTE</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body class="text-light">
+
+    <nav class="navbar sticky-top">
+        <div class="container-xl">
+            <a class="navbar-brand fw-bold fs-4 d-flex align-items-center" th:href="@{/home}">
+                <svg class="bi me-2" width="32" height="32" fill="#0ea5e9"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18" stroke="currentColor"></path></svg>
+                AloUTE
+            </a>
+        </div>
+    </nav>
+
+    <div class="container-xl mt-4">
+        <div class="row g-4">
+            <div class="col-lg-3 d-none d-lg-block">
+				<aside class="sticky-top" style="top: 80px;">
+				    <ul class="nav flex-column gap-1">
+						<li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/home">
+				                <i class="bi bi-house-door-fill fs-3"></i>
+				                <span>Trang chủ</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/upload">
+				                <i class="bi bi-upload fs-3"></i>
+				                <span>Đăng tải</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/search">
+				                <i class="bi bi-search fs-3"></i>
+				                <span>Tìm kiếm</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/friend">
+				                <i class="bi bi-people fs-3"></i>
+				                <span>Bạn bè</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+						  <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/group">
+						      <i class="bi bi-globe2 fs-3"></i>
+						      <span>Nhóm</span>
+						  </a>
+						</li>				       
+				        <li class="nav-item">
+				            <a class="nav-link active rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="#">
+				                <i class="bi bi-envelope fs-3"></i>
+				                <span>Tin nhắn</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="#">
+				                <i class="bi bi-bell fs-3"></i>
+				                <span>Thông báo</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" th:href="@{/{username}(username=${user.nameUser})}">
+				                <i class="bi bi-person-circle fs-3"></i>
+				                <span>Cá nhân</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/setting">
+				                <i class="bi bi-gear fs-3"></i>
+				                <span>Cài đặt</span>
+				            </a>
+				        </li>
+				        <li class="nav-item mt-2">
+				            <a class="nav-link text-danger rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/logout">
+				                <i class="bi bi-box-arrow-right fs-3"></i>
+				                <span>Đăng xuất</span>
+				            </a>
+				        </li>
+				    </ul>
+				</aside>
+            </div>
+            
+            <div class="col-lg-9">
+                <main>
+                    <div class="card rounded-4 overflow-hidden">
+                       <div class="chat-container">
+                           <!-- Cột danh sách cuộc trò chuyện -->
+                           <div class="conversation-list">
+                               <div class="p-3 border-bottom">
+                                   <h4 class="mb-0">Tin nhắn</h4>
+                               </div>
+                               <div class="list-group list-group-flush">
+                                   <!-- item 1 -->
+                                   <div class="list-group-item list-group-item-action bg-transparent p-3 conversation-item active">
+                                       <div class="d-flex align-items-start">
+                                           <img src="https://placehold.co/48x48/0ea5e9/fff?text=A" class="rounded-circle me-3" alt="Avatar">
+                                           <div class="w-100 overflow-hidden">
+                                               <div class="d-flex justify-content-between">
+                                                   <h6 class="mb-1 fw-bold">An Nguyen</h6>
+                                                   <small class="text-muted">10:30</small>
+                                               </div>
+                                               <p class="mb-0 small text-muted text-truncate">Ok, hẹn gặp bạn sau nhé!</p>
+                                           </div>
+                                       </div>
+                                   </div>
+                                   <!-- item 2 -->
+                                    <div class="list-group-item list-group-item-action bg-transparent p-3 conversation-item">
+                                       <div class="d-flex align-items-start">
+                                           <img src="https://placehold.co/48x48/10b981/fff?text=B" class="rounded-circle me-3" alt="Avatar">
+                                           <div class="w-100 overflow-hidden">
+                                               <div class="d-flex justify-content-between">
+                                                   <h6 class="mb-1 fw-bold">Bình Trần</h6>
+                                                   <small class="text-muted">Hôm qua</small>
+                                               </div>
+                                               <p class="mb-0 small text-muted text-truncate">Bạn đã xem tài liệu mình gửi chưa?</p>
+                                           </div>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+                           <!-- Cửa sổ chat chính -->
+                           <div class="chat-window">
+                               <!-- Header cửa sổ chat -->
+                               <div class="chat-header p-3 d-flex align-items-center">
+                                    <img src="https://placehold.co/40x40/0ea5e9/fff?text=A" class="rounded-circle me-3" alt="Avatar">
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">An Nguyen</h6>
+                                        <small class="text-success">Đang hoạt động</small>
+                                    </div>
+                                    <div class="ms-auto">
+                                        <button class="btn btn-outline-secondary rounded-circle"><i class="bi bi-telephone"></i></button>
+                                        <button class="btn btn-outline-secondary rounded-circle ms-1"><i class="bi bi-camera-video"></i></button>
+                                    </div>
+                               </div>
+                               <!-- Nội dung tin nhắn -->
+                               <div class="chat-body">
+                                   <div class="message message-received">Chào bạn, bạn khỏe không?</div>
+                                   <div class="message message-sent">Chào bạn, mình khỏe. Cảm ơn bạn!</div>
+                                   
+                                   <!-- Ví dụ gửi ảnh -->
+                                   <div class="message message-sent">
+                                       Xem ảnh này nè!
+                                       <img src="https://placehold.co/300x200/0ea5e9/fff?text=Ảnh+minh+họa" alt="Image attachment">
+                                   </div>
+
+                                   <!-- Ví dụ gửi tệp -->
+                                   <div class="message message-received">
+                                       <a href="#" class="message-file-display">
+                                           <i class="bi bi-file-earmark-zip-fill fs-1 me-2"></i>
+                                           <div>
+                                               <div class="fw-bold">tailieu.zip</div>
+                                               <div class="small text-muted">10.5 MB</div>
+                                           </div>
+                                       </a>
+                                   </div>
+                                   
+                                   <div class="message message-sent">Vẫn ổn bạn ơi. Tuần sau có deadline nên hơi bận một chút.</div>
+
+                               </div>
+                               <!-- Footer nhập tin nhắn -->
+                               <div class="chat-footer p-3">
+                                   <div class="input-group">
+                                       <button class="btn btn-outline-secondary"><i class="bi bi-paperclip"></i></button>
+                                       <input type="text" class="form-control" placeholder="Nhập tin nhắn...">
+                                       <button class="btn btn-primary"><i class="bi bi-send-fill"></i></button>
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/theme-toggle.js}"></script>
+</body>
+</html>
+

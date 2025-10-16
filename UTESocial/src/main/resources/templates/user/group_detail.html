@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="vi" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLB IT - AloUTE</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body class="text-light">
+
+    <nav class="navbar sticky-top">
+        <div class="container-xl">
+            <a class="navbar-brand fw-bold fs-4 d-flex align-items-center" th:href="@{/home}">
+                <svg class="bi me-2" width="32" height="32" fill="#0ea5e9"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18" stroke="currentColor"></path></svg>
+                AloUTE
+            </a>
+        </div>
+    </nav>
+
+    <div class="container-xl mt-4">
+        <div class="row g-4">
+            <div class="col-lg-3 d-none d-lg-block">
+				<aside class="sticky-top" style="top: 80px;">
+				    <ul class="nav flex-column gap-1">
+						<li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/home">
+				                <i class="bi bi-house-door-fill fs-3"></i>
+				                <span>Trang chủ</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/upload">
+				                <i class="bi bi-upload fs-3"></i>
+				                <span>Đăng tải</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/search">
+				                <i class="bi bi-search fs-3"></i>
+				                <span>Tìm kiếm</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/friend">
+				                <i class="bi bi-people fs-3"></i>
+				                <span>Bạn bè</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+						  <a id="nav-group" class="nav-link active rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/group">
+						      <i class="bi bi-globe2 fs-3"></i>
+						      <span>Nhóm</span>
+						  </a>
+						</li>				       
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="#">
+				                <i class="bi bi-envelope fs-3"></i>
+				                <span>Tin nhắn</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="#">
+				                <i class="bi bi-bell fs-3"></i>
+				                <span>Thông báo</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" th:href="@{/{username}(username=${user.nameUser})}">
+				                <i class="bi bi-person-circle fs-3"></i>
+				                <span>Cá nhân</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/setting">
+				                <i class="bi bi-gear fs-3"></i>
+				                <span>Cài đặt</span>
+				            </a>
+				        </li>
+				        <li class="nav-item mt-2">
+				            <a class="nav-link text-danger rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/logout">
+				                <i class="bi bi-box-arrow-right fs-3"></i>
+				                <span>Đăng xuất</span>
+				            </a>
+				        </li>
+				    </ul>
+				</aside>
+
+            </div>
+            
+            <div class="col-lg-9">
+                <main>
+                    <!-- Header của Nhóm -->
+                    <div class="mb-4 group-header">
+                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop" class="group-cover rounded-4" alt="Group Cover Image">
+                        <div class="group-info">
+                             <h1 class="fw-bold text-light">CLB IT</h1>
+                             <p class="text-light mb-2"><i class="bi bi-globe"></i> Nhóm công khai &middot; 1.234 thành viên</p>
+                             <div class="d-flex gap-2">
+                                 <button class="btn btn-primary rounded-pill"><i class="bi bi-check-lg"></i> Đã tham gia</button>
+                                 <button class="btn btn-secondary rounded-pill"><i class="bi bi-person-plus"></i> Mời</button>
+                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabs điều hướng -->
+                    <div class="card rounded-4">
+                        <div class="card-header bg-transparent border-0 p-0">
+                             <ul class="nav nav-pills nav-fill">
+                              <li class="nav-item">
+                                <a class="nav-link active rounded-top-start-4 rounded-bottom-0" data-bs-toggle="tab" href="#posts">Bài viết</a>
+                              </li>
+                               <li class="nav-item">
+                                <a class="nav-link rounded-0" data-bs-toggle="tab" href="#create-post">Tạo bài viết</a>
+                              </li>
+                              <li class="nav-item">
+                                <a class="nav-link rounded-0" data-bs-toggle="tab" href="#about">Giới thiệu</a>
+                              </li>
+                              <li class="nav-item">
+                                <a class="nav-link rounded-top-end-4 rounded-bottom-0" data-bs-toggle="tab" href="#members">Thành viên</a>
+                              </li>
+                            </ul>
+                        </div>
+                        <div class="card-body p-lg-4">
+                             <!-- Nội dung các tab -->
+                            <div class="tab-content">
+                                <!-- Tab Bài viết -->
+                                <div class="tab-pane fade show active" id="posts">
+                                     <div class="d-grid gap-3">
+                                        <!-- Bài viết mẫu 1 -->
+                                        <div class="card rounded-4 overflow-hidden">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-center gap-3 mb-3">
+                                                    <img class="rounded-circle" src="https://placehold.co/48x48/64748b/fff?text=A" alt="Avatar" width="48" height="48">
+                                                    <div>
+                                                        <p class="fw-bold mb-0">An Nguyen</p>
+                                                        <p class="text-muted small mb-0">15/10/2025 10:30</p>
+                                                    </div>
+                                                </div>
+                                                <p>Chào mọi người, tuần này CLB chúng ta có buổi seminar về Docker rất hay nhé!</p>
+                                            </div>
+                                            <div class="card-body d-flex justify-content-between post-actions">
+                                                <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-heart"></i> 15</button>
+                                                <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-chat"></i> 3</button>
+                                                <button class="btn text-muted d-flex align-items-center gap-2"><i class="bi bi-upload"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Tab Tạo bài viết -->
+                                <div class="tab-pane fade" id="create-post">
+                                     <form id="post-form">
+                                        <div class="d-flex align-items-center gap-3 mb-3">
+                                            <img class="rounded-circle" th:src="${user.avatarUrl}" alt="Avatar" width="48" height="48">
+                                            <div>
+                                                <p class="fw-bold mb-0" th:text="${user.fullName}">Tên người dùng</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <textarea class="form-control" name="content" rows="5" placeholder="Bạn đang nghĩ gì?"></textarea>
+                                        </div>
+                                        
+                                        <div id="new-files-preview" class="mt-3 d-flex flex-wrap gap-3"></div>
+                                        
+                                        <hr class="my-4">
+
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <input name="files" type="file" id="file-input" class="d-none" multiple>
+                                                <button type="button" class="btn btn-outline-secondary rounded-pill" onclick="document.getElementById('file-input').click();">
+                                                    <i class="bi bi-paperclip"></i> Thêm tệp
+                                                </button>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary rounded-pill px-5">Đăng bài</button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <!-- Tab Giới thiệu -->
+                                <div class="tab-pane fade" id="about">
+                                    <h5 class="fw-bold">Giới thiệu</h5>
+                                    <p class="text-muted">Nơi giao lưu, học hỏi và chia sẻ kiến thức về Công nghệ thông tin cho sinh viên UTE.</p>
+                                </div>
+                                <!-- Tab Thành viên -->
+                                <div class="tab-pane fade" id="members">
+                                    <h5 class="fw-bold mb-3">Thành viên (1,234)</h5>
+                                     <div class="d-grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
+                                        <!-- Member item -->
+                                        <div class="d-flex align-items-center gap-3">
+                                            <img src="https://placehold.co/48x48/64748b/fff?text=A" class="rounded-circle" alt="Member">
+                                            <div>
+                                                <a href="#" class="fw-bold text-light text-decoration-none">An Nguyen</a>
+                                                <p class="small text-muted mb-0">Quản trị viên</p>
+                                            </div>
+                                        </div>
+                                        <!-- Member item -->
+                                        <div class="d-flex align-items-center gap-3">
+                                            <img src="https://placehold.co/48x48/0ea5e9/fff?text=B" class="rounded-circle" alt="Member">
+                                            <div>
+                                                <a href="#" class="fw-bold text-light text-decoration-none">Bình Trần</a>
+                                                <p class="small text-muted mb-0">Thành viên</p>
+                                            </div>
+                                        </div>
+                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Script cho upload file trong tab "Tạo bài viết"
+        document.addEventListener('DOMContentLoaded', () => {
+            const fileInput = document.getElementById('file-input');
+            const newFilesPreviewContainer = document.getElementById('new-files-preview');
+            
+            if (fileInput) {
+                let newFileStore = new DataTransfer();
+
+                fileInput.addEventListener('change', (e) => {
+                    handleFiles(e.target.files);
+                    e.target.value = ''; 
+                });
+
+                function handleFiles(files) {
+                    for (const file of files) {
+                        newFileStore.items.add(file);
+                    }
+                    renderNewPreviews();
+                }
+
+                function renderNewPreviews() {
+                    newFilesPreviewContainer.innerHTML = '';
+                    Array.from(newFileStore.files).forEach((file, index) => {
+                        const reader = new FileReader();
+                        const previewItem = document.createElement('div');
+                        previewItem.className = 'preview-item';
+
+                        reader.onload = (e) => {
+                            let mediaElement;
+                            if (file.type.startsWith('image/')) {
+                                mediaElement = document.createElement('img');
+                                mediaElement.src = e.target.result;
+                            } else if (file.type.startsWith('video/')) {
+                                mediaElement = document.createElement('video');
+                                mediaElement.src = e.target.result;
+                                mediaElement.controls = true;
+                            } else {
+                                mediaElement = document.createElement('div');
+                                mediaElement.className = 'file-placeholder d-flex flex-column align-items-center justify-content-center rounded p-2 text-center';
+                                mediaElement.innerHTML = `<i class="bi bi-file-earmark-text fs-1"></i><small class="text-truncate">${file.name}</small>`;
+                            }
+                            previewItem.appendChild(mediaElement);
+                        };
+
+                        reader.readAsDataURL(file);
+
+                        const removeBtn = document.createElement('button');
+                        removeBtn.type = 'button';
+                        removeBtn.className = 'btn btn-danger rounded-circle remove-btn';
+                        removeBtn.innerHTML = '&times;';
+                        removeBtn.onclick = () => removeNewFile(index);
+                        
+                        previewItem.appendChild(removeBtn);
+                        newFilesPreviewContainer.appendChild(previewItem);
+                    });
+                }
+
+                function removeNewFile(index) {
+                    const newFiles = new DataTransfer();
+                    const oldFiles = Array.from(newFileStore.files);
+                    oldFiles.forEach((file, i) => {
+                        if (i !== index) {
+                            newFiles.items.add(file);
+                        }
+                    });
+                    newFileStore = newFiles;
+                    renderNewPreviews();
+                }
+            }
+        });
+    </script>
+    <script th:src="@{/js/theme-toggle.js}"></script>    
+</body>
+</html>
+

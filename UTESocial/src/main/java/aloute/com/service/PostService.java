@@ -15,4 +15,10 @@ public class PostService {
     public List<Posts> getRandomPosts() {
         return postRepository.findAllWithUserAndAttachments();
     }
+    
+    public Posts getPostById(Integer postId) {
+        return postRepository.findByIdWithAttachments(postId)
+        	    .orElseThrow(() -> new RuntimeException("Post not found"));
+    }
+
 }

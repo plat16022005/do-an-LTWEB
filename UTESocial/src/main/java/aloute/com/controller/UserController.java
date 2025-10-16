@@ -243,4 +243,15 @@ public class UserController
     	User user = (User) session.getAttribute("user");
     	return "redirect:/" + user.getNameUser();
     }
+    @GetMapping("/testform")
+    public String showTestForm(HttpSession session, Model model) {
+        // Lấy user từ session
+        User user = (User) session.getAttribute("user");
+
+        // Truyền vào model
+        model.addAttribute("user", user);
+
+        return "user/group_detail";
+    }
+
 }

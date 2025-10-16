@@ -6,19 +6,10 @@ body {
   color: #e2e8f0;
 }
 
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #0f172a;
-}
-::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #475569;
-}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #0f172a; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #475569; }
 
 .card {
   background-color: #1e293b;
@@ -80,9 +71,7 @@ aside .nav-link.active {
   scroll-snap-type: x mandatory;
   padding-bottom: 10px;
 }
-.attachment-scroll::-webkit-scrollbar {
-  height: 8px;
-}
+.attachment-scroll::-webkit-scrollbar { height: 8px; }
 .attachment-scroll::-webkit-scrollbar-thumb {
   background: #475569;
   border-radius: 4px;
@@ -97,9 +86,7 @@ aside .nav-link.active {
   box-shadow: 0 0 8px rgba(30, 41, 59, 0.5);
   transition: transform 0.2s ease-in-out;
 }
-.attachment-item:hover {
-  transform: scale(1.03);
-}
+.attachment-item:hover { transform: scale(1.03); }
 .attachment-item img,
 .attachment-item video {
   max-width: 400px;
@@ -128,16 +115,10 @@ aside .nav-link.active {
 }
 
 /* =========================================================
-   👤 Profile Header
+   👤 Profile & Group Header
    ========================================================= */
-.profile-header {
-  position: relative;
-}
-.profile-cover {
-  height: 250px;
-  object-fit: cover;
-  width: 100%;
-}
+.profile-header, .group-header { position: relative; }
+.profile-cover, .group-cover { height: 300px; object-fit: cover; width: 100%; }
 .profile-avatar {
   width: 150px;
   height: 150px;
@@ -146,17 +127,95 @@ aside .nav-link.active {
   bottom: -75px;
   left: 2rem;
 }
+.group-info {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  background: rgba(0,0,0,0.5);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  backdrop-filter: blur(5px);
+}
 
 /* =========================================================
    🔗 Link & User
    ========================================================= */
-.user-link {
-  text-decoration: none;
-  color: #adb5bd;
+.user-link { text-decoration: none; color: #adb5bd; }
+.user-link:hover { color: #ffffff; text-decoration: underline; }
+
+/* 📸 Preview Upload File */
+#file-preview .preview-item,
+#existing-files .preview-item,
+#new-files-preview .preview-item {
+  position: relative;
+  max-width: 120px;
+  max-height: 120px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #1e293b;
+  border: 1px solid #334155;
 }
-.user-link:hover {
-  color: #ffffff;
-  text-decoration: underline;
+#file-preview img, #file-preview video,
+#existing-files img, #existing-files video,
+#new-files-preview img, #new-files-preview video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: 12px;
+}
+.file-placeholder {
+  width: 120px;
+  height: 120px;
+}
+#file-preview .remove-btn,
+#existing-files .remove-btn,
+#new-files-preview .remove-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  border-radius: 50%;
+}
+#file-preview .remove-btn:hover,
+#existing-files .remove-btn:hover,
+#new-files-preview .remove-btn:hover {
+  background: rgba(220, 38, 38, 0.9);
+}
+
+/* =========================================================
+   🖼️ Cover Overlay Drag
+   ========================================================= */
+.cover-frame-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 240px;
+  border: 2px dashed white;
+  cursor: grab;
+  pointer-events: auto;
+  border-radius: 0.5rem;
+  box-sizing: border-box;
+}
+.cover-frame-overlay:active { cursor: grabbing; }
+#background-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  border-radius: 0.5rem;
 }
 
 /* =========================================================
@@ -168,15 +227,9 @@ aside .nav-link.active {
 }
 
 /* Scrollbar */
-.light-theme ::-webkit-scrollbar-track {
-  background: #e2e8f0;
-}
-.light-theme ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-}
-.light-theme ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
+.light-theme ::-webkit-scrollbar-track { background: #e2e8f0; }
+.light-theme ::-webkit-scrollbar-thumb { background: #cbd5e1; }
+.light-theme ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
 /* Navbar */
 .light-theme .navbar {
@@ -184,27 +237,18 @@ aside .nav-link.active {
   backdrop-filter: blur(10px);
   border-bottom: 1px solid #e2e8f0;
 }
-.light-theme .navbar .navbar-brand {
-  color: #0f172a !important;
-}
-.light-theme .navbar .navbar-brand:hover {
-  color: #0ea5e9 !important;
-}
-.light-theme .navbar-nav .nav-link {
-  color: #334155 !important;
-}
-.light-theme .navbar-nav .nav-link:hover {
-  color: #0ea5e9 !important;
-}
-.light-theme .navbar-nav .nav-link.active {
-  color: #0ea5e9 !important;
-  font-weight: 600;
-}
+.light-theme .navbar .navbar-brand { color: #0f172a !important; }
+.light-theme .navbar .navbar-brand:hover { color: #0ea5e9 !important; }
+.light-theme .navbar-nav .nav-link { color: #334155 !important; }
+.light-theme .navbar-nav .nav-link:hover { color: #0ea5e9 !important; }
+.light-theme .navbar-nav .nav-link.active { color: #0ea5e9 !important; font-weight: 600; }
 
 /* Sidebar */
-.light-theme aside .nav-link {
-  color: #334155;
+.light-theme aside {
+  background-color: #f1f5f9;
+  border-right: 1px solid #e2e8f0;
 }
+.light-theme aside .nav-link { color: #334155; }
 .light-theme aside .nav-link:hover {
   background-color: #f0f9ff;
   color: #0c4a6e;
@@ -215,11 +259,11 @@ aside .nav-link.active {
   font-weight: 600;
 }
 
-/* 🔍 Search & Form Control - Light Mode (ĐỐI LẬP) */
+/* 🔍 Search & Form Control - Light Mode */
 .light-theme .form-control-search,
 .light-theme .form-control {
-  background-color: #ffffff;           /* nền trắng rõ */
-  border: 1px solid #94a3b8;           /* viền đậm hơn */
+  background-color: #ffffff;
+  border: 1px solid #94a3b8;
   color: #0f172a !important;
   transition: all 0.25s ease-in-out;
 }
@@ -230,9 +274,7 @@ aside .nav-link.active {
   box-shadow: 0 0 0 0.25rem rgba(14, 165, 233, 0.25);
 }
 .light-theme .form-control-search::placeholder,
-.light-theme .form-control::placeholder {
-  color: #94a3b8;
-}
+.light-theme .form-control::placeholder { color: #94a3b8; }
 .light-theme .input-group-text-search {
   background-color: #ffffff;
   border: 1px solid #94a3b8;
@@ -240,26 +282,17 @@ aside .nav-link.active {
 }
 
 /* Text & Link */
-.light-theme .text-muted {
-  color: #64748b !important;
-}
-.light-theme .text-light {
-  color: #1e293b !important;
-}
-.light-theme .user-link {
-  color: #334155;
-}
-.light-theme .user-link:hover {
-  color: #0f172a;
-}
+.light-theme .text-muted { color: #64748b !important; }
+.light-theme .text-light { color: #1e293b !important; }
+.light-theme .user-link { color: #334155; }
+.light-theme .user-link:hover { color: #0f172a; }
 
 /* Card & Gallery */
 .light-theme .card {
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
   color: #1e293b;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.07),
-    0 1px 2px -1px rgb(0 0 0 / 0.07);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.07), 0 1px 2px -1px rgb(0 0 0 / 0.07);
 }
 .light-theme .attachment-item {
   background-color: #ffffff;
@@ -273,40 +306,28 @@ aside .nav-link.active {
   background: rgba(0, 0, 0, 0.1);
   color: #000;
 }
+.light-theme .profile-avatar { border-color: #ffffff; }
 
-/* Profile */
-.light-theme .profile-avatar {
-  border-color: #ffffff;
+/* Preview File - Light Mode */
+.light-theme #file-preview .preview-item,
+.light-theme #existing-files .preview-item,
+.light-theme #new-files-preview .preview-item {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
 }
+.light-theme .file-placeholder { background-color: #e2e8f0; }
 
-/* =========================================================
-   🩶 CUSTOM BUTTON: Gray Button for Light Mode
-   ========================================================= */
-.btn-gray-custom {
-  color: #333;
-  border: 1px solid #999;
-  background-color: #f1f1f1;
-  transition: 0.3s;
+/* 🌞 Light Mode cho group info */
+.light-theme .group-info {
+  background: rgba(255,255,255,0.5);
+  color: #0f172a;
 }
-.btn-gray-custom:hover {
-  background-color: #e2e2e2;
-  border-color: #666;
-  color: #000;
-}
-/* ===========================================
-   📄 PROFILE INFO - LIGHT MODE
-   =========================================== */
-.light-theme .list-group-item strong {
-  color: #1e293b !important;     /* xám đậm, dễ đọc trên nền sáng */
-  font-weight: 600;              /* in đậm vừa phải */
+.light-theme .group-info .text-light {
+  color: #1e293b !important;
 }
 
-.light-theme .list-group-item span {
-  color: #334155 !important;     /* chữ đậm hơn để nổi rõ */
-  font-weight: 500;
-}
 /* ============================
-   🌗 SWITCH CHUYỂN GIAO DIỆN
+   🌗 Theme Switch
    ============================ */
 .theme-switch {
   position: relative;
@@ -314,25 +335,18 @@ aside .nav-link.active {
   width: 60px;
   height: 32px;
 }
-
-.theme-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
+.theme-switch input { opacity: 0; width: 0; height: 0; }
 .slider {
   position: absolute;
   cursor: pointer;
   inset: 0;
-  background-color: #cbd5e1; /* Light mode nền xám nhạt */
+  background-color: #cbd5e1;
   transition: background-color 0.4s;
   border-radius: 34px;
   display: flex;
   align-items: center;
   padding: 4px;
 }
-
 .slider .switch-icon {
   display: inline-block;
   height: 24px;
@@ -346,88 +360,305 @@ aside .nav-link.active {
   transition: transform 0.4s ease, background-color 0.3s ease;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
+.theme-switch input:checked + .slider { background-color: #475569; }
+.theme-switch input:checked + .slider .switch-icon { transform: translateX(28px); }
+.theme-switch:hover .slider .switch-icon { background-color: #f1f5f9; }
+.dark-theme .theme-switch input:not(:checked) + .slider { background-color: #334155; }
+.dark-theme .theme-switch .switch-icon { color: #0f172a; }
 
-/* Khi bật (Dark Mode) */
-.theme-switch input:checked + .slider {
-  background-color: #475569; /* Nền tối */
+/* =========================================================
+   🩶 CUSTOM BUTTON (Light)
+   ========================================================= */
+.btn-gray-custom {
+  color: #333;
+  border: 1px solid #999;
+  background-color: #f1f1f1;
+  transition: 0.3s;
+}
+.btn-gray-custom:hover {
+  background-color: #e2e2e2;
+  border-color: #666;
+  color: #000;
 }
 
-.theme-switch input:checked + .slider .switch-icon {
-  transform: translateX(28px);
+/* 🌞 Light Mode cho combo box */
+.light-theme .form-select {
+  background-color: #ffffff;
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+}
+.light-theme .form-select:focus {
+  background-color: #ffffff;
+  color: #1e293b;
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 0.2rem rgba(14, 165, 233, 0.25);
+}
+.light-theme .form-select option {
+  background-color: #ffffff;
+  color: #1e293b;
 }
 
-/* Hiệu ứng hover */
-.theme-switch:hover .slider .switch-icon {
-  background-color: #f1f5f9;
+/* 🪄 Fix màu chữ bị chìm trong Light Mode */
+.light-theme .text-muted,
+.light-theme .text-secondary {
+  color: #334155 !important;
+}
+.light-theme .text-light {
+  color: #1e293b !important;
+}
+.light-theme .list-group-item strong {
+  color: #1e293b !important;
+  font-weight: 600;
+}
+.light-theme .list-group-item span {
+  color: #334155 !important;
+  font-weight: 500;
+}
+        /* =========================================================
+           💬 CHAT INTERFACE
+           ========================================================= */
+        .chat-container {
+            display: flex;
+            height: calc(100vh - 120px);
+        }
+        .conversation-list {
+            width: 350px;
+            flex-shrink: 0;
+            overflow-y: auto;
+            border-right: 1px solid #334155;
+        }
+        .chat-window {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .conversation-item {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .conversation-item:hover, .conversation-item.active {
+            background-color: #334155;
+        }
+        .chat-header {
+            border-bottom: 1px solid #334155;
+        }
+        .chat-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .message {
+            max-width: 70%;
+            padding: 0.5rem 1rem;
+            border-radius: 1.25rem;
+            margin-bottom: 0.5rem;
+            word-wrap: break-word;
+        }
+        .message-sent {
+            background-color: #0ea5e9;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 0.25rem;
+        }
+        .message-received {
+            background-color: #334155;
+            align-self: flex-start;
+            border-bottom-left-radius: 0.25rem;
+        }
+        .chat-footer {
+            border-top: 1px solid #334155;
+        }
+
+        .message img, .message video {
+            max-width: 100%;
+            border-radius: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .message-file-display {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* 🌞 Light Mode cho Chat */
+        .light-theme .conversation-list { border-right-color: #e2e8f0; }
+        .light-theme .conversation-item:hover, .light-theme .conversation-item.active { background-color: #e2e8f0; }
+        .light-theme .chat-header { border-bottom-color: #e2e8f0; }
+        .light-theme .message-received { background-color: #e2e8f0; }
+        .light-theme .chat-footer { border-top-color: #e2e8f0; }
+/* 💬 LIGHT MODE - FIX MÀU CHỮ TRONG DANH SÁCH TIN NHẮN */
+.light-theme .conversation-item {
+  color: #1e293b; /* chữ đậm hơn */
 }
 
-.dark-theme .theme-switch input:not(:checked) + .slider {
-  background-color: #334155;
+.light-theme .conversation-item .name {
+  color: #0f172a; /* tên người gửi rõ ràng */
+  font-weight: 600;
 }
 
-.dark-theme .theme-switch .switch-icon {
+.light-theme .conversation-item .message-preview {
+  color: #334155; /* nội dung tin nhắn */
+}
+
+.light-theme .conversation-item .time {
+  color: #64748b; /* màu phụ cho thời gian */
+  font-size: 0.85rem;
+}
+
+/* Khi hover hoặc đang active */
+.light-theme .conversation-item:hover,
+.light-theme .conversation-item.active {
+  background-color: #e2e8f0;
+}
+
+.light-theme .conversation-item:hover .name,
+.light-theme .conversation-item.active .name {
   color: #0f172a;
 }
 
-.cover-frame-overlay {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-  height: 240px;
-  border: 2px dashed white;
-  cursor: grab; /* 👈 thêm để thể hiện có thể kéo */
-  pointer-events: auto; /* 👈 Bật lại để nhận sự kiện chuột */
-  border-radius: 0.5rem;
-  box-sizing: border-box;
+.light-theme .conversation-item:hover .message-preview,
+.light-theme .conversation-item.active .message-preview {
+  color: #1e293b;
 }
-.cover-frame-overlay:active {
-  cursor: grabbing;
-}
-#background-preview {
-  width: 100%;               /* phủ kín chiều ngang */
-  height: 100%;             /* chiều cao khung ảnh tổng (tuỳ chỉnh) */
-  object-fit: cover;         /* tự động crop chiều dọc nếu ảnh không đủ tỉ lệ */
-  object-position: center top; /* giữ phần trên cùng */
-  display: block;
-  border-radius: 0.5rem;
+         /* =========================================================
+           🔔 NOTIFICATION STYLES
+           ========================================================= */
+        .notification-item {
+            transition: background-color 0.2s;
+            position: relative;
+        }
+        .notification-item.unread {
+            background-color: rgba(14, 165, 233, 0.1);
+        }
+        .notification-item:hover {
+            background-color: #334155;
+        }
+        .notification-avatar {
+            position: relative;
+        }
+        .notification-icon {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+        .unread-dot {
+            width: 12px;
+            height: 12px;
+            background-color: #0ea5e9;
+            border-radius: 50%;
+        }
+
+        /* 🌞 Light Mode cho Notifications */
+        .light-theme .notification-item:hover {
+            background-color: #e2e8f0;
+        }
+        .light-theme .notification-item.unread {
+            background-color: #e0f2fe;
+        }
+        /* =========================================================
+   🌞 LIGHT MODE - FIX MÀU CHỮ CHO THÔNG BÁO
+   ========================================================= */
+.light-theme .notification-item {
+  color: #1e293b; /* chữ chính rõ */
 }
 
-/* 📸 Giới hạn kích thước preview ảnh & video khi upload */
-#file-preview .preview-item {
-  position: relative;
-  max-width: 300px;          /* 🔸 Giới hạn chiều rộng preview */
-  max-height: 300px;
-  overflow: hidden;
-  border-radius: 12px;
-  background: #1e293b;
-  border: 1px solid #334155;
+.light-theme .notification-item .name {
+  color: #0f172a; /* tên đậm, dễ đọc */
+  font-weight: 600;
 }
 
-#file-preview img,
-#file-preview video {
-  width: 100%;               /* 🔸 tự co theo khung */
-  height: auto;
-  display: block;
-  object-fit: cover;
-  border-radius: 12px;
+.light-theme .notification-item .message {
+  color: #334155; /* nội dung thông báo */
 }
 
-/* 🗑️ Nút xóa file */
-#file-preview .remove-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: rgba(0,0,0,0.6);
-  border: none;
-  color: #fff;
-  width: 28px;
-  height: 28px;
+.light-theme .notification-item .time {
+  color: #0ea5e9; /* hoặc #64748b nếu bạn muốn xám phụ */
+  font-size: 0.85rem;
+}
+
+/* Khi hover hoặc chưa đọc */
+.light-theme .notification-item.unread {
+  background-color: #e0f2fe; /* xanh nhạt */
+}
+.light-theme .notification-item:hover {
+  background-color: #e2e8f0;
+}
+
+.light-theme .notification-item:hover .name {
+  color: #0f172a;
+}
+
+.light-theme .notification-item:hover .message {
+  color: #1e293b;
+}
+
+/* 🌞 Light Mode - Giữ màu chữ khi hover vào thông báo */
+.light-theme .notification-item:hover {
+  background-color: #e2e8f0; /* nền sáng hơn */
+}
+
+.light-theme .notification-item:hover .name,
+.light-theme .notification-item:hover .message,
+.light-theme .notification-item:hover .time {
+  color: #0f172a; /* đậm, rõ ràng */
+}
+
+/* 🌑 Dark Mode - Giữ tương phản chữ khi hover */
+.dark-theme .notification-item:hover .name,
+.dark-theme .notification-item:hover .message,
+.dark-theme .notification-item:hover .time {
+  color: #ffffff;
+}
+/* 🌞 Light Mode — Fix trùng màu khi hover thông báo */
+.light-theme .notification-item:hover {
+  background-color: #e2e8f0 !important;  /* nền sáng */
+}
+
+.light-theme .notification-item:hover .name,
+.light-theme .notification-item:hover .message,
+.light-theme .notification-item:hover .time {
+  color: #0f172a !important; /* chữ đậm rõ */
+}
+
+/* 🌑 Dark Mode — vẫn giữ nền tối nhưng đổi chữ sang trắng */
+.dark-theme .notification-item:hover {
+  background-color: #334155 !important;
+}
+
+.dark-theme .notification-item:hover .name,
+.dark-theme .notification-item:hover .message,
+.dark-theme .notification-item:hover .time {
+  color: #ffffff !important;
+}
+/* 📌 Nút icon tròn nhỏ */
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+<<<<<<< Updated upstream
+=======
+  border-radius: 50%;   /* làm nút tròn */
+>>>>>>> Stashed changes
 }
-#file-preview .remove-btn:hover {
-  background: rgba(220,38,38,0.9); /* đỏ đậm khi hover */
+
+.btn-icon i {
+  font-size: 1.1rem;
 }
+
+/* Dark/Light đã có sẵn trong btn-gray-custom */
+       

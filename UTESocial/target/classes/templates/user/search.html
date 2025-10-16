@@ -116,7 +116,7 @@
 											  </div>
 											</div>
 									        <div class="card-body">
-									            <div class="d-flex align-items-center gap-3 mb-3">
+									            <div class="d-flex align-items-center gap-3 mb-3 position-relative">
 									                <img class="rounded-circle" th:src="${rsPost.user.avatarUrl}" alt="Avatar" width="48" height="48">
 				
 									                <div>
@@ -126,6 +126,28 @@
 									                        <span th:text="${#temporals.format(rsPost.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
 									                    </p>
 									                </div>
+									<!-- Góc phải: Visibility -->
+									<div class="position-absolute top-0 end-0 me-2 mt-1 d-flex align-items-center gap-2">
+									
+									    <!-- Nút tròn chỉnh sửa bài viết -->
+									    <button th:if="${rsPost.user.userId == user.userId}"
+									            type="button"
+									            class="btn btn-icon btn-gray-custom"
+									            th:attr="data-post-id=${rsPost.postId}"
+									            onclick="openEditPost(this)"
+									            title="Chỉnh sửa bài viết">
+									        <i class="bi bi-pencil-square"></i>
+									    </button>
+									
+									    <!-- Nếu là bài viết của người khác -->
+									    <span class="badge rounded-pill bg-secondary text-light">
+									        <span th:switch="${rsPost.visibility}">
+									            <span th:case="'public'">Công khai</span>
+									            <span th:case="'friends'">Bạn bè</span>
+									            <span th:case="'private'">Chỉ mình tôi</span>
+									        </span>
+									    </span>
+									</div>											                
 									            </div>
 									            <p th:text="${rsPost.content}"></p>
 												<!-- Thư viện ảnh/video dạng thanh trượt -->
@@ -207,7 +229,7 @@
 											  </div>
 											</div>
 									        <div class="card-body">
-									            <div class="d-flex align-items-center gap-3 mb-3">
+									            <div class="d-flex align-items-center gap-3 mb-3 position-relative">
 									                <img class="rounded-circle" th:src="${rsPost.user.avatarUrl}" alt="Avatar" width="48" height="48">
 				
 									                <div>
@@ -217,6 +239,28 @@
 									                        <span th:text="${#temporals.format(rsPost.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
 									                    </p>
 									                </div>
+									<!-- Góc phải: Visibility -->
+									<div class="position-absolute top-0 end-0 me-2 mt-1 d-flex align-items-center gap-2">
+									
+									    <!-- Nút tròn chỉnh sửa bài viết -->
+									    <button th:if="${rsPost.user.userId == user.userId}"
+									            type="button"
+									            class="btn btn-icon btn-gray-custom"
+									            th:attr="data-post-id=${rsPost.postId}"
+									            onclick="openEditPost(this)"
+									            title="Chỉnh sửa bài viết">
+									        <i class="bi bi-pencil-square"></i>
+									    </button>
+									
+									    <!-- Nếu là bài viết của người khác -->
+									    <span class="badge rounded-pill bg-secondary text-light">
+									        <span th:switch="${rsPost.visibility}">
+									            <span th:case="'public'">Công khai</span>
+									            <span th:case="'friends'">Bạn bè</span>
+									            <span th:case="'private'">Chỉ mình tôi</span>
+									        </span>
+									    </span>
+									</div>										                
 									            </div>
 									            <p th:text="${rsPost.content}"></p>
 												<!-- Thư viện ảnh/video dạng thanh trượt -->
@@ -346,6 +390,61 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </script>
 
+<<<<<<< Updated upstream
 
+=======
+   <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".like-btn").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            const postId = btn.getAttribute("data-post-id");
+            const liked = btn.getAttribute("data-liked") === "true";
+            fetch("/post/toggle-like/json", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-Requested-With": "XMLHttpRequest",
+              },
+              body: JSON.stringify({ postId }),
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                if (data.success) {
+                  // Update like count
+                  btn.querySelector("span").textContent = data.likesCount;
+                  // Update icon
+                  const icon = btn.querySelector("i");
+                  if (data.liked) {
+                    icon.classList.add("bi-heart-fill", "text-danger");
+                    icon.classList.remove("bi-heart");
+                    btn.setAttribute("data-liked", "true");
+                  } else {
+                    icon.classList.remove("bi-heart-fill", "text-danger");
+                    icon.classList.add("bi-heart");
+                    btn.setAttribute("data-liked", "false");
+                  }
+                } else {
+                  alert("Có lỗi xảy ra khi cập nhật lượt thích.");
+                }
+              })
+              .catch(() => {
+                alert("Không thể kết nối đến máy chủ.");
+              });
+          });
+        });
+      });
+    </script>
+<script>
+function openEditPost(button) {
+    const postId = button.getAttribute('data-post-id');
+    if (!postId) {
+        console.error('❌ Không tìm thấy ID bài viết!');
+        return;
+    }
+    window.location.href = `/posts/${postId}/edit`;
+}
+
+</script>    
+>>>>>>> Stashed changes
 </body>
 </html>

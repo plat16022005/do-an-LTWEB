@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="vi" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chỉnh sửa bài viết - AloUTE</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}" />	
+</head>
+<body class="text-light">
+
+    <nav class="navbar sticky-top">
+        <div class="container-xl">
+            <a class="navbar-brand fw-bold fs-4 d-flex align-items-center" th:href="@{/home}">
+                <svg class="bi me-2" width="32" height="32" fill="#0ea5e9"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18" stroke="currentColor"></path></svg>
+                AloUTE
+            </a>
+            
+            <ul class="navbar-nav flex-row gap-4 position-absolute start-50 translate-middle-x">
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container-xl mt-4">
+        <div class="row g-4">
+            <div class="col-lg-3 d-none d-lg-block">
+				<aside class="sticky-top" style="top: 80px;">
+				    <ul class="nav flex-column gap-1">
+						<li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/home">
+				                <i class="bi bi-house-door-fill fs-3"></i>
+				                <span>Trang chủ</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/upload">
+				                <i class="bi bi-upload fs-3"></i>
+				                <span>Đăng tải</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/search">
+				                <i class="bi bi-search fs-3"></i>
+				                <span>Tìm kiếm</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/friend">
+				                <i class="bi bi-people fs-3"></i>
+				                <span>Bạn bè</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+						  <a id="nav-group" class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/group">
+						      <i class="bi bi-globe2 fs-3"></i>
+						      <span>Nhóm</span>
+						  </a>
+						</li>				       
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="#">
+				                <i class="bi bi-envelope fs-3"></i>
+				                <span>Tin nhắn</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="#">
+				                <i class="bi bi-bell fs-3"></i>
+				                <span>Thông báo</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" th:href="@{/{username}(username=${user.nameUser})}">
+				                <i class="bi bi-person-circle fs-3"></i>
+				                <span>Cá nhân</span>
+				            </a>
+				        </li>
+				        <li class="nav-item">
+				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/setting">
+				                <i class="bi bi-gear fs-3"></i>
+				                <span>Cài đặt</span>
+				            </a>
+				        </li>
+				        <li class="nav-item mt-2">
+				            <a class="nav-link text-danger rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/logout">
+				                <i class="bi bi-box-arrow-right fs-3"></i>
+				                <span>Đăng xuất</span>
+				            </a>
+				        </li>
+				    </ul>
+				</aside>
+
+            </div>
+            
+            <div class="col-lg-9">
+                <main>
+                    <div class="card rounded-4">
+                        <div class="card-body p-4 p-md-5">
+                            <h2 class="mb-4 text-light">Chỉnh sửa bài viết</h2>
+							<form id="edit-post-form"
+							      th:action="@{'/posts/' + ${post.postId} + '/edit'}"
+							      method="post"
+							      enctype="multipart/form-data">
+                                    <div class="d-flex justify-content-end mb-3">
+									    <div class="d-flex align-items-center gap-2">
+									        <label for="visibility" class="form-label mb-0">Chế độ hiển thị:</label>
+									        <select id="visibility" name="visibility" class="form-select form-select-sm w-auto" th:value="${post.visibility}">
+									            <option value="public" th:selected="${post.visibility == 'public'}">Công khai</option>
+									            <option value="friends" th:selected="${post.visibility == 'friends'}">Bạn bè</option>
+									            <option value="private" th:selected="${post.visibility == 'private'}">Chỉ mình tôi</option>
+									        </select>
+									    </div>
+									</div>							      
+                                <div class="mb-3">
+                                    <label for="post-content" class="form-label">Nội dung</label>
+                                    
+                                    <textarea th:text="${post.content}" id="post-content" class="form-control" name="content" rows="5">Nội dung cũ của bài viết sẽ được hiển thị ở đây.</textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Tệp đính kèm hiện tại</label>
+									<div id="existing-files" class="d-flex flex-wrap gap-3">
+									    <div th:each="att : ${post.attachments}" 
+									         class="preview-item" 
+									         th:attr="data-file-id=${att.attachmentId}">
+									         
+												<img th:if="${att.fileType != null and att.fileType.startsWith('image')}"
+												     th:src="${att.fileUrl}"
+												     class="rounded" alt="Preview">
+												
+												<video th:if="${att.fileType != null and att.fileType.startsWith('video')}"
+												       th:src="${att.fileUrl}"
+												       class="rounded" controls></video>
+												
+												<div th:if="${att.fileType == null or (!att.fileType.startsWith('image') and !att.fileType.startsWith('video'))}"
+												     class="file-placeholder d-flex flex-column align-items-center justify-content-center rounded p-2 text-center">
+												  <i class="bi bi-file-earmark-text fs-1"></i>
+												  <small th:text="${#strings.substring(att.fileUrl, att.fileUrl.lastIndexOf('/') + 1)}" class="text-truncate"></small>
+												</div>
+
+									
+									        <!-- Nút xóa -->
+									        <button type="button" 
+									                class="btn btn-sm btn-danger rounded-circle remove-btn" 
+									                onclick="removeExistingFile(this)">&times;</button>
+									    </div>
+									</div>
+
+                                </div>
+                                
+                                <hr class="my-4">
+
+                                <div class="mb-3">
+                                    <label for="new-files-input" class="form-label">Thêm tệp mới</label>
+                                    <input name="newFiles" type="file" id="new-files-input" class="form-control" multiple>
+                                </div>
+                                
+                                <!-- Khu vực xem trước file MỚI -->
+                                <div id="new-files-preview" class="mt-3 d-flex flex-wrap gap-3"></div>
+
+                                <!-- Input ẩn để lưu ID các file cần xóa -->
+                                <div id="files-to-delete"></div>
+
+                                <div class="d-flex justify-content-end align-items-center mt-4 gap-2">
+                                    <a href="/profile" class="btn btn-secondary rounded-pill px-4">Hủy</a>
+                                    <button type="submit" class="btn btn-primary rounded-pill px-5">Lưu thay đổi</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const newFilesInput = document.getElementById('new-files-input');
+            const newFilesPreviewContainer = document.getElementById('new-files-preview');
+            
+            let newFileStore = new DataTransfer();
+
+            newFilesInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+
+            function handleFiles(files) {
+                for (const file of files) {
+                    newFileStore.items.add(file);
+                }
+                renderNewPreviews();
+            }
+
+            function renderNewPreviews() {
+                newFilesPreviewContainer.innerHTML = '';
+                Array.from(newFileStore.files).forEach((file, index) => {
+                    const reader = new FileReader();
+                    const previewItem = document.createElement('div');
+                    previewItem.className = 'preview-item';
+
+                    reader.onload = (e) => {
+                        let mediaElement;
+                        if (file.type.startsWith('image/')) {
+                            mediaElement = document.createElement('img');
+                            mediaElement.src = e.target.result;
+                        } else if (file.type.startsWith('video/')) {
+                            mediaElement = document.createElement('video');
+                            mediaElement.src = e.target.result;
+                            mediaElement.controls = true;
+                        } else {
+                            mediaElement = document.createElement('div');
+                            mediaElement.className = 'file-placeholder d-flex flex-column align-items-center justify-content-center rounded p-2 text-center';
+                            mediaElement.innerHTML = `<i class="bi bi-file-earmark-text fs-1"></i><small class="text-truncate">${file.name}</small>`;
+                        }
+                        previewItem.appendChild(mediaElement);
+                    };
+
+                    reader.readAsDataURL(file);
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.className = "btn btn-sm btn-danger rounded-circle remove-btn";
+                    removeBtn.innerHTML = '&times;';
+                    removeBtn.onclick = () => removeNewFile(index);
+                    
+                    previewItem.appendChild(removeBtn);
+                    newFilesPreviewContainer.appendChild(previewItem);
+                    newFilesInput.files = newFileStore.files;
+                });
+            }
+
+            function removeNewFile(index) {
+                const newFiles = new DataTransfer();
+                const oldFiles = Array.from(newFileStore.files);
+                oldFiles.forEach((file, i) => {
+                    if (i !== index) {
+                        newFiles.items.add(file);
+                    }
+                });
+                newFileStore = newFiles;
+                renderNewPreviews();
+            }
+        });
+
+        // Hàm xóa tệp đính kèm đã có
+        function removeExistingFile(button) {
+            const previewItem = button.closest('.preview-item');
+            const fileId = previewItem.dataset.fileId;
+            
+            // Thêm ID vào input ẩn để gửi về server
+            const filesToDeleteContainer = document.getElementById('files-to-delete');
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'deleteFileIds';
+            hiddenInput.value = fileId;
+            filesToDeleteContainer.appendChild(hiddenInput);
+
+            // Ẩn tệp khỏi giao diện
+            previewItem.style.display = 'none';
+        }
+    </script>
+    <script th:src="@{/js/theme-toggle.js}"></script>    
+</body>
+</html>
+

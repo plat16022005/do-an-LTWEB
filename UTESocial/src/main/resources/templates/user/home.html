@@ -134,6 +134,7 @@
 							    </div>
 							  </div>
 							</div>
+<<<<<<< Updated upstream
 					        <div class="card-body">
 					            <div class="d-flex align-items-center gap-3 mb-3">
 					                <img class="rounded-circle" th:src="${post.user.avatarUrl}" alt="Avatar" width="48" height="48">
@@ -147,6 +148,47 @@
 					                </div>
 					            </div>
 					            <p th:text="${post.content}"></p>
+=======
+							<div class="card-body">
+								<div class="d-flex align-items-center gap-3 mb-3 position-relative">
+									<img class="rounded-circle" th:src="${post.user.avatarUrl}"
+										alt="Avatar" width="48" height="48" />
+
+									<div>
+										<p class="fw-bold mb-0" th:text="${post.user.fullName}">
+											Tên người dùng</p>
+										<a class="fw mb-0 user-link" th:text="${post.user.nameUser}"
+											th:href="@{/{username}(username=${post.user.nameUser})}"></a>
+										<p class="text-muted small mb-0">
+											<span
+												th:text="${#temporals.format(post.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+										</p>
+									</div>
+									<!-- Góc phải: Visibility -->
+									<div class="position-absolute top-0 end-0 me-2 mt-1 d-flex align-items-center gap-2">
+									
+									    <!-- Nút tròn chỉnh sửa bài viết -->
+									    <button th:if="${post.user.userId == user.userId}"
+									            type="button"
+									            class="btn btn-icon btn-gray-custom"
+									            th:attr="data-post-id=${post.postId}"
+									            onclick="openEditPost(this)"
+									            title="Chỉnh sửa bài viết">
+									        <i class="bi bi-pencil-square"></i>
+									    </button>
+									
+									    <!-- Nếu là bài viết của người khác -->
+									    <span class="badge rounded-pill bg-secondary text-light">
+									        <span th:switch="${post.visibility}">
+									            <span th:case="'public'">Công khai</span>
+									            <span th:case="'friends'">Bạn bè</span>
+									            <span th:case="'private'">Chỉ mình tôi</span>
+									        </span>
+									    </span>
+									</div>									
+								</div>
+								<p th:text="${post.content}"></p>
+>>>>>>> Stashed changes
 								<!-- Thư viện ảnh/video dạng thanh trượt -->
 								<div th:if="${post.attachments != null and !post.attachments.isEmpty()}" 
 								     class="attachment-scroll mt-3">
@@ -197,6 +239,7 @@
 					</main>
                 </div>
 
+<<<<<<< Updated upstream
                 <div id="policy-content" class="d-none">
                     <div class="card rounded-4">
                         <div class="card-body p-4 p-md-5">
@@ -208,6 +251,92 @@
 
                             <h3 class="mt-4">2. Nội dung người dùng</h3>
                             <p>Bạn chịu hoàn toàn trách nhiệm về nội dung bạn đăng tải. Bạn không được phép đăng tải nội dung vi phạm pháp luật, có tính chất xúc phạm, hoặc vi phạm bản quyền của người khác. Chúng tôi có quyền xóa bất kỳ nội dung nào vi phạm mà không cần báo trước.</p>
+=======
+				<div id="friend-content">
+					<main class="d-grid gap-3">
+						<div th:each="post : ${friendPosts}"
+							class="card rounded-4 overflow-hidden">
+							<!-- Modal báo cáo bài viết -->
+							<div class="modal fade"
+								th:id="'reportPostModal__' + ${post.postId}" tabindex="-1"
+								aria-labelledby="reportPostLabel" aria-hidden="true">
+								<div class="modal-dialog modal-dialog-centered">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="modal-title" id="reportPostLabel">Báo cáo bài
+												viết</h5>
+											<button type="button" class="btn-close"
+												data-bs-dismiss="modal" aria-label="Đóng"></button>
+										</div>
+										<div class="modal-body">
+											<form method="post" th:action="@{/report-post}">
+												<input type="hidden" name="postId" th:value="${post.postId}" />
+												<div class="mb-3">
+													<label for="reason" class="form-label">Lý do báo
+														cáo</label>
+													<textarea name="reason" class="form-control" rows="4"
+														placeholder="Nhập lý do..."></textarea>
+												</div>
+												<div class="d-flex justify-content-end">
+													<button type="button" class="btn btn-secondary me-2"
+														data-bs-dismiss="modal">Hủy</button>
+													<button type="submit" class="btn btn-danger">Gửi
+														báo cáo</button>
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="card-body">
+								<div class="d-flex align-items-center gap-3 mb-3 position-relative">
+									<img class="rounded-circle" th:src="${post.user.avatarUrl}"
+										alt="Avatar" width="48" height="48" />
+
+									<div>
+										<p class="fw-bold mb-0" th:text="${post.user.fullName}">
+											Tên người dùng</p>
+										<a class="fw mb-0 user-link" th:text="${post.user.nameUser}"
+											th:href="@{/{username}(username=${post.user.nameUser})}"></a>
+										<p class="text-muted small mb-0">
+											<span
+												th:text="${#temporals.format(post.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+										</p>
+									</div>
+									<!-- Góc phải: Visibility -->
+									<div class="position-absolute top-0 end-0 me-2 mt-1 d-flex align-items-center gap-2">
+									
+									    <!-- Nút tròn chỉnh sửa bài viết -->
+									    <button th:if="${post.user.userId == user.userId}"
+									            type="button"
+									            class="btn btn-icon btn-gray-custom"
+									            th:attr="data-post-id=${post.postId}"
+									            onclick="openEditPost(this)"
+									            title="Chỉnh sửa bài viết">
+									        <i class="bi bi-pencil-square"></i>
+									    </button>
+									
+									    <!-- Nếu là bài viết của người khác -->
+									    <span class="badge rounded-pill bg-secondary text-light">
+									        <span th:switch="${post.visibility}">
+									            <span th:case="'public'">Công khai</span>
+									            <span th:case="'friends'">Bạn bè</span>
+									            <span th:case="'private'">Chỉ mình tôi</span>
+									        </span>
+									    </span>
+									</div>										
+								</div>
+								<p th:text="${post.content}"></p>
+								<!-- Thư viện ảnh/video dạng thanh trượt -->
+								<div
+									th:if="${post.attachments != null and !post.attachments.isEmpty()}"
+									class="attachment-scroll mt-3">
+									<div th:each="att : ${post.attachments}"
+										class="attachment-item text-center">
+										<!-- Nếu là ảnh -->
+										<img th:if="${att.fileType.startsWith('image')}"
+											th:src="${att.fileUrl}" alt="Ảnh đính kèm" />
+>>>>>>> Stashed changes
 
                             <h3 class="mt-4">3. Giới hạn trách nhiệm</h3>
                             <p>Chúng tôi không chịu trách nhiệm cho bất kỳ thiệt hại nào phát sinh từ việc sử dụng hoặc không thể sử dụng trang web. Nội dung trên trang web chỉ mang tính chất tham khảo.</p>
@@ -298,7 +427,21 @@ function scrollGallery(btn, direction) {
 </script>
 <script th:src="@{/js/theme-toggle.js}"></script>
 
+<script>
+function openEditPost(button) {
+    const postId = button.getAttribute('data-post-id');
+    if (!postId) {
+        console.error('❌ Không tìm thấy ID bài viết!');
+        return;
+    }
+    window.location.href = `/posts/${postId}/edit`;
+}
 
+<<<<<<< Updated upstream
 </body>
+=======
+</script>
+  </body>
+>>>>>>> Stashed changes
 </html>
 

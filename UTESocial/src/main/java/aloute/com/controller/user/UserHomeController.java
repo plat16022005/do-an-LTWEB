@@ -24,8 +24,18 @@ public class UserHomeController {
     	{
     		return "redirect:/access-deniel";
     	}
+<<<<<<< Updated upstream
         List<Posts> posts = postRepository.findAllWithUserAndAttachments();
         model.addAttribute("posts", posts);
+=======
+        List<Posts> posts = postRepository.findAllVisiblePosts(user.getUserId());
+        List<Posts> friendPosts = postRepository.findFriendPosts(user.getUserId());
+		model.addAttribute("posts", posts);
+		model.addAttribute("friendPosts", friendPosts);
+		model.addAttribute("likedPostIds", postLikeService.getLikedPostIdsByUser(user, posts));
+		model.addAttribute("repostedPostIds", postRepostService.getRepostedPostIdsByUser(user, posts));
+
+>>>>>>> Stashed changes
 		return "user/home";
 	}
 }
