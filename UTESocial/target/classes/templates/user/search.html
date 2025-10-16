@@ -197,10 +197,13 @@
 															th:text="${rsPost.commentsCount}">0</span> <span class="ms-1">Bình
 															luận</span>
 													</button>
-													<button class="btn text-muted d-flex align-items-center gap-2">
-														<i class="bi bi-repeat"></i> <span
-															th:text="${rsPost.shareCount}">0</span> <span class="ms-1">Chia
-															sẻ</span>
+													<button th:if="${post.user.userId != user.userId}"
+													        class="btn text-muted d-flex align-items-center gap-2 repost-btn"
+													        th:attr="data-post-id=${post.postId}"
+													        th:attrappend="data-reposted=${repostedPostIds.contains(post.postId)}">
+													    <i th:classappend="${repostedPostIds.contains(post.postId)} ? ' text-primary' : ''" class="bi bi-repeat"></i>
+													    <span th:text="${post.shareCount}">0</span>
+													    <span class="ms-1">Đăng lại</span>
 													</button>
 													<button th:if="${rsPost.user.userId != user.userId}"
 														class="btn text-muted d-flex align-items-center gap-2"
@@ -324,9 +327,13 @@
 															th:text="${rsPost.commentsCount}">0</span> <span class="ms-1">Bình
 															luận</span>
 													</button>
-													<button th:if="${rsPost.user.userId != user.userId}" class="btn text-muted d-flex align-items-center gap-2">
-														<i class="bi bi-repeat"></i> <span
-															th:text="${rsPost.shareCount}">0</span> <span class="ms-1">Đăng lại</span>
+													<button th:if="${post.user.userId != user.userId}"
+													        class="btn text-muted d-flex align-items-center gap-2 repost-btn"
+													        th:attr="data-post-id=${post.postId}"
+													        th:attrappend="data-reposted=${repostedPostIds.contains(post.postId)}">
+													    <i th:classappend="${repostedPostIds.contains(post.postId)} ? ' text-primary' : ''" class="bi bi-repeat"></i>
+													    <span th:text="${post.shareCount}">0</span>
+													    <span class="ms-1">Đăng lại</span>
 													</button>
 													<button th:if="${rsPost.user.userId != user.userId}"
 														class="btn text-muted d-flex align-items-center gap-2"
