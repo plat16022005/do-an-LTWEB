@@ -4,6 +4,8 @@ import aloute.com.entity.Posts;
 import aloute.com.entity.Reports;
 import aloute.com.entity.User;
 import aloute.com.service.AdminService;
+import aloute.com.entity.AuditLogs; 
+import aloute.com.repository.AuditLogRepository; 
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +15,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.PostMapping; // Thêm import này
+import org.springframework.web.servlet.mvc.support.RedirectAttributes; // Thêm import này
 
 import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @Controller
 @RequestMapping("/admin")
@@ -46,23 +56,35 @@ public class AdminController
     	{
     		return "redirect:/access-deniel";
     	}
-    	model.addAttribute("totalUsers", adminService.countManagedUsers());
-	    model.addAttribute("totalPosts", adminService.getTotalPosts());
+    	model.addAttribute("totalUsers", adminService.countManagedUsers());	  
 	    model.addAttribute("pendingReports", adminService.getPendingReportsCount());
+	    model.addAttribute("approvedPostsCount", adminService.getApprovedPostsCount());
+        model.addAttribute("pendingPostsCount", adminService.getPendingPostsCount());
+        model.addAttribute("rejectedPostsCount", adminService.getRejectedPostsCount());
 	    return "admin/dashboard";
 	}
     
     
     @GetMapping("/users")
-    public String manageUsers(Model model, HttpSession session) 
+    public String manageUsers(Model model, 
+				    		@RequestParam(defaultValue = "0") int page, // Tham số trang hiện tại
+				            @RequestParam(defaultValue = "10") int size, // Tham số kích thước trang
+				    		HttpSession session) 
     {
     	User user = (User) session.getAttribute("user");
-    	if (user == null)
+    	if (user == null || !"Admin".equals(user.getRole())) 
     	{
-    		return "redirect:/access-deniel";
-    	}
-        List<User> users = adminService.getAllUsers();
-        model.addAttribute("users", users);
+            return "redirect:/access-deniel";
+        }
+    	
+    	// Tạo đối tượng Pageable với sắp xếp mặc định theo UserID tăng dần
+        Pageable pageable = PageRequest.of(page, size, Sort.by("userId").ascending());
+    	
+    	Page<User> userPage = adminService.getAllUsers(pageable);
+    	
+    	model.addAttribute("userPage", userPage); // Truyền cả đối tượng Page vào model
+        model.addAttribute("currentPage", page);   // Truyền trang hiện tại để dùng trong pagination
+        model.addAttribute("pageSize", size);      // Truyền kích thước trang
         return "admin/users";
     }
 
@@ -118,10 +140,27 @@ public class AdminController
         model.addAttribute("posts", posts);
         return "admin/posts";
     }
-
-    public String deletePost(@RequestParam Integer postId) 
+    
+    @PostMapping("/posts/delete")
+    public String deletePost(@RequestParam Integer postId, RedirectAttributes redirectAttributes, HttpSession session) 
     {
-        adminService.deletePost(postId);
+    	// Kiểm tra quyền Admin (nên có trong mọi action của Admin)
+        User user = (User) session.getAttribute("user");
+        if (user == null || !"Admin".equals(user.getRole() ) ) 
+        {
+            return "redirect:/access-deniel";
+        }
+        try 
+        {
+            adminService.deletePost(postId); // Gọi service để xóa 
+            redirectAttributes.addFlashAttribute("successMessage", "Đã xóa bài đăng ID: " + postId); // Thông báo thành công
+        } 
+        catch (Exception e) 
+        {
+            // Log lỗi 
+             System.err.println("Error deleting post ID " + postId + ": " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi xóa bài đăng."); // Thông báo lỗi
+        }
         return "redirect:/admin/posts";
     }
   
@@ -181,5 +220,68 @@ public class AdminController
     }
 
 
-     
+    // Hiển thị form nhập lý do từ chối
+    @GetMapping("/posts/reject")
+    public String showRejectPostForm(@RequestParam Integer postId, Model model, HttpSession session) 
+    {
+        User user = (User) session.getAttribute("user");
+        if (user == null || !"Admin".equals(user.getRole())) 
+        {
+            return "redirect:/access-deniel";
+        }
+        Posts post = adminService.getPostById(postId);
+        if (post == null) 
+        {
+            // Xử lý trường hợp không tìm thấy bài đăng (ví dụ: redirect về trang posts với thông báo lỗi)
+            return "redirect:/admin/posts?error=PostNotFound";
+        }
+        model.addAttribute("post", post);
+        model.addAttribute("postId", postId);
+        return "admin/reject_post"; // Tạo file HTML này ở bước sau
+    }
+
+    // Xử lý việc từ chối bài đăng
+    @PostMapping("/posts/reject")
+    public String rejectPost(@RequestParam Integer postId, @RequestParam String reason, HttpSession session, RedirectAttributes redirectAttributes) 
+    {
+        User user = (User) session.getAttribute("user");
+        if (user == null || !"Admin".equals(user.getRole())) 
+        {
+            return "redirect:/access-deniel";
+        }
+        try 
+        {
+            adminService.rejectPost(postId, reason);
+            redirectAttributes.addFlashAttribute("successMessage", "Đã từ chối bài đăng ID: " + postId);
+        } catch (Exception e) {
+            // Ghi log lỗi nếu cần
+            redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi từ chối bài đăng.");
+        }
+        return "redirect:/admin/posts";
+    }
+    
+    
+    @Autowired
+    private AuditLogRepository auditLogRepository; 
+    
+    @GetMapping("/audit-logs")
+    public String showAuditLogs(Model model,
+                                @RequestParam(defaultValue = "0") int page,
+                                @RequestParam(defaultValue = "15") int size,
+                                HttpSession session) 
+    {
+        User user = (User) session.getAttribute("user");
+        if (user == null || !"Admin".equals(user.getRole())) 
+        {
+            return "redirect:/access-deniel";
+        }
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<AuditLogs> logPage = auditLogRepository.findAllByOrderByCreatedAtDesc(pageable); 
+
+        model.addAttribute("logPage", logPage);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        return "admin/audit_logs"; 
+    }
 }

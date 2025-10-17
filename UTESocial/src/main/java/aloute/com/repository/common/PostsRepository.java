@@ -132,4 +132,16 @@ public interface PostsRepository extends JpaRepository<Posts, Integer> {
 		""")
 		Optional<Posts> findByIdWithAttachments(@Param("postId") Integer postId);
 
+	
+	//Lấy tất cả Posts và thông tin User liên quan (eagerly)
+	@Query("SELECT DISTINCT p FROM Posts p LEFT JOIN FETCH p.user WHERE p.isDeleted = false ORDER BY p.createdAt DESC")
+    List<Posts> findAllWithUserForAdmin();
+	
+	//Tìm Post theo ID và fetch thông tin User liên quan.
+	@Query("SELECT p FROM Posts p LEFT JOIN FETCH p.user WHERE p.postId = :postId")
+    Optional<Posts> findByIdWithUser(@Param("postId") Integer postId);
+	
+	//Đếm số lượng bài đăng theo trạng thái cụ thể và chưa bị xóa.
+	@Query("SELECT COUNT(p) FROM Posts p WHERE p.status = :status AND p.isDeleted = false")
+    long countByStatusAndIsDeletedFalse(@Param("status") String status);
 }

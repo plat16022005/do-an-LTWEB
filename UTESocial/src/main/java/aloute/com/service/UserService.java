@@ -14,6 +14,8 @@ import aloute.com.util.PasswordUtil;
 public class UserService {
 	@Autowired
     private UserRepository userRepository;
+	@Autowired
+	 private AuditLogService auditLogService;
 	
     public User login(String email, String password) {
 		// Allow login with either email or username (templates say 'Email hoặc tên người dùng')
@@ -28,8 +30,12 @@ public class UserService {
 		}
 
 		if (user != null && PasswordUtil.hashPassword(password).equals(user.getPasswordHash())) {
+			auditLogService.logAction(user, "LOGIN_SUCCESS", "User logged in successfully."); // Ghi log khi đăng nhập thành công
 			return user;
 		}
+		else {
+		         auditLogService.logAction("LOGIN_FAILURE", "Failed login attempt for email/username: " + email);
+		     }
 		return null;
     }
     

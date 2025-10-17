@@ -288,7 +288,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="user : ${users}">
+                            <tr th:each="user : ${userPage.content}">
                                 <td class="py-3 px-4" th:text="${user.userId}"></td>
                                 <td class="py-3 px-4" th:text="${user.email}"></td>
                                 <td class="py-3 px-4" th:text="${user.fullName}"></td>
@@ -315,12 +315,29 @@
                                     </form>
                                 </td>
                             </tr>
-                            <tr th:if="${users.isEmpty()}">
-                                <td colspan="6" class="text-center py-3 px-4">Không có người dùng nào được tìm thấy.</td>
+                            <tr th:if="${userPage.empty}">
+                                <td colspan="6" class="text-center py-4 px-4 text-muted">Không có người dùng nào.</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+                
+                <nav aria-label="Page navigation" th:if="${userPage.totalPages > 1}" class="p-3">
+                    <ul class="pagination">
+                        <li class="page-item" th:classappend="${userPage.first} ? 'disabled'">
+                            <a class="page-link" th:href="@{/admin/users(page=${currentPage - 1}, size=${pageSize})}">Trước</a>
+                        </li>
+
+                        <li class="page-item" th:each="i : ${#numbers.sequence( T(java.lang.Math).max(0, currentPage - 2), T(java.lang.Math).min(userPage.totalPages - 1, currentPage + 2) )}" th:classappend="${i == currentPage} ? 'active'">
+                            <a class="page-link" th:href="@{/admin/users(page=${i}, size=${pageSize})}" th:text="${i + 1}"></a>
+                        </li>
+
+                        <li class="page-item" th:classappend="${userPage.last} ? 'disabled'">
+                            <a class="page-link" th:href="@{/admin/users(page=${currentPage + 1}, size=${pageSize})}">Sau</a>
+                        </li>
+                    </ul>
+                </nav>
+                
             </div>
         </div>
     </div>
