@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="vi" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chỉnh sửa bài viết - AloUTE</title>
+<!-- Bootstrap CSS -->
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<!-- Bootstrap Icons -->
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body class="text-light">
+
+	<nav class="navbar sticky-top">
+		<div class="container-xl">
+			<a class="navbar-brand fw-bold fs-4 d-flex align-items-center"
+				th:href="@{/home}"> <svg class="bi me-2" width="32" height="32"
+					fill="#0ea5e9">
+					<path stroke-linecap="round" stroke-linejoin="round"
+						stroke-width="2" d="M12 6.253v11.494m-9-5.747h18"
+						stroke="currentColor"></path></svg> AloUTE
+			</a>
+
+			<ul
+				class="navbar-nav flex-row gap-4 position-absolute start-50 translate-middle-x">
+			</ul>
+		</div>
+	</nav>
+
+	<div class="container-xl mt-4">
+		<div class="row g-4">
+			<div class="col-lg-3 d-none d-lg-block">
+				<aside class="sticky-top" style="top: 80px;">
+					<ul class="nav flex-column gap-1">
+						<li class="nav-item"><a
+							class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+							href="/home"> <i class="bi bi-house-door-fill fs-3"></i> <span>Trang
+									chủ</span>
+						</a></li>
+						<li class="nav-item"><a
+							class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+							href="/upload"> <i class="bi bi-upload fs-3"></i> <span>Đăng
+									tải</span>
+						</a></li>
+						<li class="nav-item"><a
+							class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+							href="/search"> <i class="bi bi-search fs-3"></i> <span>Tìm
+									kiếm</span>
+						</a></li>
+						<li class="nav-item"><a
+							class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+							href="/friend"> <i class="bi bi-people fs-3"></i> <span>Bạn
+									bè</span>
+						</a></li>
+						<li class="nav-item"><a id="nav-group"
+							class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+							href="/group"> <i class="bi bi-globe2 fs-3"></i> <span>Nhóm</span>
+						</a></li>
+						<li class="nav-item"><a
+							class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+							href="#"> <i class="bi bi-envelope fs-3"></i> <span>Tin
+									nhắn</span>
+						</a></li>
+						<li class="nav-item"><a
+							class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+							href="#"> <i class="bi bi-bell fs-3"></i> <span>Thông
+									báo</span>
+						</a></li>
+						<li class="nav-item"><a
+							class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+							th:href="@{/{username}(username=${user.nameUser})}"> <i
+								class="bi bi-person-circle fs-3"></i> <span>Cá nhân</span>
+						</a></li>
+						<li class="nav-item"><a
+							class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+							href="/setting"> <i class="bi bi-gear fs-3"></i> <span>Cài
+									đặt</span>
+						</a></li>
+						<li class="nav-item mt-2"><a
+							class="nav-link text-danger rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+							href="/logout"> <i class="bi bi-box-arrow-right fs-3"></i> <span>Đăng
+									xuất</span>
+						</a></li>
+					</ul>
+
+				</aside>
+
+			</div>
+			<div class="col-lg-9">
+				<main class="d-grid gap-3">
+					<div class="card rounded-4 overflow-hidden">
+						<div class="modal fade"
+							th:id="'reportPostModal__' + ${post.postId}" tabindex="-1"
+							aria-labelledby="reportPostLabel" aria-hidden="true">
+							<div class="modal-dialog modal-dialog-centered">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="reportPostLabel">Báo cáo bài
+											viết</h5>
+										<button type="button" class="btn-close"
+											data-bs-dismiss="modal" aria-label="Đóng"></button>
+									</div>
+									<div class="modal-body">
+										<form method="post" th:action="@{/report-post}">
+											<input type="hidden" name="postId" th:value="${post.postId}" />
+											<div class="mb-3">
+												<label for="reason" class="form-label">Lý do báo cáo</label>
+												<textarea name="reason" class="form-control" rows="4"
+													placeholder="Nhập lý do..."></textarea>
+											</div>
+											<div class="d-flex justify-content-end">
+												<button type="button" class="btn btn-secondary me-2"
+													data-bs-dismiss="modal">Hủy</button>
+												<button type="submit" class="btn btn-danger">Gửi
+													báo cáo</button>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="card-body">
+							<div
+								class="d-flex align-items-center gap-3 mb-3 position-relative">
+								<img class="rounded-circle" th:src="${post.user.avatarUrl}"
+									alt="Avatar" width="48" height="48" />
+								<div>
+									<p class="fw-bold mb-0" th:text="${post.user.fullName}">
+										Tên người dùng</p>
+									<a class="fw mb-0 user-link" th:text="${post.user.nameUser}"
+										th:href="@{/{username}(username=${post.user.nameUser})}"></a>
+									<p class="text-muted small mb-0">
+										<span
+											th:text="${#temporals.format(post.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+									</p>
+								</div>
+								<!-- Góc phải: Visibility -->
+								<div
+									class="position-absolute top-0 end-0 me-2 mt-1 d-flex align-items-center gap-2">
+
+									<!-- Nút tròn chỉnh sửa bài viết -->
+									<button th:if="${post.user.userId == user.userId}"
+										type="button" class="btn btn-icon btn-gray-custom"
+										th:attr="data-post-id=${post.postId}"
+										onclick="openEditPost(this)" title="Chỉnh sửa bài viết">
+										<i class="bi bi-pencil-square"></i>
+									</button>
+
+									<!-- Nếu là bài viết của người khác -->
+									<span class="badge rounded-pill bg-secondary text-light">
+										<span th:switch="${post.visibility}"> <span
+											th:case="'public'">Công khai</span> <span th:case="'friends'">Bạn
+												bè</span> <span th:case="'private'">Chỉ mình tôi</span>
+									</span>
+									</span>
+								</div>
+							</div>
+							<p th:text="${post.content}"></p>
+							<!-- Thư viện ảnh/video dạng thanh trượt -->
+							<div
+								th:if="${post.attachments != null and !post.attachments.isEmpty()}"
+								class="attachment-scroll mt-3">
+								<div th:each="att : ${post.attachments}"
+									class="attachment-item text-center">
+									<!-- Nếu là ảnh -->
+									<img th:if="${att.fileType.startsWith('image')}"
+										th:src="${att.fileUrl}" alt="Ảnh đính kèm" />
+
+									<!-- Nếu là video -->
+									<video th:if="${att.fileType.startsWith('video')}"
+										th:src="${att.fileUrl}" controls class="rounded-3"></video>
+
+									<!-- Nếu là file khác -->
+									<a
+										th:if="${!att.fileType.startsWith('image') and !att.fileType.startsWith('video')}"
+										th:href="${att.fileUrl}" class="attachment-file"
+										target="_blank"> <i class="bi bi-paperclip"></i> <span
+										th:text="${#strings.substring(att.fileUrl, att.fileUrl.lastIndexOf('/') + 1)}"></span>
+									</a>
+								</div>
+							</div>
+						</div>
+
+						<div class="card-body d-flex gap-2 post-actions">
+							<div
+								class="d-flex justify-content-between align-items-center w-100">
+								<button
+									class="btn text-muted d-flex align-items-center gap-2 like-btn"
+									type="button" th:attr="data-post-id=${post.postId}"
+									th:attrappend="data-liked=${likedPostIds.contains(post.postId)}">
+									<i
+										th:classappend="${likedPostIds.contains(post.postId)} ? ' bi-heart-fill text-danger' : ' bi-heart'"
+										class="bi"></i> <span th:text="${post.likesCount}">0</span> <span
+										class="ms-1">Thích</span>
+								</button>
+								<button class="btn text-muted d-flex align-items-center gap-2">
+									<i class="bi bi-chat"></i> <span
+										th:text="${post.commentsCount}">0</span> <span class="ms-1">Bình
+										luận</span>
+								</button>
+								<button th:if="${post.user.userId != user.userId}"
+									class="btn text-muted d-flex align-items-center gap-2 repost-btn"
+									th:attr="data-post-id=${post.postId}"
+									th:attrappend="data-reposted=${repostedPostIds.contains(post.postId)}">
+									<i
+										th:classappend="${repostedPostIds.contains(post.postId)} ? ' text-primary' : ''"
+										class="bi bi-repeat"></i> <span th:text="${post.shareCount}">0</span>
+									<span class="ms-1">Đăng lại</span>
+								</button>
+								<button th:if="${post.user.userId != user.userId}"
+									class="btn text-muted d-flex align-items-center gap-2"
+									data-bs-toggle="modal"
+									th:attr="data-bs-target='#reportPostModal__' + ${post.postId}">
+									<i class="bi bi-flag"></i> <span class="ms-1">Báo cáo</span>
+								</button>
+							</div>
+						</div>
+					</div>
+					<!-- 📢 HỘP BÌNH LUẬN -->
+					<div class="card-body border-top pt-3">
+						<div class="d-flex flex-column gap-3">
+
+							<div class="comments-list d-flex flex-column gap-3 mb-3">
+								<div th:each="c : ${comments}" class="comment-item d-flex gap-3">
+									<img th:src="${c.user.avatarUrl}" alt="Avatar"
+										class="rounded-circle flex-shrink-0" width="40" height="40">
+									<div class="comment-content flex-grow-1">
+										<div class="d-flex justify-content-between align-items-start">
+											<div>
+												<span class="fw-bold mb-0" th:text="${c.user.fullName}">Tên</span>
+												<a class="fw mb-0 user-link" th:text="${c.user.nameUser}"
+															th:href="@{/{username}(username=${c.user.nameUser})}"></a>
+												<small class="text-muted ms-2"
+													th:text="${#temporals.format(c.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
+											</div>
+
+										</div>
+										<p class="mb-1" th:text="${c.content}">Nội dung</p>
+										<div class="d-flex gap-3">
+											<button
+												class="btn btn-sm text-muted d-flex align-items-center gap-1">
+												<i class="bi bi-heart"></i> <span th:text="${c.likeCount}">0</span>
+											</button>
+											<button
+												class="btn btn-sm text-muted p-0 open-reply-modal-btn"
+												type="button" data-bs-toggle="modal"
+												data-bs-target="#commentThreadModal">Bình luận</button>
+										</div>
+									</div>
+								</div>
+							</div>
+
+
+							<!-- ✍️ Form nhập bình luận mới -->
+							<div class="d-flex align-items-center gap-2 mt-4">
+								<img th:src="${user.avatar}" class="rounded-circle"
+									width="48" height="48"> <input type="text"
+									class="form-control rounded-pill"
+									placeholder="Viết bình luận của bạn...">
+								<button class="btn btn-primary rounded-circle">
+									<i class="bi bi-send"></i>
+								</button>
+							</div>
+						</div>
+					</div>
+				</main>
+			</div>
+		</div>
+	</div>
+	<!-- Modal nhập phản hồi -->
+	<!-- 📌 Modal Thread -->
+	<div class="modal fade" id="commentThreadModal" tabindex="-1"
+		aria-labelledby="commentThreadLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-lg">
+			<div class="modal-content bg-dark text-light">
+
+				<!-- 🧾 Bình luận đang được phản hồi -->
+				<div class="modal-header border-0">
+					<div class="d-flex gap-3 align-items-start w-100">
+						<img id="thread-avatar" src="" alt="Avatar" class="rounded-circle"
+							width="48" height="48">
+						<div class="flex-grow-1">
+							<div class="d-flex align-items-center gap-2 mb-1">
+								<h6 id="thread-username" class="fw-bold mb-0"></h6>
+								<small id="thread-time" class="text-muted"></small>
+							</div>
+							<p id="thread-content" class="mb-2"></p>
+							<div class="d-flex align-items-center gap-3">
+								<button
+									class="btn btn-sm p-0 d-flex align-items-center gap-1 comment-like-btn"
+									type="button">
+									<i class="bi bi-heart"></i> <span id="thread-like">0</span>
+								</button>
+								<button class="btn btn-sm text-muted p-0" id="thread-reply-btn">
+									Bình luận</button>
+							</div>
+						</div>
+					</div>
+					<button type="button" class="btn-close btn-close-white"
+						data-bs-dismiss="modal" aria-label="Đóng"></button>
+				</div>
+
+				<hr class="m-0 border-secondary">
+
+				<!-- 💬 Danh sách phản hồi -->
+				<div class="modal-body">
+					<div id="reply-list" class="d-flex flex-column gap-3">
+						<!-- replies render tại đây -->
+					</div>
+				</div>
+
+				<hr class="m-0 border-secondary">
+
+				<!-- 📝 Form nhập phản hồi -->
+				<div class="modal-footer border-0">
+					<div class="d-flex align-items-start gap-2 w-100">
+						<img src="https://i.pravatar.cc/48?img=9" alt="Avatar"
+							class="rounded-circle" width="48" height="48">
+						<textarea id="reply-input" class="form-control"
+							placeholder="Phản hồi bình luận này..." rows="2"></textarea>
+					</div>
+					<button class="btn btn-primary mt-2" id="send-reply-btn">Gửi</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const newFilesInput = document.getElementById('new-files-input');
+            const newFilesPreviewContainer = document.getElementById('new-files-preview');
+            
+            let newFileStore = new DataTransfer();
+
+            newFilesInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+
+            function handleFiles(files) {
+                for (const file of files) {
+                    newFileStore.items.add(file);
+                }
+                renderNewPreviews();
+            }
+
+            function renderNewPreviews() {
+                newFilesPreviewContainer.innerHTML = '';
+                Array.from(newFileStore.files).forEach((file, index) => {
+                    const reader = new FileReader();
+                    const previewItem = document.createElement('div');
+                    previewItem.className = 'preview-item';
+
+                    reader.onload = (e) => {
+                        let mediaElement;
+                        if (file.type.startsWith('image/')) {
+                            mediaElement = document.createElement('img');
+                            mediaElement.src = e.target.result;
+                        } else if (file.type.startsWith('video/')) {
+                            mediaElement = document.createElement('video');
+                            mediaElement.src = e.target.result;
+                            mediaElement.controls = true;
+                        } else {
+                            mediaElement = document.createElement('div');
+                            mediaElement.className = 'file-placeholder d-flex flex-column align-items-center justify-content-center rounded p-2 text-center';
+                            mediaElement.innerHTML = `<i class="bi bi-file-earmark-text fs-1"></i><small class="text-truncate">${file.name}</small>`;
+                        }
+                        previewItem.appendChild(mediaElement);
+                    };
+
+                    reader.readAsDataURL(file);
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.className = "btn btn-sm btn-danger rounded-circle remove-btn";
+                    removeBtn.innerHTML = '&times;';
+                    removeBtn.onclick = () => removeNewFile(index);
+                    
+                    previewItem.appendChild(removeBtn);
+                    newFilesPreviewContainer.appendChild(previewItem);
+                    newFilesInput.files = newFileStore.files;
+                });
+            }
+
+            function removeNewFile(index) {
+                const newFiles = new DataTransfer();
+                const oldFiles = Array.from(newFileStore.files);
+                oldFiles.forEach((file, i) => {
+                    if (i !== index) {
+                        newFiles.items.add(file);
+                    }
+                });
+                newFileStore = newFiles;
+                renderNewPreviews();
+            }
+        });
+
+        // Hàm xóa tệp đính kèm đã có
+        function removeExistingFile(button) {
+            const previewItem = button.closest('.preview-item');
+            const fileId = previewItem.dataset.fileId;
+            
+            // Thêm ID vào input ẩn để gửi về server
+            const filesToDeleteContainer = document.getElementById('files-to-delete');
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'deleteFileIds';
+            hiddenInput.value = fileId;
+            filesToDeleteContainer.appendChild(hiddenInput);
+
+            // Ẩn tệp khỏi giao diện
+            previewItem.style.display = 'none';
+        }
+    </script>
+	<script th:src="@{/js/theme-toggle.js}"></script>
+
+	<script>
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".like-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      const postId = btn.getAttribute("data-post-id");
+      const liked = btn.getAttribute("data-liked") === "true";
+
+      fetch("/post/toggle-like/json", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+        },
+        body: JSON.stringify({ postId }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            btn.querySelector("span").textContent = data.likesCount;
+            const icon = btn.querySelector("i");
+            if (data.liked) {
+              icon.classList.add("bi-heart-fill", "text-danger");
+              icon.classList.remove("bi-heart");
+              btn.setAttribute("data-liked", "true");
+            } else {
+              icon.classList.remove("bi-heart-fill", "text-danger");
+              icon.classList.add("bi-heart");
+              btn.setAttribute("data-liked", "false");
+            }
+          } else {
+            alert("Có lỗi xảy ra khi cập nhật lượt thích.");
+          }
+        })
+        .catch(() => {
+          alert("Không thể kết nối đến máy chủ.");
+        });
+    });
+  });
+});
+</script>
+	<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  document.querySelectorAll(".repost-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      const postId = btn.getAttribute("data-post-id");
+
+      fetch("/post/toggle-repost/json", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+        },
+        body: JSON.stringify({ postId }),
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          // ✅ Cập nhật số lượng đăng lại (span đầu tiên chứa số)
+          const countSpan = btn.querySelector("span");
+          countSpan.textContent = data.repostCount;
+
+          // ✅ Đổi icon màu xanh khi đã đăng lại
+          const icon = btn.querySelector("i");
+          if (data.reposted) {
+            icon.classList.add("text-primary");
+          } else {
+            icon.classList.remove("text-primary");
+          }
+
+          // ✅ Toast thông báo
+          const toast = document.createElement('div');
+          toast.className = 'alert alert-success position-fixed top-0 end-0 m-3 shadow';
+          toast.style.zIndex = '1055';
+          toast.textContent = data.reposted ? '✅ Đăng lại thành công!' : '⛔ Hủy đăng lại!';
+          document.body.appendChild(toast);
+          setTimeout(() => toast.remove(), 2000);
+
+        } else {
+          alert(data.message || "❌ Có lỗi xảy ra khi đăng lại.");
+        }
+      })
+      .catch(() => {
+        alert("⚠️ Không thể kết nối đến máy chủ.");
+      });
+    });
+  });
+
+});
+</script>
+	<script>
+function openEditPost(button) {
+    const postId = button.getAttribute('data-post-id');
+    if (!postId) {
+        console.error('❌ Không tìm thấy ID bài viết!');
+        return;
+    }
+    window.location.href = `/posts/${postId}/edit`;
+}
+
+</script>
+	<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('commentThreadModal');
+  const threadAvatar = document.getElementById('thread-avatar');
+  const threadUsername = document.getElementById('thread-username');
+  const threadTime = document.getElementById('thread-time');
+  const threadContent = document.getElementById('thread-content');
+  const threadLike = document.getElementById('thread-like');
+  const replyList = document.getElementById('reply-list');
+  const replyInput = document.getElementById('reply-input');
+
+  let currentCommentId = null;
+
+  // Hàm mở modal và load thread theo commentID
+  function openThread(comment) {
+    currentCommentId = comment.id;
+    threadAvatar.src = comment.avatar;
+    threadUsername.textContent = comment.username;
+    threadTime.textContent = comment.time;
+    threadContent.textContent = comment.content;
+    threadLike.textContent = comment.likes;
+    replyList.innerHTML = '';
+
+    // 🔸 Giả lập dữ liệu replies
+    // Trong thực tế: gọi API theo comment.id để lấy replies từ DB
+    const replies = comment.replies || [];
+
+    replies.forEach(r => {
+      const el = document.createElement('div');
+      el.className = 'd-flex gap-3 align-items-start p-2 rounded-3 bg-dark-subtle reply-item';
+      el.dataset.commentId = r.id;
+      el.innerHTML = `
+        <img src="${r.avatar}" alt="Avatar" class="rounded-circle" width="40" height="40">
+        <div class="flex-grow-1">
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <h6 class="fw-bold mb-0">${r.username}</h6>
+            <small class="text-muted">${r.time}</small>
+          </div>
+          <p class="mb-2">${r.content}</p>
+          <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-sm p-0 d-flex align-items-center gap-1 comment-like-btn" type="button">
+              <i class="bi bi-heart"></i> <span>${r.likes}</span>
+            </button>
+            <button class="btn btn-sm text-muted p-0 reply-to-reply-btn" type="button">
+              Bình luận
+            </button>
+          </div>
+        </div>
+      `;
+      replyList.appendChild(el);
+    });
+  }
+
+  // 🧲 Gắn sự kiện click cho nút bình luận (ở cha hoặc con)
+  document.querySelectorAll('.open-reply-modal-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const parent = btn.closest('.comment-item');
+      const commentData = {
+        id: parent.dataset.commentId,
+        avatar: parent.dataset.avatar,
+        username: parent.dataset.username,
+        time: parent.dataset.time,
+        content: parent.dataset.content,
+        likes: parent.dataset.likes,
+        // replies có thể load từ server
+        replies: [
+          { id: 'r101', avatar: 'https://i.pravatar.cc/48?img=3', username: 'Lê Văn C', time: '18/10/2025 02:00', content: 'Đúng luôn 👍', likes: 3 },
+          { id: 'r102', avatar: 'https://i.pravatar.cc/48?img=4', username: 'Phạm Văn D', time: '18/10/2025 02:05', content: 'Tôi cũng nghĩ vậy!', likes: 1 }
+        ]
+      };
+
+      openThread(commentData);
+    });
+  });
+
+  // 📝 Gửi phản hồi
+  document.getElementById('send-reply-btn').addEventListener('click', () => {
+    const text = replyInput.value.trim();
+    if (!text) return alert('Vui lòng nhập nội dung phản hồi!');
+    console.log(`📨 Gửi phản hồi vào commentID: ${currentCommentId} - Nội dung: ${text}`);
+
+    // ✅ render ra UI ngay lập tức (mock)
+    const el = document.createElement('div');
+    el.className = 'd-flex gap-3 align-items-start p-2 rounded-3 bg-dark-subtle reply-item';
+    el.innerHTML = `
+      <img src="https://i.pravatar.cc/48?img=9" alt="Avatar" class="rounded-circle" width="40" height="40">
+      <div class="flex-grow-1">
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <h6 class="fw-bold mb-0">Tôi</h6>
+          <small class="text-muted">vừa xong</small>
+        </div>
+        <p class="mb-2">${text}</p>
+        <div class="d-flex align-items-center gap-3">
+          <button class="btn btn-sm p-0 d-flex align-items-center gap-1 comment-like-btn" type="button">
+            <i class="bi bi-heart"></i> <span>0</span>
+          </button>
+          <button class="btn btn-sm text-muted p-0 reply-to-reply-btn" type="button">
+            Bình luận
+          </button>
+        </div>
+      </div>
+    `;
+    replyList.appendChild(el);
+    replyInput.value = '';
+  });
+
+  // ❤️ Like trên replies
+  replyList.addEventListener('click', e => {
+    const likeBtn = e.target.closest('.comment-like-btn');
+    if (likeBtn) {
+      const liked = likeBtn.classList.toggle('liked');
+      const span = likeBtn.querySelector('span');
+      let count = parseInt(span.textContent);
+      span.textContent = liked ? count + 1 : count - 1;
+    }
+  });
+
+  // 💬 Bình luận vào bình luận con (chuyển thread sang comment con)
+  replyList.addEventListener('click', e => {
+    const replyBtn = e.target.closest('.reply-to-reply-btn');
+    if (replyBtn) {
+      const item = replyBtn.closest('.reply-item');
+      const replyData = {
+        id: item.dataset.commentId,
+        avatar: item.querySelector('img').src,
+        username: item.querySelector('h6').textContent,
+        time: item.querySelector('small').textContent,
+        content: item.querySelector('p').textContent,
+        likes: item.querySelector('span').textContent,
+        replies: [] // có thể fetch từ DB khi cần
+      };
+      openThread(replyData);
+    }
+  });
+});
+</script>
+
+
+
+</body>
+</html>
+

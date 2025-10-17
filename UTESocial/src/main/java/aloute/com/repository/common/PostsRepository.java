@@ -131,5 +131,6 @@ public interface PostsRepository extends JpaRepository<Posts, Integer> {
 		    WHERE p.postId = :postId
 		""")
 		Optional<Posts> findByIdWithAttachments(@Param("postId") Integer postId);
-
+	@Query("SELECT p FROM Posts p JOIN FETCH p.user LEFT JOIN FETCH p.attachments WHERE p.postId = :id")
+	Optional<Posts> findPostWithUser(@Param("id") Integer id);
 }

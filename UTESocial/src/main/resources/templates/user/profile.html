@@ -320,16 +320,19 @@
 												class="bi"></i> <span th:text="${post.likesCount}">0</span>
 											<span class="ms-1">Thích</span>
 										</button>
-										<button class="btn text-muted d-flex align-items-center gap-2">
-											<i class="bi bi-chat"></i><span
-												th:text="${post.commentsCount}">0</span><span class="ms-1">Bình
-												luận</span>
-										</button>
+										<a th:href="@{/posts/{id}(id=${post.postId})}" 
+										   class="btn text-muted d-flex align-items-center gap-2">
+										    <i class="bi bi-chat"></i>
+										    <span th:text="${post.commentsCount}">0</span>
+										    <span class="ms-1">Bình luận</span>
+										</a>
 										<button th:if="${post.user.userId != user.userId}"
-											class="btn text-muted d-flex align-items-center gap-2">
-											<i class="bi bi-repeat"></i><span
-												th:text="${post.shareCount}">0</span><span class="ms-1">Đăng
-												lại</span>
+										        class="btn text-muted d-flex align-items-center gap-2 repost-btn"
+										        th:attr="data-post-id=${post.postId}"
+										        th:attrappend="data-reposted=${repostedPostIds.contains(post.postId)}">
+										    <i th:classappend="${repostedPostIds.contains(post.postId)} ? ' text-primary' : ''" class="bi bi-repeat"></i>
+										    <span th:text="${post.shareCount}">0</span>
+										    <span class="ms-1">Đăng lại</span>
 										</button>
 										<button th:if="${post.user.userId != user.userId}"
 											class="btn text-muted d-flex align-items-center gap-2"
@@ -514,12 +517,12 @@
 													class="bi"></i> <span th:text="${post.likesCount}">0</span>
 												<span class="ms-1">Thích</span>
 											</button>
-											<button
-												class="btn text-muted d-flex align-items-center gap-2">
-												<i class="bi bi-chat"></i> <span
-													th:text="${post.commentsCount}">0</span> <span class="ms-1">Bình
-													luận</span>
-											</button>
+											<a th:href="@{/posts/{id}(id=${post.postId})}" 
+											   class="btn text-muted d-flex align-items-center gap-2">
+											    <i class="bi bi-chat"></i>
+											    <span th:text="${post.commentsCount}">0</span>
+											    <span class="ms-1">Bình luận</span>
+											</a>
 											<button th:if="${post.user.userId != user.userId}"
 												class="btn text-muted d-flex align-items-center gap-2 repost-btn"
 												th:attr="data-post-id=${post.postId}"
@@ -756,6 +759,7 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+
   document.querySelectorAll(".repost-btn").forEach(function (btn) {
     btn.addEventListener("click", function () {
       const postId = btn.getAttribute("data-post-id");
@@ -768,40 +772,41 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         body: JSON.stringify({ postId }),
       })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            // 🔁 Cập nhật số lượng
-            const countSpan = btn.querySelector("span");
-            countSpan.textContent = data.repostCount;
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          // ✅ Cập nhật số lượng đăng lại (span đầu tiên chứa số)
+          const countSpan = btn.querySelector("span");
+          countSpan.textContent = data.repostCount;
 
-            // 🌟 Đổi màu icon khi repost
-            const icon = btn.querySelector("i");
-            if (data.reposted) {
-              icon.classList.add("text-primary");
-            } else {
-              icon.classList.remove("text-primary");
-            }
-
-            // ✅ Toast thông báo
-            const toast = document.createElement('div');
-            toast.className = 'alert alert-success position-fixed top-0 end-0 m-3 shadow';
-            toast.style.zIndex = '1055';
-            toast.textContent = data.reposted ? '✅ Đăng lại thành công!' : '⛔ Hủy đăng lại!';
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2000);
+          // ✅ Đổi icon màu xanh khi đã đăng lại
+          const icon = btn.querySelector("i");
+          if (data.reposted) {
+            icon.classList.add("text-primary");
           } else {
-            alert(data.message || "❌ Có lỗi xảy ra khi đăng lại.");
+            icon.classList.remove("text-primary");
           }
-        })
-        .catch(() => {
-          alert("⚠️ Không thể kết nối đến máy chủ.");
-        });
+
+          // ✅ Toast thông báo
+          const toast = document.createElement('div');
+          toast.className = 'alert alert-success position-fixed top-0 end-0 m-3 shadow';
+          toast.style.zIndex = '1055';
+          toast.textContent = data.reposted ? '✅ Đăng lại thành công!' : '⛔ Hủy đăng lại!';
+          document.body.appendChild(toast);
+          setTimeout(() => toast.remove(), 2000);
+
+        } else {
+          alert(data.message || "❌ Có lỗi xảy ra khi đăng lại.");
+        }
+      })
+      .catch(() => {
+        alert("⚠️ Không thể kết nối đến máy chủ.");
+      });
     });
   });
+
 });
 </script>
-
 	<script>
 function openEditPost(button) {
     const postId = button.getAttribute('data-post-id');

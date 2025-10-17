@@ -662,4 +662,89 @@ aside .nav-link.active {
 }
 
 /* Dark/Light đã có sẵn trong btn-gray-custom */
-       
+.modal-content {
+  background-color: #0f172a;
+}
+
+#reply-list .bg-dark-subtle {
+  background-color: rgba(30, 41, 59, 0.7) !important;
+}
+
+#reply-list .bg-dark-subtle:hover {
+  background-color: rgba(30, 41, 59, 0.9) !important;
+}
+
+textarea#reply-input {
+  background-color: #1e293b;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+}
+.comment-like-btn i {
+  font-size: 1.2rem;
+  transition: 0.2s;
+}
+
+.comment-like-btn.liked i {
+  color: #f87171;
+}
+
+.reply-item {
+  background-color: rgba(30, 41, 59, 0.7);
+}
+
+.reply-item:hover {
+  background-color: rgba(30, 41, 59, 0.9);
+}
+
+#reply-input {
+  background-color: #1e293b;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+}
+
+/* 🌞 LIGHT MODE - Modal & Bình luận */
+.light-theme .modal-content {
+  background-color: #ffffff !important;  /* Modal trắng */
+  color: #0f172a !important;
+  border: 1px solid #e2e8f0;
+}
+
+/* Phần reply item */
+.light-theme .reply-item,
+.light-theme #reply-list .bg-dark-subtle {
+  background-color: #f8fafc !important; /* nền sáng nhẹ */
+  color: #0f172a !important;
+  border: 1px solid #e2e8f0;
+}
+
+.light-theme .reply-item:hover,
+.light-theme #reply-list .bg-dark-subtle:hover {
+  background-color: #e2e8f0 !important; /* hover sáng */
+}
+
+/* Textarea */
+.light-theme textarea#reply-input,
+.light-theme #reply-input {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1;
+}
+
+/* Nút Gửi */
+.light-theme .btn-primary {
+  background-color: #0ea5e9;
+  border: none;
+  color: #fff;
+}
+.light-theme .btn-primary:hover {
+  background-color: #0284c7;
+}
+
+/* Icon & Like trong comment */
+.light-theme .comment-like-btn i {
+  color: #334155;
+}
+.light-theme .comment-like-btn.liked i {
+  color: #ef4444;
+}
+     
