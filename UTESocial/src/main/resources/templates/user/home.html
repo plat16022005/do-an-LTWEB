@@ -45,11 +45,12 @@
               aria-current="page"
               href="#"
               id="home-link"
+              data-bs-toggle="tab"
               >Cộng đồng</a
             >
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#" id="policy-link">Bạn bè</a>
+            <a class="nav-link" href="#" data-bs-toggle="tab" id="policy-link">Bạn bè</a>
           </li>
         </ul>
       </div>
@@ -116,7 +117,7 @@
 			</div>
 
 			<div class="col-lg-9">
-				<div id="home-content">
+				<div class="tab-pane fade show active" id="home-content">
 					<main class="d-grid gap-3">
 						<div th:each="post : ${posts}"
 							class="card rounded-4 overflow-hidden">
@@ -255,7 +256,7 @@
 					</main>
 				</div>
 
-				<div id="friend-content">
+				<div class="d-none" id="friend-content">
 					<main class="d-grid gap-3">
 						<div th:each="post : ${friendPosts}"
 							class="card rounded-4 overflow-hidden">
@@ -433,9 +434,16 @@
         });
 
         policyLink.addEventListener("click", (e) => {
-          e.preventDefault();
-          showPolicy();
-        });
+        	  e.preventDefault();
+        	  showPolicy();
+
+        	  // 🆕 Fetch dữ liệu friendPosts khi mở tab bạn bè
+        	  fetch("/api/friend-posts")
+        	    .then(res => res.text())
+        	    .then(html => {
+        	      document.getElementById("friend-post-container").innerHTML = html;
+        	    });
+        	});
       });
     </script>
 
