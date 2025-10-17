@@ -9,6 +9,8 @@ import aloute.com.repository.common.ReportsRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,13 +20,17 @@ import java.util.Arrays;
 @Service
 public class AdminService 
 {
+	@Autowired
+    private AuditLogService auditLogService;
+	
+	
 	//Đối với user
     @Autowired
     private UserRepository userRepository;
 
-    public List<User> getAllUsers() 
+    public Page<User> getAllUsers(Pageable pageable) 
     {
-    	return userRepository.findByRoleIn(Arrays.asList("user", "manager"));
+    	return userRepository.findByRoleIn(Arrays.asList("user", "manager"), pageable); //truyền pageable vào repo
     }
     
     //Khoá tài khoản
@@ -38,6 +44,8 @@ public class AdminService
             user.setLockedReason(reason);
             user.setLockedAt(LocalDateTime.now());
             userRepository.save(user);
+            
+            auditLogService.logAction("LOCK_USER", "Locked user ID: " + userId + ". Reason: " + reason);
         }
     }
     
@@ -52,6 +60,8 @@ public class AdminService
             user.setLockedReason(null);
             user.setLockedAt(null);
             userRepository.save(user);
+            
+            auditLogService.logAction("UNLOCK_USER", "Unlocked user ID: " + userId);
         }
     }
     
@@ -81,12 +91,12 @@ public class AdminService
 
     public List<Posts> getAllPosts() 
     {
-        return postsRepository.findAll();
+    	return postsRepository.findAllWithUserForAdmin();
     }
     
     public Posts getPostById(Integer postId) 
     {
-        return postsRepository.findById(postId).orElse(null);
+    	return postsRepository.findByIdWithUser(postId).orElse(null);
     }
 
     public void deletePost(Integer postId) 
@@ -113,7 +123,8 @@ public class AdminService
     public void rejectPost(Integer postId, String reason) 
     {
         Optional<Posts> postOptional = postsRepository.findById(postId);
-        if (postOptional.isPresent()) {
+        if (postOptional.isPresent()) 
+        {
             Posts post = postOptional.get();
             post.setStatus("rejected");
             
@@ -167,10 +178,6 @@ public class AdminService
         return userRepository.countByRoleIn(Arrays.asList("user", "manager"));
     }
     
-    public long getTotalPosts() 
-    {
-        return postsRepository.count();
-    }
     
     public long getPendingReportsCount() 
     {
@@ -178,6 +185,18 @@ public class AdminService
     }
     
     
-    
+    public long getApprovedPostsCount() 
+    {
+        return postsRepository.countByStatusAndIsDeletedFalse("approved");
+    }
+
+    public long getPendingPostsCount() 
+    {
+        return postsRepository.countByStatusAndIsDeletedFalse("pending");
+    }
+
+    public long getRejectedPostsCount() {
+        return postsRepository.countByStatusAndIsDeletedFalse("rejected");
+    }
 }
    

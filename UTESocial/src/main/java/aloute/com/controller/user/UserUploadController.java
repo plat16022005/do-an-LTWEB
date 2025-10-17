@@ -58,7 +58,7 @@ public class UserUploadController {
 	    post.setCommentsCount(0);
 	    post.setVisibility(visibility);
 	    post.setDeleted(false);
-	    post.setStatus("approved");
+	    post.setStatus("pending");
 	    postRepository.save(post);
 
 

@@ -261,11 +261,25 @@
                     <h2 class="display-4 fw-bold mb-1" th:text="${totalUsers}"></h2>
                     <p class="text-muted mb-0">Tính đến hiện tại</p>
                 </div>
-                <div class="content-card">
-                    <h5 class="text-primary mb-3">Tổng số bài đăng</h5>
-                    <h2 class="display-4 fw-bold mb-1" th:text="${totalPosts}"></h2>
-                    <p class="text-muted mb-0">Đã được duyệt</p>
+
+				<div class="content-card">
+					<h5 class="text-success mb-3">Bài đăng đã duyệt</h5>
+					<h2 class="display-4 fw-bold mb-1" th:text="${approvedPostsCount}"></h2>
+					<p class="text-muted mb-0">Đang hiển thị</p>
+				</div>
+
+				<div class="content-card">
+                    <h5 class="text-warning mb-3">Bài đăng chờ duyệt</h5>
+                    <h2 class="display-4 fw-bold mb-1" th:text="${pendingPostsCount}"></h2>
+                    <p class="text-muted mb-0">Cần xử lý</p>
                 </div>
+
+                <div class="content-card">
+                     <h5 class="text-danger mb-3">Bài đăng bị từ chối</h5>
+                     <h2 class="display-4 fw-bold mb-1" th:text="${rejectedPostsCount}"></h2>
+                     <p class="text-muted mb-0">Đã bị ẩn</p>
+                 </div>                
+                
                 <div class="content-card">
                     <h5 class="text-primary mb-3">Khiếu nại chờ xử lý</h5>
                     <h2 class="display-4 fw-bold mb-1" th:text="${pendingReports}"></h2>
