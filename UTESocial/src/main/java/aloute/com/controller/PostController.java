@@ -34,7 +34,7 @@ public class PostController {
     @GetMapping("/posts/{id}")
     public String postDetail(@PathVariable Integer id, Model model, HttpSession session) {
         User user = (User) session.getAttribute("user");
-
+        model.addAttribute("user", user);
         Posts post = postRepository.findPostWithUser(id)
             .orElseThrow(() -> new RuntimeException("Không tìm thấy bài viết"));
 
