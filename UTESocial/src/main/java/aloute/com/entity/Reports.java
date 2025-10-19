@@ -12,7 +12,9 @@ public class Reports {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer reportId;
 
-    
+    @ManyToOne
+    @JoinColumn(name = "PostID")
+    private Posts post;
 
     @ManyToOne
     @JoinColumn(name = "ReporterID")
@@ -128,13 +130,15 @@ public class Reports {
 		return resolvedAt;
 	}
 
-	public void setResolvedAt(LocalDateTime resolvedAt) {
+    public void setResolvedAt(LocalDateTime resolvedAt) {
 		this.resolvedAt = resolvedAt;
 	}
 
-    // Getters and Setters
-    
-    
-    
+    public Posts getPost() {
+        return post;
+    }
 
+    public void setPost(Posts post) {
+        this.post = post;
+    }
 }

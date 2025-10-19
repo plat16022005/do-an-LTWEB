@@ -30,23 +30,28 @@ public class CommentController {
     // 📨 Thêm bình luận gốc
     @PostMapping("/comments/add")
     public String addComment(@RequestParam Integer postId,
-                             @RequestParam String content,
-                             HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) return "redirect:/login";
+                 @RequestParam String content,
+                 HttpSession session) {
+    User user = (User) session.getAttribute("user");
+    if (user == null) return "redirect:/login";
 
-        Posts post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy bài viết"));
+    Posts post = postRepository.findById(postId)
+        .orElseThrow(() -> new RuntimeException("Không tìm thấy bài viết"));
 
-        Comment c = new Comment();
-        c.setUser(user);
-        c.setPost(post);
-        c.setContent(content);
-        c.setCreatedAt(LocalDateTime.now());
+    Comment c = new Comment();
+    c.setUser(user);
+    c.setPost(post);
+    c.setContent(content);
+    c.setCreatedAt(LocalDateTime.now());
 
-        commentRepository.save(c);
+    commentRepository.save(c);
 
-        return "redirect:/posts/" + postId;
+    // Cập nhật lại số lượng bình luận cho bài viết
+    int commentCount = commentRepository.countByPostId(postId);
+    post.setCommentsCount(commentCount);
+    postRepository.save(post);
+
+    return "redirect:/posts/" + postId;
     }
 
     // 📨 Thêm phản hồi
@@ -68,9 +73,16 @@ public class CommentController {
         reply.setContent(content);
         reply.setCreatedAt(LocalDateTime.now());
 
-        commentRepository.save(reply);
+    commentRepository.save(reply);
 
-        return ResponseEntity.ok().build();
+    // Cập nhật lại số lượng bình luận cho bài viết (bao gồm cả reply)
+    Integer postId = parent.getPost().getPostId();
+    Posts post = parent.getPost();
+    int commentCount = commentRepository.countByPostId(postId);
+    post.setCommentsCount(commentCount);
+    postRepository.save(post);
+
+    return ResponseEntity.ok().build();
     }
 
     // 🧾 Lấy replies theo comment cha
