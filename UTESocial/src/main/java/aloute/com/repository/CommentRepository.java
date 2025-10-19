@@ -10,9 +10,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
-    // Đếm tổng số bình luận (bao gồm cả reply) cho một bài viết (không tính comment bị xóa)
-    @Query("SELECT COUNT(c) FROM Comment c WHERE c.post.postId = :postId AND c.isDeleted = false")
-    int countByPostId(@Param("postId") Integer postId);
 
     // 🧾 Lấy tất cả bình luận gốc của một bài viết
     List<Comment> findByPostAndParentCommentIsNullAndIsDeletedFalseOrderByCreatedAtAsc(Posts post);

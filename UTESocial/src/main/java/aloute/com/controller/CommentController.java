@@ -45,12 +45,6 @@ public class CommentController {
     c.setCreatedAt(LocalDateTime.now());
 
     commentRepository.save(c);
-
-    // Cập nhật lại số lượng bình luận cho bài viết
-    int commentCount = commentRepository.countByPostId(postId);
-    post.setCommentsCount(commentCount);
-    postRepository.save(post);
-
     return "redirect:/posts/" + postId;
     }
 
@@ -74,14 +68,6 @@ public class CommentController {
         reply.setCreatedAt(LocalDateTime.now());
 
     commentRepository.save(reply);
-
-    // Cập nhật lại số lượng bình luận cho bài viết (bao gồm cả reply)
-    Integer postId = parent.getPost().getPostId();
-    Posts post = parent.getPost();
-    int commentCount = commentRepository.countByPostId(postId);
-    post.setCommentsCount(commentCount);
-    postRepository.save(post);
-
     return ResponseEntity.ok().build();
     }
 

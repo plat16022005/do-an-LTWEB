@@ -3,7 +3,7 @@ package aloute.com.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "PostLikes", uniqueConstraints = {@UniqueConstraint(columnNames = {"PostID", "UserID"})})
+@Table(name = "Likes", uniqueConstraints = {@UniqueConstraint(columnNames = {"PostID", "UserID"})})
 public class PostLike {
 
     @Id
