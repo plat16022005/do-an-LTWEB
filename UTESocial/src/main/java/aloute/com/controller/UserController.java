@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -243,6 +244,17 @@ public class UserController
     	User user = (User) session.getAttribute("user");
     	return "redirect:/" + user.getNameUser();
     }
+    
+    @GetMapping("/profile/{userId}")
+    public String redirectProfile(@PathVariable("userId") Integer userId) {
+        // 🔸 Ở đây bạn có thể lấy thông tin User từ DB theo userId
+        User targetUser = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng ID: " + userId));
+
+        // 👉 Chuyển hướng đến trang profile theo username
+        return "redirect:/" + targetUser.getNameUser();
+    }
+
     @GetMapping("/testform")
     public String showTestForm(HttpSession session, Model model) {
         // Lấy user từ session

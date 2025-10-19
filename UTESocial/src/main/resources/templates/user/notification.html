@@ -63,7 +63,7 @@
 				            </a>
 				        </li>
 				        <li class="nav-item">
-				            <a class="nav-link active rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="#">
+				            <a class="nav-link active rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/notification">
 				                <i class="bi bi-bell fs-3"></i>
 				                <span>Thông báo</span>
 				            </a>
@@ -108,46 +108,54 @@
                             <div class="tab-content">
                                 <div class="tab-pane fade show active" id="all-notifications">
                                     <div class="list-group list-group-flush">
-                                        <!-- Unread Notification -->
-                                        <a href="#" class="list-group-item list-group-item-action bg-transparent p-3 notification-item unread">
-                                            <div class="d-flex w-100 align-items-center">
-                                                <div class="notification-avatar me-3">
-                                                    <img src="https://placehold.co/56x56/ef4444/fff?text=C" class="rounded-circle" alt="Avatar">
-                                                    <span class="notification-icon bg-danger text-white"><i class="bi bi-heart-fill"></i></span>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <p class="mb-1"><strong>Cẩm Duyên</strong> và <strong>2 người khác</strong> đã thích bài viết của bạn.</p>
-                                                    <small class="text-primary fw-bold">5 phút trước</small>
-                                                </div>
-                                                <div class="unread-dot"></div>
-                                            </div>
-                                        </a>
-                                        <!-- Read Notification -->
-                                        <a href="#" class="list-group-item list-group-item-action bg-transparent p-3 notification-item">
-                                            <div class="d-flex w-100 align-items-center">
-                                                <div class="notification-avatar me-3">
-                                                    <img src="https://placehold.co/56x56/0ea5e9/fff?text=A" class="rounded-circle" alt="Avatar">
-                                                    <span class="notification-icon bg-primary text-white"><i class="bi bi-chat-dots-fill"></i></span>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <p class="mb-1"><strong>An Nguyen</strong> đã bình luận về bài viết của bạn: "Bài viết rất hay!"</p>
-                                                    <small class="text-muted">1 giờ trước</small>
-                                                </div>
-                                            </div>
-                                        </a>
-                                        <!-- Read Notification -->
-                                        <a href="#" class="list-group-item list-group-item-action bg-transparent p-3 notification-item">
-                                            <div class="d-flex w-100 align-items-center">
-                                                <div class="notification-avatar me-3">
-                                                    <img src="https://placehold.co/56x56/10b981/fff?text=B" class="rounded-circle" alt="Avatar">
-                                                     <span class="notification-icon bg-success text-white"><i class="bi bi-person-fill-add"></i></span>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <p class="mb-1"><strong>Bình Trần</strong> đã gửi cho bạn lời mời kết bạn.</p>
-                                                    <small class="text-muted">Hôm qua</small>
-                                                </div>
-                                            </div>
-                                        </a>
+									<a th:each="n : ${notifications}"
+										th:if="${!n.isRead}"
+										th:href="@{'/notification/read/' + ${n.notificationId}}"
+
+									   th:classappend="${n.isRead} ? 'notification-item' : 'notification-item unread'"
+									   class="list-group-item list-group-item-action bg-transparent p-3">
+									
+									    <div class="d-flex w-100 align-items-center">
+									        <!-- Avatar -->
+									        <div class="notification-avatar me-3">
+									            <img th:src="${n.actorAvatar != null ? n.actorAvatar : '/uploads/avatars/default.jpg'}"
+									                 class="rounded-circle" alt="Avatar" width="56" height="56">
+									
+									            <!-- Icon theo type -->
+												<span class="notification-icon text-white"
+												      th:classappend="${
+												          n.type == 'LIKE' ? ' bg-danger' :
+												          n.type == 'COMMENT' ? ' bg-primary' :
+												          n.type == 'SHARE' ? ' bg-warning' :
+												          n.type == 'FRIEND_REQUEST' ? ' bg-success' :
+												          n.type == 'FRIEND_ACCEPT' ? ' bg-success' :
+												          n.type == 'MESSAGE' ? ' bg-secondary' :
+												          n.type == 'FRIEND_POST' ? ' bg-info' : ''
+												      }">
+												    <i th:class="${
+												          n.type == 'LIKE' ? 'bi bi-heart-fill' :
+												          n.type == 'COMMENT' ? 'bi bi-chat-dots-fill' :
+												          n.type == 'SHARE' ? 'bi bi-share-fill' :
+												          n.type == 'FRIEND_REQUEST' ? 'bi bi-person-fill-add' :
+												          n.type == 'FRIEND_ACCEPT' ? 'bi bi-person-check-fill' :
+												          n.type == 'MESSAGE' ? 'bi bi-envelope-fill' :
+												          n.type == 'FRIEND_POST' ? 'bi bi-megaphone-fill' : ''
+												      }"></i>
+												</span>
+
+									        </div>
+									
+									        <!-- Nội dung thông báo -->
+									        <div class="flex-grow-1">
+									            <p class="mb-1" th:text="${n.content}"></p>
+									            <small th:text="${#temporals.format(n.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
+									        </div>
+									
+									        <!-- Dấu chấm unread -->
+									        <div th:if="${!n.isRead}" class="unread-dot"></div>
+									    </div>
+									</a>
+
                                     </div>
                                 </div>
                                 <div class="tab-pane fade" id="unread-notifications">
