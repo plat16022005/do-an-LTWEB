@@ -41,4 +41,30 @@ public class ReportController {
                     .body("Có lỗi xảy ra khi gửi báo cáo");
         }
     }
+
+    @PostMapping("/report-user")
+    public ResponseEntity<?> reportUser(
+            @RequestParam String username,
+            @RequestParam String reason,
+            HttpSession session) {
+        try {
+            User reporter = (User) session.getAttribute("user");
+            if (reporter == null) {
+                return ResponseEntity.status(401)
+                        .body("Bạn cần đăng nhập để báo cáo");
+            }
+
+            reportService.createUserReport(username, reporter.getUserId(), reason);
+
+            return ResponseEntity.ok()
+                    .body("Báo cáo người dùng đã được gửi thành công. Chúng tôi sẽ xem xét báo cáo của bạn.");
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest()
+                    .body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body("Có lỗi xảy ra khi gửi báo cáo");
+        }
+    }
 }

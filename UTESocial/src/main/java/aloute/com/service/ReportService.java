@@ -68,4 +68,43 @@ public class ReportService {
 
         return reportRepository.save(report);
     }
+
+    /**
+     * Tạo báo cáo người dùng
+     */
+    public Reports createUserReport(String reportedUsername, Integer reporterId, String reason) {
+        // Lấy thông tin người bị báo cáo
+        User reportedUser = userRepository.findByNameUser(reportedUsername);
+        if (reportedUser == null) {
+            throw new RuntimeException("Không tìm thấy người dùng");
+        }
+        
+        // Lấy thông tin người báo cáo
+        User reporter = userRepository.findById(reporterId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người báo cáo"));
+        
+        // Không cho phép tự báo cáo bản thân
+        if (reportedUser.getUserId().equals(reporter.getUserId())) {
+            throw new RuntimeException("Bạn không thể báo cáo chính mình");
+        }
+        
+        // Kiểm tra xem đã báo cáo người này chưa
+        List<Reports> existingReports = reportRepository.findByReportedUserAndReporter(reportedUser, reporter);
+        if (!existingReports.isEmpty()) {
+            throw new RuntimeException("Bạn đã báo cáo người dùng này rồi");
+        }
+
+        // Tạo báo cáo mới
+        Reports report = new Reports();
+        report.setPost(null); // Không liên quan đến bài viết
+        report.setReporter(reporter);
+        report.setReportedUser(reportedUser);
+        report.setReason(reason);
+        report.setType("user");
+        report.setStatus("pending");
+        report.setResolutionStatus("pending");
+        report.setCreatedAt(LocalDateTime.now());
+
+        return reportRepository.save(report);
+    }
 }
