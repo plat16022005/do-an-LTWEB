@@ -88,8 +88,8 @@ public class ReportService {
             throw new RuntimeException("Bạn không thể báo cáo chính mình");
         }
         
-        // Kiểm tra xem đã báo cáo người này chưa
-        List<Reports> existingReports = reportRepository.findByReportedUserAndReporter(reportedUser, reporter);
+        // Kiểm tra xem đã báo cáo người này chưa (chỉ kiểm tra type="user")
+        List<Reports> existingReports = reportRepository.findByReportedUserAndReporterAndType(reportedUser, reporter, "user");
         if (!existingReports.isEmpty()) {
             throw new RuntimeException("Bạn đã báo cáo người dùng này rồi");
         }
