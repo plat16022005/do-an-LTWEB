@@ -10,45 +10,284 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* Copy <style> block from admin/dashboard.html or users.html */
-        :root { /* ... */ }
-        body { /* ... */ }
-        /* ... all other styles ... */
-        .pagination { /* Optional: custom styles for pagination */
-            justify-content: center;
+        
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --sidebar-bg: #1e293b;
+            --border-color: #334155;
+            --text-light: #e2e8f0;
+            --text-muted: #94a3b8;
+            --primary-color: #0ea5e9;
+            --shadow-medium: rgba(0, 0, 0, 0.4);
+        }
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Montserrat', sans-serif;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .main-wrapper {
+            display: flex;
+            width: 100%;
+            padding: 20px;
+            gap: 20px;
+        }
+        .sidebar-container {
+            flex-shrink: 0;
+            width: 280px;
+            position: sticky;
+            top: 20px;
+            height: calc(100vh - 40px);
+        }
+        .sidebar {
+            background-color: var(--sidebar-bg);
+            border-radius: 15px;
+            padding: 20px 0;
+            box-shadow: 0 10px 30px var(--shadow-medium);
+            border: 1px solid var(--border-color);
+            height: 100%;
+            
+        }
+        .sidebar .navbar-brand {
+            padding: 10px 20px;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            display: block;
+            text-align: center;
+        }
+        .sidebar .nav-link {
+            color: var(--text-muted);
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: background-color 0.2s, color 0.2s, transform 0.3s ease;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background-color: rgba(14, 165, 233, 0.1);
+            color: var(--text-light);
+            border-left: 4px solid var(--primary-color);
+            padding-left: 21px; 
+            transform: translateX(5px);
+        }
+        .sidebar .nav-link.active {
+            font-weight: bold;
+        }
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .main-header {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px 30px;
+            box-shadow: 0 10px 30px var(--shadow-medium);
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .main-header .form-control {
+            background-color: var(--bg-dark);
+            border-color: var(--border-color);
+            color: var(--text-light);
+            max-width: 300px;
+            border-radius: 50rem;
+        }
+        .main-header .form-control::placeholder {
+            color: var(--text-muted);
+        }
+        .main-header .input-group {
+            flex-grow: 1; 
+            max-width: 400px;
+        }
+        .main-header .search-icon { 
+            color: var(--text-muted);
+        }
+        .main-header .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+        }
+        .content-card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px; 
+            box-shadow: 0 8px 25px var(--shadow-medium);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .content-card.p-0:hover {
+             transform: none;
+             box-shadow: 0 8px 25px var(--shadow-medium);
+        }
+        .bi {
+            font-size: 1.25rem; 
+            width: 25px; 
+            text-align: center; 
+        }
+        .nav-link .bi { 
+            color: var(--text-muted);
+        }
+        .nav-link.active .bi { 
+            color: var(--primary-color);
+        }
+
+        .table {
+            color: var(--text-light);
+            background-color: transparent; 
+            border-radius: 15px; 
+            overflow: hidden; 
+            margin-bottom: 0; 
+        }
+        .table thead th {
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-muted);
+        }
+        .table tbody tr:last-child td {
+            border-bottom: none; /* No border for the last row */
+        }
+        .table tbody td {
+            border-top: 1px solid var(--border-color); /* Separator lines */
+            vertical-align: middle; /* Align content vertically */
+        }
+        .table th, .table td { 
+             padding: 1rem 1.5rem; 
+        }
+        
+        .pagination {
+            justify-content: center; 
+            margin-top: 1rem; 
         }
         .page-item.active .page-link {
              background-color: var(--primary-color);
              border-color: var(--primary-color);
+             color: #fff;
         }
         .page-link {
              background-color: var(--card-bg);
-             border-color: var(--border-color);
+             border: 1px solid var(--border-color);
              color: var(--text-muted);
+             margin: 0 2px; 
+             border-radius: 0.375rem;
         }
          .page-link:hover {
              background-color: #334155;
              color: var(--text-light);
+             border-color: #475569; 
         }
         .page-item.disabled .page-link {
              background-color: var(--card-bg);
              border-color: var(--border-color);
-             color: #6c757d; /* Muted color for disabled */
+             color: #6c757d; 
+             opacity: 0.65; 
         }
+
+         
+        @media (max-width: 992px) {
+            .main-wrapper {
+                flex-direction: column;
+            }
+            .sidebar-container {
+                width: 100%;
+                position: static; 
+                height: auto; 
+                margin-bottom: 20px;
+            }
+            .sidebar {
+                 height: auto;
+            }
+            .main-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .main-header .input-group {
+                width: 100%;
+                max-width: none;
+            }
+        }
+       
     </style>
 </head>
 <body>
     <div class="main-wrapper">
         <div class="sidebar-container">
             <div class="sidebar">
-                <a class="navbar-brand fw-bold fs-4 d-flex align-items-center justify-content-center gap-2" th:href="@{/admin/dashboard}">... AloUTE Admin</a>
+                <a class="navbar-brand fw-bold fs-4 d-flex align-items-center justify-content-center gap-2" th:href="@{/admin/dashboard}">
+                    <svg class="bi me-2" width="32" height="32" fill="var(--primary-color)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18" stroke="currentColor"></path></svg>
+                    AloUTE Admin
+                </a>
                 <ul class="nav flex-column mt-4">
-                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/dashboard}">... Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/users}">... Quản lý Người dùng</a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/posts}">... Quản lý Bài đăng</a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/reports}">... Khiếu nại</a></li>
-                     <li class="nav-item"><a class="nav-link active" th:href="@{/admin/audit-logs}"><i class="bi bi-clock-history"></i><span>Lịch sử Hoạt động</span></a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/logout}">... Đăng xuất</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/admin/dashboard}">
+                            <i class="bi bi-speedometer2"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/admin/users}">
+                            <i class="bi bi-people-fill"></i>
+                            <span>Quản lý Người dùng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/admin/posts}">
+                            <i class="bi bi-journals"></i>
+                            <span>Quản lý Bài đăng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/admin/reports}">
+                            <i class="bi bi-flag-fill"></i>
+                            <span>Khiếu nại</span>
+                        </a>
+                    </li>
+                     <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/admin/audit-logs}">
+                            <i class="bi bi-clock-history"></i>
+                            <span>Lịch sử Hoạt động</span>
+                        </a>
+                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-gear-fill"></i>
+                            <span>Cài đặt</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/logout}">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Đăng xuất</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -59,7 +298,14 @@
                     <h2 class="mb-0">Lịch sử Hoạt động</h2>
                     <p class="text-muted mb-0">Xem lại các hành động quan trọng trên hệ thống.</p>
                 </div>
+                 <div class="d-flex align-items-center gap-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Tìm kiếm..." aria-label="Tìm kiếm">
+                        <span class="input-group-text"><i class="bi bi-search search-icon"></i></span>
+                    </div>
+                    <img src="https://placehold.co/40x40/0ea5e9/FFFFFF?text=A" alt="Admin Avatar" class="profile-avatar">
                 </div>
+            </div>
 
             <div class="content-card p-0">
                 <div class="table-responsive">
@@ -78,11 +324,11 @@
                                 <td class="py-3 px-4" th:text="${log.logId}"></td>
                                 <td class="py-3 px-4" th:text="${#temporals.format(log.createdAt, 'dd-MM-yyyy HH:mm:ss')}"></td>
                                 <td class="py-3 px-4">
-                                    <span th:if="${log.user != null}" th:text="${log.user.fullName + ' (ID: ' + log.user.userId + ')'}"></span>
+                                    <span th:if="${log.user != null}" th:text="${log.user.fullName + ' (@' + log.user.nameUser + ')'}"></span>
                                     <span th:unless="${log.user != null}" class="text-muted fst-italic">Hệ thống</span>
                                 </td>
                                 <td class="py-3 px-4" th:text="${log.action}"></td>
-                                <td class="py-3 px-4" th:text="${log.details}"></td>
+                                <td class="py-3 px-4" style="word-break: break-word;" th:text="${log.details}"></td>
                             </tr>
                             <tr th:if="${logPage.empty}">
                                 <td colspan="5" class="text-center py-4 px-4 text-muted">Không có lịch sử hoạt động nào.</td>

@@ -14,7 +14,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class ReportService {
+public class ReportService 
+{
     
     @Autowired
     private ReportsRepository reportRepository;
@@ -25,7 +26,8 @@ public class ReportService {
     @Autowired
     private UserRepository userRepository;
 
-    public Reports createReport(Integer postId, Integer reporterId, String reason) {
+    public Reports createReport(Integer postId, Integer reporterId, String reason) 
+    {
         // Lấy thông tin post và user
         Posts post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy bài viết"));
@@ -72,7 +74,8 @@ public class ReportService {
     /**
      * Tạo báo cáo người dùng
      */
-    public Reports createUserReport(String reportedUsername, Integer reporterId, String reason) {
+    public Reports createUserReport(String reportedUsername, Integer reporterId, String reason) 
+    {
         // Lấy thông tin người bị báo cáo
         User reportedUser = userRepository.findByNameUser(reportedUsername);
         if (reportedUser == null) {

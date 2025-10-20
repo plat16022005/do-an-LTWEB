@@ -246,13 +246,19 @@
                         </a>
                     </li>
                     <li class="nav-item">
+					    <a class="nav-link" th:href="@{/admin/audit-logs}">
+					        <i class="bi bi-clock-history"></i>
+					        <span>Lịch sử Hoạt động</span>
+					    </a>
+					</li>
+                    <li class="nav-item">
                         <a class="nav-link" href="#">
                             <i class="bi bi-gear-fill"></i>
                             <span>Cài đặt</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" th:href="@{/logout}">
                             <i class="bi bi-box-arrow-right"></i>
                             <span>Đăng xuất</span>
                         </a>
@@ -281,35 +287,56 @@
                             <tr>
                                 <th class="py-3 px-4">ID</th>
                                 <th class="py-3 px-4">Người tố cáo</th>
-                                <th class="py-3 px-4">Người bị tố cáo</th>
-                                <th class="py-3 px-4">Loại</th>
+                                <th class="py-3 px-4">Đối tượng bị tố cáo</th>
+                                <th class="py-3 px-4">Loại & Chi tiết</th>
                                 <th class="py-3 px-4">Lý do</th>
                                 <th class="py-3 px-4">Ngày tố cáo</th>
-                                <th class="py-3 px-4">Thao tác</th>
+                                <th class="py-3 px-4">Trạng thái</th> 
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="report : ${reports}">
-                                <td class="py-3 px-4" th:text="${report.reportId}"></td>
-                                <td class="py-3 px-4" th:text="${report.reporter.fullName}"></td>
-                                <td class="py-3 px-4" th:text="${report.reportedUser.fullName}"></td>
-                                <td class="py-3 px-4" th:text="${report.type}"></td>
-                                <td class="py-3 px-4" th:text="${report.reason}"></td>
-                                <td class="py-3 px-4" th:text="${#temporals.format(report.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
-                                <td class="py-3 px-4">
-                                    <form th:action="@{/admin/reports/resolve}" method="post" style="display:inline-block; margin-right: 5px;">
-                                        <input type="hidden" name="reportId" th:value="${report.reportId}" />
-                                        <button type="submit" class="btn btn-sm btn-success">Duyệt</button>
-                                    </form>
-                                    <form th:action="@{/admin/reports/reject}" method="post" style="display:inline-block;">
-                                        <input type="hidden" name="reportId" th:value="${report.reportId}" />
-                                        <button type="submit" class="btn btn-sm btn-danger">Từ chối</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            <tr th:if="${reports.isEmpty()}">
-                                <td colspan="7" class="text-center py-3 px-4">Không có khiếu nại nào.</td>
-                            </tr>
+							<tr th:each="report : ${reports}">
+						         <td class="py-3 px-4" th:text="${report.reportId}"></td>
+						         <td class="py-3 px-4" th:text="${report.reporter?.fullName ?: 'N/A'}"></td> <td class="py-3 px-4">
+						             <a th:if="${report.type == 'user' and report.reportedUser != null}"
+						                th:href="@{'/' + ${report.reportedUser.nameUser}}"
+						                target="_blank"  
+						                class="text-decoration-none"
+						                th:text="${report.reportedUser.fullName ?: 'N/A'}"> 
+						             </a>
+						             <span th:if="${report.type == 'post' and report.reportedUser != null}"
+						                   th:text="${report.reportedUser.fullName ?: 'N/A'}"></span>
+						             <span th:unless="${report.reportedUser != null}">N/A</span> </td>
+						             
+						         <td class="py-3 px-4">
+						             <span th:text="${#strings.capitalize(report.type)}"></span>
+						             
+						             <!-- Tố cáo bài viết -->
+						             <a th:if="${report.type == 'post'}" 
+						             	th:href="@{/admin/reports/view-post/{reportId}(reportId=${report.reportId})}"
+						                class="ms-2 badge bg-info text-decoration-none"
+						                title="Xem chi tiết Khiếu nại & Bài viết">
+       									<i class="bi bi-eye-fill"></i> Xem chi tiết 
+       								</a>
+       								 <!-- Tố cáo người dùng -->
+       								 <a th:if="${report.type == 'user'}"
+       								 	th:href="@{/admin/reports/view-user/{reportId}(reportId=${report.reportId})}"
+								       	class="ms-2 badge bg-primary text-decoration-none"
+								       	title="Xem chi tiết Khiếu nại & Người dùng">
+								       	<i class="bi bi-person-fill-exclamation"></i> Xem chi tiết
+       								 </a>
+						         </td>
+						         <td class="py-3 px-4" th:text="${report.reason}"></td>
+						         <td class="py-3 px-4" th:text="${#temporals.format(report.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
+						         <td class="py-3 px-4">
+						            <span th:if="${report.status == 'pending'}" class="badge bg-warning text-dark">Chờ xử lý</span>
+								    <span th:if="${report.status == 'completed' and report.resolutionStatus == 'resolved'}" class="badge bg-success">Đã xử lý</span>
+								    <span th:if="${report.status == 'completed' and report.resolutionStatus == 'rejected'}" class="badge bg-danger">Đã từ chối</span>
+						         </td>
+						     </tr>
+						     <tr th:if="${reports.isEmpty()}">
+						         <td colspan="7" class="text-center py-3 px-4 text-muted">Không có khiếu nại nào.</td>
+						     </tr>                        
                         </tbody>
                     </table>
                 </div>

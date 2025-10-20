@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional; 
+
+import org.hibernate.Hibernate; 
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -94,9 +97,28 @@ public class AdminService
     	return postsRepository.findAllWithUserForAdmin();
     }
     
+    @Transactional(readOnly = true)
     public Posts getPostById(Integer postId) 
     {
-    	return postsRepository.findByIdWithUser(postId).orElse(null);
+    	Optional<Posts> postOptional = postsRepository.findByIdWithUser(postId);
+        if (postOptional.isPresent()) 
+        {
+            Posts post = postOptional.get();
+
+            // Khởi tạo các collection 
+            // lấy dữ liệu attachments và moderations ( lịch sử duyệt/từ chối)
+            Hibernate.initialize(post.getAttachments());
+            Hibernate.initialize(post.getModerations());
+
+            
+            if (post.getModerations() != null) 
+            {
+                post.getModerations().forEach(mod -> Hibernate.initialize(mod.getModerator()));
+            }
+
+            return post; // Trả về post với các collection đã được tải
+        }
+        return null; 
     }
 
     public void deletePost(Integer postId) 
@@ -139,9 +161,37 @@ public class AdminService
     @Autowired
     private ReportsRepository reportsRepository;
     
+    
     public List<Reports> getAllReports() 
     {
-        return reportsRepository.findAll();
+    	return reportsRepository.findAllWithReporterAndReportedUserOrderByCreatedAtDesc();
+    }
+    
+    @Transactional(readOnly = true) 
+    public Optional<Reports> getReportWithDetails(Integer reportId) 
+    {
+    	Optional<Reports> reportOpt = reportsRepository.findByIdWithDetails(reportId);
+
+        if (reportOpt.isPresent()) 
+        {
+            Reports report = reportOpt.get();
+            Posts post = report.getPost(); // Lấy post từ report
+
+            // Kiểm tra xem report này có liên quan đến post không
+            if (post != null) 
+            {
+                // Khởi tạo collection moderations của post đó
+                Hibernate.initialize(post.getModerations());
+
+                // Nếu moderations không null, khởi tạo luôn moderator bên trong
+                if (post.getModerations() != null) 
+                {
+                    post.getModerations().forEach(mod -> Hibernate.initialize( mod.getModerator()) );
+                }
+            }
+        }
+
+        return reportOpt;
     }
     
     public void resolveReport(Integer reportId) 

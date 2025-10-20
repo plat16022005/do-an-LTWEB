@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.bind.annotation.PostMapping; // Thêm import này
-import org.springframework.web.servlet.mvc.support.RedirectAttributes; // Thêm import này
+import org.springframework.web.bind.annotation.PostMapping; 
+import org.springframework.web.servlet.mvc.support.RedirectAttributes; 
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -261,6 +263,7 @@ public class AdminController
     }
     
     
+    // Xem log hoạt động
     @Autowired
     private AuditLogRepository auditLogRepository; 
     
@@ -277,11 +280,67 @@ public class AdminController
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<AuditLogs> logPage = auditLogRepository.findAllByOrderByCreatedAtDesc(pageable); 
+        Page<AuditLogs> logPage = auditLogRepository.findAllWithUserOrderByCreatedAtDesc(pageable); 
 
         model.addAttribute("logPage", logPage);
         model.addAttribute("currentPage", page);
         model.addAttribute("pageSize", size);
         return "admin/audit_logs"; 
+    }
+    
+    
+    //Xem chi tiết report bài viết
+    @GetMapping("/reports/view-post/{reportId}")
+    public String viewReportedPost(@PathVariable Integer reportId, Model model, HttpSession session) 
+    {
+        User adminUser = (User) session.getAttribute("user");
+        if ( adminUser == null || !"Admin".equals(adminUser.getRole()) ) 
+        {
+            return "redirect:/access-deniel";
+        }
+
+        Optional<Reports> reportOpt = adminService.getReportWithDetails(reportId);
+
+        if (reportOpt.isEmpty() || !"post".equals(reportOpt.get().getType()) || reportOpt.get().getPost() == null) 
+        {
+            
+            model.addAttribute("errorMessage", "Không tìm thấy khiếu nại hoặc bài viết liên quan.");
+            return "admin/report_not_found";
+            
+        }
+
+        Reports report = reportOpt.get();
+        model.addAttribute("report", report);
+        model.addAttribute("post", report.getPost());
+        model.addAttribute("headerTitle", "Chi tiết Khiếu nại Bài viết");
+        model.addAttribute("headerDescription", "Xem thông tin khiếu nại và bài viết bị khiếu nại.");
+
+        return "admin/report_post_detail"; 
+    }
+    
+    
+  //Xem chi tiết report người dùng
+    @GetMapping("/reports/view-user/{reportId}")
+    public String viewReportedUser(@PathVariable Integer reportId, Model model, HttpSession session) 
+    {
+        User adminUser = (User) session.getAttribute("user");
+        if (adminUser == null || !"Admin".equals(adminUser.getRole())) {
+            return "redirect:/access-deniel";
+        }
+
+        Optional<Reports> reportOpt = adminService.getReportWithDetails(reportId);
+
+        if (reportOpt.isEmpty() || !"user".equals(reportOpt.get().getType()) || reportOpt.get().getReportedUser() == null) {
+            model.addAttribute("errorMessage", "Không tìm thấy khiếu nại hoặc người dùng liên quan.");
+            return "admin/report_not_found";
+        }
+
+        Reports report = reportOpt.get();
+        model.addAttribute("report", report);
+        model.addAttribute("reportedUser", report.getReportedUser());
+        model.addAttribute("headerTitle", "Chi tiết Khiếu nại Người dùng");
+        model.addAttribute("headerDescription", "Xem thông tin khiếu nại và người dùng bị khiếu nại.");
+
+        return "admin/report_user_detail";
     }
 }
