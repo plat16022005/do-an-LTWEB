@@ -22,6 +22,8 @@ import aloute.com.repository.common.PostsRepository;
 import aloute.com.service.AttachmentService;
 import aloute.com.service.FriendService;
 import aloute.com.service.PostService;
+import aloute.com.service.BlockService;
+
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -46,6 +48,8 @@ public class UserProfileController {
 	private aloute.com.service.PostLikeService postLikeService;
 	@Autowired
 	private aloute.com.service.PostRepostService postRepostService;
+	@Autowired
+	private BlockService blockService;
 
 	@GetMapping("/api/posts/{postId}/like")
 	public @ResponseBody String toggleLike(@PathVariable Integer postId, HttpSession session) {
@@ -82,9 +86,18 @@ public class UserProfileController {
 		boolean isFriend = friendService.checkFriend(user.getUserId(), information.getUserId());
 		boolean isBeRequest = friendService.checkBeRequest(information.getUserId(), user.getUserId());
 		boolean isPending = friendService.checkPending(user.getUserId(), information.getUserId());
+		
+		// Kiểm tra trạng thái chặn
+		boolean isBlocked = blockService.isBlocked(user.getUserId(), information.getUserId()); // Tôi chặn người này
+		boolean isBlockedByOther = blockService.isBlocked(information.getUserId(), user.getUserId()); // Người này chặn tôi
+		boolean hasBlockRelation = isBlocked || isBlockedByOther;
+		
 		model.addAttribute("isBeRequest", isBeRequest);
 		model.addAttribute("isPending", isPending);
 		model.addAttribute("isFriend", isFriend);
+		model.addAttribute("isBlocked", isBlocked);
+		model.addAttribute("isBlockedByOther", isBlockedByOther);
+		model.addAttribute("hasBlockRelation", hasBlockRelation);
 		model.addAttribute("info", information);
 		model.addAttribute("isOwner", isOwner);
 		model.addAttribute("posts", posts);

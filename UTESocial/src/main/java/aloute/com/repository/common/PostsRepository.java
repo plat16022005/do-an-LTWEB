@@ -13,14 +13,39 @@ import aloute.com.entity.Posts;
 
 @Repository
 public interface PostsRepository extends JpaRepository<Posts, Integer> {
+
 	@Query("""
-		    SELECT DISTINCT p 
+		    SELECT DISTINCT p
 		    FROM Posts p
-		    LEFT JOIN FETCH p.user
+		    LEFT JOIN FETCH p.user u
 		    LEFT JOIN FETCH p.attachments
-		    WHERE p.visibility = 'public'
-		      AND p.isDeleted = false
+		    WHERE p.isDeleted = false
 		      AND p.status = 'approved'
+		      AND (
+		           p.visibility = 'public'
+		           OR (
+		                p.visibility = 'friends'
+		                AND EXISTS (
+		                    SELECT 1 FROM Friend f
+		                    WHERE f.status = 'accepted'
+		                      AND (
+		                          (f.user1.userId = :currentUserId AND f.user2.userId = u.userId)
+		                          OR
+		                          (f.user2.userId = :currentUserId AND f.user1.userId = u.userId)
+		                      )
+		                )
+		          )
+		          OR (
+		                p.visibility = 'private'
+		                AND u.userId = :currentUserId
+		          )
+		      )
+		      AND NOT EXISTS (
+		          SELECT 1 FROM BlockedUser b
+		          WHERE (b.blocker.userId = :currentUserId AND b.blocked.userId = u.userId)
+		             OR (b.blocker.userId = u.userId AND b.blocked.userId = :currentUserId)
+		      )
+		    ORDER BY FUNCTION('RAND')
 		""")
         List<Posts> findAllWithUserAndAttachments();
 
@@ -53,23 +78,45 @@ public interface PostsRepository extends JpaRepository<Posts, Integer> {
 		    ORDER BY FUNCTION('RAND')
 		""")
 		List<Posts> findAllVisiblePosts(@Param("currentUserId") Integer currentUserId);
+
 	@Query("""
-		    SELECT DISTINCT p 
+		    SELECT DISTINCT p
 		    FROM Posts p
-		    LEFT JOIN FETCH p.user
+		    LEFT JOIN FETCH p.user u
 		    LEFT JOIN FETCH p.attachments
 		    WHERE p.isDeleted = false
 		      AND p.status = 'approved'
-		      AND p.visibility IN ('public', 'friends')
-		      AND p.user.userId IN (
-		        SELECT CASE
-		                   WHEN f.user1.userId = :currentUserId THEN f.user2.userId
-		                   ELSE f.user1.userId
-		               END
-		        FROM Friend f
-		        WHERE (f.user1.userId = :currentUserId OR f.user2.userId = :currentUserId)
-		          AND f.status = 'Accepted'
-		    )
+		      AND (
+
+		          u.userId = :targetUserId AND :currentUserId = :targetUserId
+		          
+
+		          OR (
+		              u.userId = :targetUserId
+		              AND p.visibility IN ('public', 'friends')
+		              AND EXISTS (
+		                  SELECT 1 FROM Friend f
+		                  WHERE f.status = 'Accepted'
+		                    AND (
+		                        (f.user1.userId = :currentUserId AND f.user2.userId = :targetUserId)
+		                        OR
+		                        (f.user2.userId = :currentUserId AND f.user1.userId = :targetUserId)
+		                    )
+		              )
+		          )
+
+
+		          OR (
+		              u.userId = :targetUserId
+		              AND p.visibility = 'public'
+		          )
+		      )
+		      AND NOT EXISTS (
+		          SELECT 1 FROM BlockedUser b
+		          WHERE (b.blocker.userId = :currentUserId AND b.blocked.userId = :targetUserId)
+		             OR (b.blocker.userId = :targetUserId AND b.blocked.userId = :currentUserId)
+		      )
+
 		    ORDER BY p.createdAt DESC
 		""")
         List<Posts> findFriendPosts(@Param("currentUserId") Integer currentUserId);
