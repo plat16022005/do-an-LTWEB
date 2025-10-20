@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import aloute.com.entity.User;
 import aloute.com.repository.UserRepository;
 import aloute.com.service.FriendService;
-import aloute.com.service.BlockService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -21,8 +20,6 @@ public class UserFriendController {
 	private FriendService friendService;
 	@Autowired
 	private UserRepository userRepository;
-	@Autowired
-	private BlockService blockService;
 	@GetMapping("/friend")
 	public String showFriendForm(Model model, HttpSession session)
 	{
@@ -34,12 +31,10 @@ public class UserFriendController {
     	List<User> friends = friendService.getFriendList(user.getUserId());
     	List<User> beRequestFriends = friendService.getListBeingRequested(user.getUserId());
     	List<User> requestFriends = friendService.getListRequested(user.getUserId());
-    	List<User> blockedUsers = blockService.getBlockedUsers(user.getUserId());
     	
     	model.addAttribute("friends", friends);
     	model.addAttribute("beRequestFriends", beRequestFriends);
     	model.addAttribute("requestFriends", requestFriends);
-    	model.addAttribute("blockedUsers", blockedUsers);
 		return "user/friend";
 	}
 	@PostMapping("/friend/unfriend")
