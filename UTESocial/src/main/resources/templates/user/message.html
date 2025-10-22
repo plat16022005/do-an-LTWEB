@@ -8,7 +8,127 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-<link rel="stylesheet" th:href="@{/css/style.css}" />
+    <!-- Link to external stylesheet -->
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+         /* Bổ sung CSS cho tên người gửi trong chat nhóm */
+        .sender-name {
+            font-size: 0.8rem;
+            margin-bottom: 0.25rem;
+            color: #adb5bd;
+        }
+        .light-theme .sender-name {
+            color: #64748b;
+        }
+        .message-received .sender-name {
+            margin-left: 0.5rem;
+        }
+
+        /* CSS cho chat interface */
+        .chat-container {
+            display: flex;
+            height: calc(100vh - 120px);
+        }
+        .conversation-list {
+            width: 350px;
+            flex-shrink: 0;
+            overflow-y: auto;
+            border-right: 1px solid #334155;
+        }
+        .chat-window {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .conversation-item {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .conversation-item:hover, .conversation-item.active {
+            background-color: #334155;
+        }
+        .chat-header {
+            border-bottom: 1px solid #334155;
+        }
+        .chat-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .message {
+            max-width: 70%;
+            padding: 0.5rem 1rem;
+            border-radius: 1.25rem;
+            margin-bottom: 0.5rem;
+            word-wrap: break-word;
+        }
+        .message-sent {
+            background-color: #0ea5e9;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 0.25rem;
+        }
+        .message-received {
+            background-color: #334155;
+            align-self: flex-start;
+            border-bottom-left-radius: 0.25rem;
+        }
+        .chat-footer {
+            border-top: 1px solid #334155;
+        }
+
+        .message img, .message video {
+            max-width: 100%;
+            border-radius: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .message-file-display {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: inherit;
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            margin-top: 0.5rem;
+        }
+        .message-file-display:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* 🌞 Light Mode cho Chat */
+        .light-theme .conversation-list { border-right-color: #e2e8f0; }
+        .light-theme .conversation-item:hover, .light-theme .conversation-item.active { background-color: #e2e8f0; }
+        .light-theme .chat-header { border-bottom-color: #e2e8f0; }
+        .light-theme .message-received { background-color: #e2e8f0; }
+        .light-theme .chat-footer { border-top-color: #e2e8f0; }
+        .light-theme .message-file-display {
+            background-color: rgba(0, 0, 0, 0.05);
+            color: #1e293b;
+        }
+        .light-theme .message-file-display:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        /* 👤 Avatar trong chat */
+        .avatar-chat {
+            width: 36px;
+            height: 36px;
+            object-fit: cover;
+        }
+        .chat-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 0.5rem;
+        }
+        .chat-row.sent {
+            justify-content: flex-end;
+        }
+    </style>
 </head>
 <body class="text-light">
 
@@ -23,6 +143,7 @@
 
     <div class="container-xl mt-4">
         <div class="row g-4">
+            <!-- Sidebar -->
             <div class="col-lg-3 d-none d-lg-block">
 				<aside class="sticky-top" style="top: 80px;">
 				    <ul class="nav flex-column gap-1">
@@ -57,7 +178,7 @@
 						  </a>
 						</li>				       
 				        <li class="nav-item">
-				            <a class="nav-link active rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="#">
+				            <a class="nav-link active rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/message">
 				                <i class="bi bi-envelope fs-3"></i>
 				                <span>Tin nhắn</span>
 				            </a>
@@ -90,84 +211,120 @@
 				</aside>
             </div>
             
+            <!-- Chat main -->
             <div class="col-lg-9">
                 <main>
                     <div class="card rounded-4 overflow-hidden">
                        <div class="chat-container">
-                           <!-- Cột danh sách cuộc trò chuyện -->
+                           <!-- Danh sách cuộc trò chuyện -->
                            <div class="conversation-list">
                                <div class="p-3 border-bottom">
                                    <h4 class="mb-0">Tin nhắn</h4>
                                </div>
                                <div class="list-group list-group-flush">
-                                   <!-- item 1 -->
+                                   <!-- item 1 (Group Chat - Active Example) -->
                                    <div class="list-group-item list-group-item-action bg-transparent p-3 conversation-item active">
+                                       <div class="d-flex align-items-start">
+                                           <img src="https://placehold.co/48x48/8b5cf6/fff?text=IT" class="rounded-circle me-3" alt="Group Avatar">
+                                           <div class="w-100 overflow-hidden">
+                                               <div class="d-flex justify-content-between">
+                                                   <h6 class="mb-1 fw-bold">CLB IT</h6>
+                                                   <small class="text-muted">10:45</small>
+                                               </div>
+                                               <p class="mb-0 small text-muted text-truncate"><strong class="name">Bình Trần:</strong> Bạn xem tài liệu này nhé</p>
+                                           </div>
+                                       </div>
+                                   </div>
+                                   <!-- item 2 (1-on-1 Chat) -->
+                                   <div class="list-group-item list-group-item-action bg-transparent p-3 conversation-item">
                                        <div class="d-flex align-items-start">
                                            <img src="https://placehold.co/48x48/0ea5e9/fff?text=A" class="rounded-circle me-3" alt="Avatar">
                                            <div class="w-100 overflow-hidden">
                                                <div class="d-flex justify-content-between">
-                                                   <h6 class="mb-1 fw-bold">An Nguyen</h6>
-                                                   <small class="text-muted">10:30</small>
+                                                   <h6 class="mb-1 fw-bold name">An Nguyen</h6>
+                                                   <small class="text-muted time">10:30</small>
                                                </div>
-                                               <p class="mb-0 small text-muted text-truncate">Ok, hẹn gặp bạn sau nhé!</p>
+                                               <p class="mb-0 small text-muted text-truncate message-preview">Ok, hẹn gặp bạn sau nhé!</p>
                                            </div>
                                        </div>
                                    </div>
-                                   <!-- item 2 -->
-                                    <div class="list-group-item list-group-item-action bg-transparent p-3 conversation-item">
+                                   <!-- item 3 (1-on-1 Chat) -->
+                                   <div class="list-group-item list-group-item-action bg-transparent p-3 conversation-item">
                                        <div class="d-flex align-items-start">
                                            <img src="https://placehold.co/48x48/10b981/fff?text=B" class="rounded-circle me-3" alt="Avatar">
                                            <div class="w-100 overflow-hidden">
                                                <div class="d-flex justify-content-between">
-                                                   <h6 class="mb-1 fw-bold">Bình Trần</h6>
-                                                   <small class="text-muted">Hôm qua</small>
+                                                   <h6 class="mb-1 fw-bold name">Bình Trần</h6>
+                                                   <small class="text-muted time">Hôm qua</small>
                                                </div>
-                                               <p class="mb-0 small text-muted text-truncate">Bạn đã xem tài liệu mình gửi chưa?</p>
+                                               <p class="mb-0 small text-muted text-truncate message-preview">Bạn đã xem tài liệu mình gửi chưa?</p>
                                            </div>
                                        </div>
                                    </div>
                                </div>
                            </div>
+
                            <!-- Cửa sổ chat chính -->
                            <div class="chat-window">
-                               <!-- Header cửa sổ chat -->
                                <div class="chat-header p-3 d-flex align-items-center">
-                                    <img src="https://placehold.co/40x40/0ea5e9/fff?text=A" class="rounded-circle me-3" alt="Avatar">
+                                    <img src="https://placehold.co/40x40/8b5cf6/fff?text=IT" class="rounded-circle me-3" alt="Group Avatar">
                                     <div>
-                                        <h6 class="mb-0 fw-bold">An Nguyen</h6>
-                                        <small class="text-success">Đang hoạt động</small>
+                                        <h6 class="mb-0 fw-bold">CLB IT</h6>
+                                        <small class="text-muted">5 thành viên</small>
                                     </div>
                                     <div class="ms-auto">
-                                        <button class="btn btn-outline-secondary rounded-circle"><i class="bi bi-telephone"></i></button>
-                                        <button class="btn btn-outline-secondary rounded-circle ms-1"><i class="bi bi-camera-video"></i></button>
+                                         <button class="btn btn-outline-secondary rounded-circle ms-1"><i class="bi bi-info-circle"></i></button>
                                     </div>
                                </div>
-                               <!-- Nội dung tin nhắn -->
                                <div class="chat-body">
-                                   <div class="message message-received">Chào bạn, bạn khỏe không?</div>
-                                   <div class="message message-sent">Chào bạn, mình khỏe. Cảm ơn bạn!</div>
-                                   
-                                   <!-- Ví dụ gửi ảnh -->
-                                   <div class="message message-sent">
-                                       Xem ảnh này nè!
-                                       <img src="https://placehold.co/300x200/0ea5e9/fff?text=Ảnh+minh+họa" alt="Image attachment">
+                                   <!-- Tin nhắn nhận -->
+                                   <div class="chat-row">
+                                       <img src="https://placehold.co/36x36/0ea5e9/fff?text=A" class="rounded-circle avatar-chat" alt="An Nguyen">
+                                       <div class="message message-received">
+                                           <small class="d-block text-muted sender-name">An Nguyen:</small>
+                                           Chào mọi người!
+                                       </div>
                                    </div>
 
-                                   <!-- Ví dụ gửi tệp -->
-                                   <div class="message message-received">
-                                       <a href="#" class="message-file-display">
-                                           <i class="bi bi-file-earmark-zip-fill fs-1 me-2"></i>
-                                           <div>
-                                               <div class="fw-bold">tailieu.zip</div>
-                                               <div class="small text-muted">10.5 MB</div>
-                                           </div>
-                                       </a>
+                                   <!-- Tin nhắn gửi -->
+                                   <div class="chat-row sent">
+                                       <div class="message message-sent">Chào An!</div>
+                                       <img src="https://placehold.co/36x36/ff9800/fff?text=U" class="rounded-circle avatar-chat" alt="Me">
                                    </div>
-                                   
-                                   <div class="message message-sent">Vẫn ổn bạn ơi. Tuần sau có deadline nên hơi bận một chút.</div>
 
+                                   <!-- Tin nhắn nhận (ảnh) -->
+                                   <div class="chat-row">
+                                       <img src="https://placehold.co/36x36/10b981/fff?text=B" class="rounded-circle avatar-chat" alt="Bình Trần">
+                                       <div class="message message-received">
+                                           <small class="d-block text-muted sender-name">Bình Trần:</small>
+                                           Mọi người xem ảnh seminar tuần trước nè!
+                                           <img src="https://placehold.co/300x200/10b981/fff?text=Seminar" alt="Image attachment">
+                                       </div>
+                                   </div>
+
+                                   <!-- Tin nhắn nhận (file) -->
+                                   <div class="chat-row">
+                                       <img src="https://placehold.co/36x36/10b981/fff?text=B" class="rounded-circle avatar-chat" alt="Bình Trần">
+                                       <div class="message message-received">
+                                           <small class="d-block text-muted sender-name">Bình Trần:</small>
+                                           Bạn xem tài liệu này nhé
+                                           <a href="#" class="message-file-display">
+                                               <i class="bi bi-file-earmark-pdf-fill fs-1 me-2 text-danger"></i>
+                                               <div>
+                                                   <div class="fw-bold">Docker_Intro.pdf</div>
+                                                   <div class="small text-muted">2.1 MB</div>
+                                               </div>
+                                           </a>
+                                       </div>
+                                   </div>
+
+                                   <!-- Tin nhắn gửi -->
+                                   <div class="chat-row sent">
+                                       <div class="message message-sent">Ok bạn, để mình xem.</div>
+                                       <img src="https://placehold.co/36x36/ff9800/fff?text=U" class="rounded-circle avatar-chat" alt="Me">
+                                   </div>
                                </div>
-                               <!-- Footer nhập tin nhắn -->
+
                                <div class="chat-footer p-3">
                                    <div class="input-group">
                                        <button class="btn btn-outline-secondary"><i class="bi bi-paperclip"></i></button>
@@ -187,4 +344,3 @@
     <script th:src="@{/js/theme-toggle.js}"></script>
 </body>
 </html>
-
