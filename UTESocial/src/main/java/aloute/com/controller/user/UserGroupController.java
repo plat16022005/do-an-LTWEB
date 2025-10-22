@@ -19,4 +19,14 @@ public class UserGroupController {
     	}
 		return "user/group";
 	}
+	@GetMapping("/group/create")
+	public String showCreateGForm(Model model, HttpSession session)
+	{
+    	User user = (User) session.getAttribute("user");
+    	if (user == null)
+    	{
+    		return "redirect:/access-deniel";
+    	}
+		return "user/create_group";
+	}
 }
