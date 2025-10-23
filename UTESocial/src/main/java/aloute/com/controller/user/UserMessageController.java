@@ -54,5 +54,30 @@ public class UserMessageController {
 	    }
 	    return messageService.getAllMessagesBetween(currentUser.getUserId(), friendId);
 	}
+	@GetMapping("/message/{friendId}")
+	public String openMessagePage(@PathVariable Integer friendId, Model model, HttpSession session) {
+	    User currentUser = (User) session.getAttribute("user");
+	    if (currentUser == null) {
+	        return "redirect:/login";
+	    }
+
+	    // Danh sách bạn bè
+	    List<User> friends = friendService.getFriendList(currentUser.getUserId());
+	    model.addAttribute("friends", friends);
+
+	    // 🔥 Thêm map lastMessages để tránh null
+	    Map<Integer, String> lastMessages = new HashMap<>();
+	    for (User friend : friends) {
+	        String preview = messageService.getLatestMessagePreview(currentUser.getUserId(), friend.getUserId());
+	        lastMessages.put(friend.getUserId(), preview);
+	    }
+	    model.addAttribute("lastMessages", lastMessages);
+
+	    // 👇 Truyền friendId để front-end tự mở chat
+	    model.addAttribute("friendId", friendId);
+
+	    return "user/message";
+	}
+
 
 }

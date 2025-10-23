@@ -38,7 +38,7 @@ public class NotificationActionController {
                 redirectUrl = "/profile/" + n.getRelatedId();
                 break;
             case "MESSAGE":
-                redirectUrl = "/messages/" + n.getRelatedId();
+                redirectUrl = "/message/" + n.getRelatedId();
                 break;
             default:
                 redirectUrl = "/notification";
