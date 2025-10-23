@@ -2,6 +2,8 @@ package aloute.com.entity;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -21,7 +23,8 @@ public class Attachments {
     // Quan hệ với Messages
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MessageID")
-    private Messages message;
+    @JsonIgnore
+    private Message message;
 
     @Column(name = "FileURL", length = 255)
     private String fileUrl;
@@ -55,11 +58,11 @@ public class Attachments {
         this.post = post;
     }
 
-    public Messages getMessage() {
+    public Message getMessage() {
         return message;
     }
 
-    public void setMessage(Messages message) {
+    public void setMessage(Message message) {
         this.message = message;
     }
 

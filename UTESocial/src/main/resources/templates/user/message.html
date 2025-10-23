@@ -100,114 +100,58 @@
                 <main>
                     <div class="card rounded-4 overflow-hidden">
                        <div class="chat-container">
+                       		<input type="hidden" id="current-user-id" th:value="${user.userId}">
                            <!-- Danh sách cuộc trò chuyện -->
                            <div class="conversation-list">
                                <div class="p-3 border-bottom">
                                    <h4 class="mb-0">Tin nhắn</h4>
                                </div>
-                               <div class="list-group list-group-flush">
-                                   <!-- item 1 (Group Chat - Active Example) -->
-                                   <div class="list-group-item list-group-item-action bg-transparent p-3 conversation-item active">
-                                       <div class="d-flex align-items-start">
-                                           <img src="https://placehold.co/48x48/8b5cf6/fff?text=IT" class="rounded-circle me-3" alt="Group Avatar">
-                                           <div class="w-100 overflow-hidden">
-                                               <div class="d-flex justify-content-between">
-                                                   <h6 class="mb-1 fw-bold">CLB IT</h6>
-                                                   <small class="text-muted">10:45</small>
-                                               </div>
-                                               <p class="mb-0 small text-muted text-truncate"><strong class="name">Bình Trần:</strong> Bạn xem tài liệu này nhé</p>
-                                           </div>
-                                       </div>
-                                   </div>
-                                   <!-- item 2 (1-on-1 Chat) -->
-                                   <div class="list-group-item list-group-item-action bg-transparent p-3 conversation-item">
-                                       <div class="d-flex align-items-start">
-                                           <img src="https://placehold.co/48x48/0ea5e9/fff?text=A" class="rounded-circle me-3" alt="Avatar">
-                                           <div class="w-100 overflow-hidden">
-                                               <div class="d-flex justify-content-between">
-                                                   <h6 class="mb-1 fw-bold name">An Nguyen</h6>
-                                                   <small class="text-muted time">10:30</small>
-                                               </div>
-                                               <p class="mb-0 small text-muted text-truncate message-preview">Ok, hẹn gặp bạn sau nhé!</p>
-                                           </div>
-                                       </div>
-                                   </div>
-                                   <!-- item 3 (1-on-1 Chat) -->
-                                   <div class="list-group-item list-group-item-action bg-transparent p-3 conversation-item">
-                                       <div class="d-flex align-items-start">
-                                           <img src="https://placehold.co/48x48/10b981/fff?text=B" class="rounded-circle me-3" alt="Avatar">
-                                           <div class="w-100 overflow-hidden">
-                                               <div class="d-flex justify-content-between">
-                                                   <h6 class="mb-1 fw-bold name">Bình Trần</h6>
-                                                   <small class="text-muted time">Hôm qua</small>
-                                               </div>
-                                               <p class="mb-0 small text-muted text-truncate message-preview">Bạn đã xem tài liệu mình gửi chưa?</p>
-                                           </div>
-                                       </div>
-                                   </div>
-                               </div>
+								<div class="list-group list-group-flush">
+								    <div th:each="friend : ${friends}"
+								         class="list-group-item list-group-item-action bg-transparent p-3 conversation-item"
+								         th:attr="data-peer-id=${friend.userId},data-username=${friend.nameUser}"
+								         onclick="openChatWith(this)">
+								        <div class="d-flex align-items-start">
+											<img th:src="${friend.avatarUrl != null ? friend.avatarUrl : 'https://placehold.co/48x48?text=U'}"
+											     class="rounded-circle me-3"
+											     style="width: 50px; height: 50px; object-fit: cover;"
+											     alt="Avatar">
+
+								            <div class="w-100 overflow-hidden">
+								                <div class="d-flex justify-content-between">
+								                    <h6 class="mb-1 fw-bold name" th:text="${friend.fullName}"></h6>
+								                    <small class="text-muted time"></small>
+								                </div>
+												<p class="mb-0 small text-muted text-truncate message-preview">
+												    <span th:text="${lastMessages[friend.userId]}"></span>
+												</p>
+
+								            </div>
+								        </div>
+								    </div>
+								</div>
+
                            </div>
 
                            <!-- Cửa sổ chat chính -->
                            <div class="chat-window">
-                               <div class="chat-header p-3 d-flex align-items-center">
-                                    <img src="https://placehold.co/40x40/8b5cf6/fff?text=IT" class="rounded-circle me-3" alt="Group Avatar">
-                                    <div>
-                                        <h6 class="mb-0 fw-bold">CLB IT</h6>
-                                        <small class="text-muted">5 thành viên</small>
-                                    </div>
-                                    <div class="ms-auto">
-                                         <button class="btn btn-outline-secondary rounded-circle ms-1"><i class="bi bi-info-circle"></i></button>
-                                    </div>
-                               </div>
-                               <div class="chat-body">
-                                   <!-- Tin nhắn nhận -->
-                                   <div class="chat-row">
-                                       <img src="https://placehold.co/36x36/0ea5e9/fff?text=A" class="rounded-circle avatar-chat" alt="An Nguyen">
-                                       <div class="message message-received">
-                                           <small class="d-block text-muted sender-name">An Nguyen:</small>
-                                           Chào mọi người!
-                                       </div>
-                                   </div>
+								<div class="chat-header p-3 d-flex align-items-center" id="chat-header">
+								    <img id="chat-header-avatar" src="https://placehold.co/40x40?text=U" class="rounded-circle me-3" style="width: 50px; height: 50px; object-fit: cover;" alt="Avatar">
+								    <div>
+								        <h6 class="mb-0 fw-bold" id="chat-header-name">Chưa chọn cuộc trò chuyện</h6>
+								        <a id="chat-header-nameUser" class="text-muted small text-decoration-none"></a>
+								    </div>
+								    <div class="ms-auto">
+								        <button class="btn btn-outline-secondary rounded-circle ms-1">
+								            <i class="bi bi-info-circle"></i>
+								        </button>
+								    </div>
+								</div>
+								
+								<div class="chat-body" id="chat-body">
+								    <div class="text-center text-muted mt-4">Hãy chọn 1 người bạn để bắt đầu trò chuyện 💬</div>
+								</div>
 
-                                   <!-- Tin nhắn gửi -->
-                                   <div class="chat-row sent">
-                                       <div class="message message-sent">Chào An!</div>
-                                       <img src="https://placehold.co/36x36/ff9800/fff?text=U" class="rounded-circle avatar-chat" alt="Me">
-                                   </div>
-
-                                   <!-- Tin nhắn nhận (ảnh) -->
-                                   <div class="chat-row">
-                                       <img src="https://placehold.co/36x36/10b981/fff?text=B" class="rounded-circle avatar-chat" alt="Bình Trần">
-                                       <div class="message message-received">
-                                           <small class="d-block text-muted sender-name">Bình Trần:</small>
-                                           Mọi người xem ảnh seminar tuần trước nè!
-                                           <img src="https://placehold.co/300x200/10b981/fff?text=Seminar" alt="Image attachment">
-                                       </div>
-                                   </div>
-
-                                   <!-- Tin nhắn nhận (file) -->
-                                   <div class="chat-row">
-                                       <img src="https://placehold.co/36x36/10b981/fff?text=B" class="rounded-circle avatar-chat" alt="Bình Trần">
-                                       <div class="message message-received">
-                                           <small class="d-block text-muted sender-name">Bình Trần:</small>
-                                           Bạn xem tài liệu này nhé
-                                           <a href="#" class="message-file-display">
-                                               <i class="bi bi-file-earmark-pdf-fill fs-1 me-2 text-danger"></i>
-                                               <div>
-                                                   <div class="fw-bold">Docker_Intro.pdf</div>
-                                                   <div class="small text-muted">2.1 MB</div>
-                                               </div>
-                                           </a>
-                                       </div>
-                                   </div>
-
-                                   <!-- Tin nhắn gửi -->
-                                   <div class="chat-row sent">
-                                       <div class="message message-sent">Ok bạn, để mình xem.</div>
-                                       <img src="https://placehold.co/36x36/ff9800/fff?text=U" class="rounded-circle avatar-chat" alt="Me">
-                                   </div>
-                               </div>
 
                                <div class="chat-footer p-3">
                                    <div class="input-group">
@@ -226,5 +170,160 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script th:src="@{/js/theme-toggle.js}"></script>
+<script>
+	const USER_ID = document.getElementById('current-user-id').value;
+</script>
+<script>
+let currentChatFriendId = null;
+
+async function openChatWith(element) {
+    const friendId = element.getAttribute('data-peer-id');
+    const friendName = element.querySelector('.name').innerText;
+    const friendAvatar = element.querySelector('img').src;
+    const friendUsername = element.getAttribute('data-username');
+    currentChatFriendId = friendId;
+
+    // 🧭 Cập nhật chat header
+    document.getElementById('chat-header-avatar').src = friendAvatar;
+    document.getElementById('chat-header-name').innerText = friendName;
+    const usernameLink = document.getElementById('chat-header-nameUser');
+    usernameLink.innerText = friendUsername;
+    usernameLink.href = '/' + friendUsername;
+
+    // 📨 Gọi API lấy tin nhắn
+    const res = await fetch(`/message/load/${friendId}`);
+    const messages = await res.json();
+
+    const chatBody = document.getElementById('chat-body');
+    chatBody.innerHTML = '';
+
+    if (messages.length === 0) {
+        chatBody.innerHTML = `<div class="text-center text-muted mt-4">Chưa có tin nhắn nào, hãy bắt đầu trò chuyện 💬</div>`;
+        return;
+    }
+
+    messages.forEach(msg => renderMessage(msg));
+    chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+function renderMessage(msg) {
+    const sentByMe = msg.sender.userId == USER_ID;
+    const row = document.createElement('div');
+    row.classList.add('chat-row');
+    if (sentByMe) row.classList.add('sent');
+
+    const avatarUrl = msg.sender.avatarUrl || 'https://placehold.co/36x36?text=U';
+
+    let messageContent = `
+        ${!sentByMe ? `<img src="${avatarUrl}" class="rounded-circle avatar-chat" alt="${msg.sender.fullName}">` : ''}
+        <div class="message ${sentByMe ? 'message-sent' : 'message-received'}">
+            ${!sentByMe ? `<small class="d-block text-muted sender-name">${msg.sender.fullName}:</small>` : ''}
+            ${msg.content || ''}
+    `;
+
+    // ✅ Hiển thị attachments có thanh trượt ngang
+    if (msg.attachments && msg.attachments.length > 0) {
+        messageContent += `<div class="attachment-scroll mt-2">`;
+
+        msg.attachments.forEach(att => {
+        	const fileUrl = att.fileUrl ?? att.fileURL ?? att.url ?? '';
+        	if (!fileUrl) return;
+            // 👉 Chuyển URL tương đối thành tuyệt đối
+            const absoluteUrl = new URL(fileUrl, window.location.origin).href;
+
+            let fileType = att.fileType ? att.fileType.toLowerCase() : '';
+            if (fileType === 'video' || absoluteUrl.endsWith('.mp4')) {
+                fileType = 'video/mp4'; // fallback MIME chuẩn
+            }
+
+            // 👀 In ra console để kiểm tra
+            console.log("📎 Attachment URL:", absoluteUrl);
+            console.log("📄 Attachment Type:", fileType);
+
+            if (fileType.startsWith('image')) {
+                // 🖼 Ảnh
+                messageContent += `
+                    <div class="attachment-item me-2">
+                        <img src="${absoluteUrl}" class="img-fluid rounded" style="max-width: 200px; max-height: 200px; object-fit: cover;">
+                    </div>
+                `;
+            } else if (fileType.startsWith('video')) {
+                // 📹 Video
+                messageContent += `
+                    <div class="attachment-item me-2">
+                        <video controls playsinline preload="metadata" style="max-width: 250px; max-height: 250px; border-radius: 8px;">
+                            <source src="${absoluteUrl}" type="${fileType}">
+                            Trình duyệt của bạn không hỗ trợ video.
+                        </video>
+                    </div>
+                `;
+            } else if (fileType.includes('pdf')) {
+                // 📄 PDF
+                messageContent += `
+                    <div class="attachment-item me-2 p-2 border rounded bg-dark-subtle d-flex align-items-center">
+                        <i class="bi bi-file-earmark-pdf-fill fs-2 text-danger me-2"></i>
+                        <a href="${absoluteUrl}" target="_blank" class="text-primary small">Tải PDF</a>
+                    </div>
+                `;
+            } else {
+                // 📎 File khác
+                const fileName = absoluteUrl.split('/').pop();
+                messageContent += `
+                    <div class="attachment-item me-2 p-2 border rounded bg-dark-subtle d-flex align-items-center">
+                        <i class="bi bi-paperclip fs-2 me-2"></i>
+                        <a href="${absoluteUrl}" target="_blank" class="text-primary small">${fileName}</a>
+                    </div>
+                `;
+            }
+        });
+
+        messageContent += `</div>`;
+    }
+
+    row.innerHTML = messageContent;
+    document.getElementById('chat-body').appendChild(row);
+}
+
+</script>
+
+ <script>
+document.querySelector('.chat-footer .btn-primary').addEventListener('click', async () => {
+    const input = document.querySelector('.chat-footer input[type="text"]');
+    const content = input.value.trim();
+    if (!content && !window.pendingAttachments?.length) return;
+
+    const formData = new FormData();
+    formData.append('content', content);
+    formData.append('receiverId', currentChatFriendId);
+
+    // 🗂 Thêm file đính kèm nếu có
+    if (window.pendingAttachments && window.pendingAttachments.length > 0) {
+        window.pendingAttachments.forEach(file => formData.append('attachments', file));
+    }
+
+    const res = await fetch('/message/send', { method: 'POST', body: formData });
+    const msg = await res.json();
+
+    // ✅ Hiển thị ngay tin nhắn của bản thân
+    renderMessage(msg);
+
+    // Xoá input và reset file sau khi gửi
+    input.value = '';
+    window.pendingAttachments = [];
+});
+</script>
+ <script>
+document.querySelector('.chat-footer .btn-outline-secondary').addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.multiple = true;
+    input.onchange = (e) => {
+        window.pendingAttachments = Array.from(e.target.files);
+        console.log("📎 File đính kèm đã chọn:", window.pendingAttachments);
+    };
+    input.click();
+});
+</script>
+ 
 </body>
 </html>

@@ -445,6 +445,7 @@ aside .nav-link.active {
         .chat-body {
             flex-grow: 1;
             overflow-y: auto;
+            overflow-x: hidden;
             padding: 1rem;
             display: flex;
             flex-direction: column;
@@ -864,3 +865,176 @@ textarea#reply-input {
         .chat-row.sent {
             justify-content: flex-end;
         }
+/* Tin nhắn gửi đi (của mình) */
+.chat-row.sent {
+    justify-content: flex-end;
+}
+
+.chat-row.sent .message {
+    background-color: #0ea5e9; /* màu xanh */
+    color: white;
+    border-top-right-radius: 0.25rem;
+    border-top-left-radius: 1rem;
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+}
+
+.chat-row.sent img {
+    display: none; /* Ẩn avatar bên phải */
+}
+
+/* Tin nhắn nhận */
+.chat-row {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 10px;
+}
+
+.chat-row .avatar-chat {
+    width: 36px;
+    height: 36px;
+    margin-right: 8px;
+}
+
+.chat-row.sent .avatar-chat {
+    margin-right: 0;
+    margin-left: 8px;
+}
+
+.message {
+    max-width: 500px;
+    padding: 10px 14px;
+    border-radius: 1rem;
+    background-color: #374151; /* màu xám tin nhận */
+    color: white;
+    font-size: 0.95rem;
+    word-wrap: break-word;
+}
+
+.sender-name {
+    font-size: 0.75rem;
+    margin-bottom: 2px;
+    display: block;
+    color: #cbd5e1;
+}
+.attachment-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 0.5rem;
+    padding-bottom: 5px;
+}
+
+.attachment-scroll::-webkit-scrollbar {
+    height: 8px;
+}
+
+.attachment-scroll::-webkit-scrollbar-thumb {
+    background-color: #6c757d;
+    border-radius: 4px;
+}
+
+.attachment-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.attachment-item {
+    flex: 0 0 auto;
+}
+/* =========================================================
+   🌞 LIGHT MODE - CHAT KHUNG TIN NHẮN
+   ========================================================= */
+
+/* Tin nhắn nhận */
+.light-theme .chat-row .message {
+  background-color: #e2e8f0;        /* Nền xám sáng */
+  color: #0f172a;                   /* Chữ đen rõ */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Tin nhắn gửi (của mình) */
+.light-theme .chat-row.sent .message {
+  background-color: #0ea5e9;        /* Xanh dương nổi bật */
+  color: #ffffff;
+  border-top-right-radius: 0.25rem;
+  border-top-left-radius: 1rem;
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  box-shadow: 0 1px 4px rgba(14, 165, 233, 0.3);
+}
+
+/* Ẩn avatar khi là tin nhắn của mình */
+.light-theme .chat-row.sent img.avatar-chat {
+  display: none;
+}
+
+/* Tên người gửi */
+.light-theme .sender-name {
+  color: #64748b;
+}
+
+/* Attachment trong light mode */
+.light-theme .attachment-scroll::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+}
+.light-theme .attachment-scroll::-webkit-scrollbar-track {
+  background-color: #f1f5f9;
+}
+.light-theme .attachment-item img,
+.light-theme .attachment-item video {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e2e8f0;
+}
+
+/* File đính kèm */
+.light-theme .message-file-display {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+.light-theme .message-file-display:hover {
+  background-color: #e2e8f0;
+}
+
+/* Thanh cuộn ngang ảnh/video */
+.light-theme .attachment-scroll {
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+/* Avatar chat */
+.light-theme .avatar-chat {
+  border: 1px solid #e2e8f0;
+}
+/* 📸 Fix layout cho attachments trong tin nhắn gửi */
+.chat-row.sent .attachment-scroll {
+  justify-content: flex-end;
+}
+
+.attachment-item {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 150px;  /* 👈 quan trọng: có chiều rộng tối thiểu */
+  max-width: 250px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.attachment-item img,
+.attachment-item video {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+}
+/* Ưu tiên style ảnh trong khung attachment */
+.message .attachment-item img,
+.message .attachment-item video {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    max-width: unset;      /* ❌ bỏ giới hạn max-width từ .message img */
+    background-color: #000; /* để nhìn rõ nếu ảnh không load */
+}
+
