@@ -1,194 +1,552 @@
 <!DOCTYPE html>
 <html lang="vi" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bạn bè - AloUTE</title>
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <style>
-
-    </style>
-</head>
-<body class="text-light">
-
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style></style>
+  </head>
+  <body class="text-light">
     <nav class="navbar sticky-top">
-        <div class="container-xl">
-            <a class="navbar-brand fw-bold fs-4 d-flex align-items-center" th:href="@{/home}">
-                <svg class="bi me-2" width="32" height="32" fill="#0ea5e9"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18" stroke="currentColor"></path></svg>
-                AloUTE
-            </a>
-        </div>
+      <div class="container-xl">
+        <a
+          class="navbar-brand fw-bold fs-4 d-flex align-items-center"
+          th:href="@{/home}"
+        >
+          <svg class="bi me-2" width="32" height="32" fill="#0ea5e9">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6.253v11.494m-9-5.747h18"
+              stroke="currentColor"
+            ></path>
+          </svg>
+          AloUTE
+        </a>
+      </div>
     </nav>
 
     <div class="container-xl mt-4">
-        <div class="row g-4">
-            <div class="col-lg-3 d-none d-lg-block">
-				<aside class="sticky-top" style="top: 80px;">
-				    <ul class="nav flex-column gap-1">
-						<li class="nav-item">
-				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/home">
-				                <i class="bi bi-house-door-fill fs-3"></i>
-				                <span>Trang chủ</span>
-				            </a>
-				        </li>
-				        <li class="nav-item">
-				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/upload">
-				                <i class="bi bi-upload fs-3"></i>
-				                <span>Đăng tải</span>
-				            </a>
-				        </li>
-				        <li class="nav-item">
-				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/search">
-				                <i class="bi bi-search fs-3"></i>
-				                <span>Tìm kiếm</span>
-				            </a>
-				        </li>
-				        <li class="nav-item">
-				            <a class="nav-link active rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/friend">
-				                <i class="bi bi-people fs-3"></i>
-				                <span>Bạn bè</span>
-				            </a>
-				        </li>
-				        <li class="nav-item">
-						  <a id="nav-group" class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/group">
-						      <i class="bi bi-globe2 fs-3"></i>
-						      <span>Nhóm</span>
-						  </a>
-						</li>				
-				        <li class="nav-item">
-				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="#">
-				                <i class="bi bi-envelope fs-3"></i>
-				                <span>Tin nhắn</span>
-				            </a>
-				        </li>
-				        <li class="nav-item">
-				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/notification">
-				                <i class="bi bi-bell fs-3"></i>
-				                <span>Thông báo</span>
-				            </a>
-				        </li>
-				        <li class="nav-item">
-				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" 
-   																		th:href="@{/{username}(username=${user.nameUser})}">
-				                <i class="bi bi-person-circle fs-3"></i>
-				                <span>Cá nhân</span>
-				            </a>
-				        </li>
-				        <li class="nav-item">
-				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/setting">
-				                <i class="bi bi-gear fs-3"></i>
-				                <span>Cài đặt</span>
-				            </a>
-				        </li>
-				        <li class="nav-item mt-2">
-				            <a class="nav-link text-danger rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/logout">
-				                <i class="bi bi-box-arrow-right fs-3"></i>
-				                <span>Đăng xuất</span>
-				            </a>
-				        </li>
-				    </ul>
-				</aside>
-
-            </div>
-            
-            <div class="col-lg-9">
-                <main>
-                    <div class="card rounded-4">
-                        <div class="card-body p-4">
-                            <h3 class="mb-4">Bạn bè</h3>
-
-                            <!-- Tabs điều hướng -->
-                            <ul class="nav nav-pills mb-4">
-                              <li class="nav-item">
-                                <a class="nav-link active" data-bs-toggle="tab" href="#all-friends">Tất cả bạn bè</a>
-                              </li>
-                              <li class="nav-item">
-                                <a class="nav-link" data-bs-toggle="tab" href="#requests-received">Đã nhận</a>
-                              </li>
-                              <li class="nav-item">
-                                <a class="nav-link" data-bs-toggle="tab" href="#requests-sent">Đã gửi</a>
-                              </li>
-                            </ul>
-
-                            <!-- Nội dung các tab -->
-                            <div class="tab-content">
-                                <!-- Tab Tất cả bạn bè -->
-                                <div class="tab-pane fade show active" id="all-friends">
-                                    <div class="d-flex flex-column gap-3">
-										<div th:each="friend : ${friends}" class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item">                                    
-	                                        <div class="d-flex align-items-center gap-3">
-	                                            <img th:src="${friend.avatarUrl}" class="rounded-circle" alt="Avatar" width="48" height="48">
-	                                            <div>
-	                                                <h6 th:text="${friend.fullName}" class="mb-0 fw-bold"></h6>
-	                                                <a class="fw mb-0 user-link" th:text="${friend.nameUser}" th:href="@{/{username}(username=${friend.nameUser})}"></a>
-	                                            </div>
-	                                        </div>
-	                                        <div class="d-flex gap-2">
-	                                            <button class="btn btn-sm btn-primary rounded-pill">Nhắn tin</button>
-	                                        </div>
-	                                    </div>    
-                                    </div>
-                                </div>
-
-                                <!-- Tab Lời mời đã nhận -->
-                                <div class="tab-pane fade" id="requests-received">
-                                    <div class="d-flex flex-column gap-3">
-										<div th:each="friend : ${beRequestFriends}" class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item">                                         
-	                                        <div class="d-flex align-items-center gap-3">
-	                                            <img th:src="${friend.avatarUrl}" class="rounded-circle" alt="Avatar" width="48" height="48">
-	                                            <div>
-	                                                <h6 th:text="${friend.fullName}" class="mb-0 fw-bold"></h6>
-	                                                <a class="fw mb-0 user-link" th:text="${friend.nameUser}" th:href="@{/{username}(username=${friend.nameUser})}"></a>
-	                                            </div>
-	                                        </div>
-	                                        <div class="d-flex gap-2">
-	                                            <form action="/friend/accept" method="post">
-	                                                <input type="hidden" name="friendId" th:value="${friend.userId}">		
-	                                                <button type="submit" class="btn btn-sm btn-success rounded-pill">Chấp nhận</button>
-	                                            </form>
-	                                            <form action="/friend/deny" method="post">
-	                                                <input type="hidden" name="friendId" th:value="${friend.userId}">
-	                                                <button type="submit" class="btn btn-sm btn-danger rounded-pill">Từ chối</button>
-	                                            </form>
-	                                        </div>
-	                                    </div>
-                                    </div>
-                                </div>
-
-                                <!-- Tab Lời mời đã gửi -->
-                                <div class="tab-pane fade" id="requests-sent">
-                                     <div class="d-flex flex-column gap-3">
-										<div th:each="friend : ${requestFriends}" class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item">                                         
-	                                        <div class="d-flex align-items-center gap-3">
-	                                            <img th:src="${friend.avatarUrl}" class="rounded-circle" alt="Avatar" width="48" height="48">
-	                                            <div>
-	                                                <h6 th:text="${friend.fullName}" class="mb-0 fw-bold"></h6>
-	                                                <a class="fw mb-0 user-link" th:text="${friend.nameUser}" th:href="@{/{username}(username=${friend.nameUser})}"></a>
-	                                            </div>
-	                                        </div>
-	                                        <div class="d-flex gap-2">
-	                                            <form action="/friend/deny" method="post">
-	                                                <input type="hidden" name="friendId" th:value="${friend.userId}">
-	                                                <button type="submit" class="btn btn-sm btn-outline-warning rounded-pill">Hủy lời mời</button>
-	                                            </form>
-	                                        </div>
-	                                    </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </main>
-            </div>
+      <div class="row g-4">
+        <div class="col-lg-3 d-none d-lg-block">
+          <aside class="sticky-top" style="top: 80px">
+            <ul class="nav flex-column gap-1">
+              <li class="nav-item">
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/home"
+                >
+                  <i class="bi bi-house-door-fill fs-3"></i>
+                  <span>Trang chủ</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/upload"
+                >
+                  <i class="bi bi-upload fs-3"></i>
+                  <span>Đăng tải</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/search"
+                >
+                  <i class="bi bi-search fs-3"></i>
+                  <span>Tìm kiếm</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link active rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/friend"
+                >
+                  <i class="bi bi-people fs-3"></i>
+                  <span>Bạn bè</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  id="nav-group"
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/group"
+                >
+                  <i class="bi bi-globe2 fs-3"></i>
+                  <span>Nhóm</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="#"
+                >
+                  <i class="bi bi-envelope fs-3"></i>
+                  <span>Tin nhắn</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/notification"
+                >
+                  <i class="bi bi-bell fs-3"></i>
+                  <span>Thông báo</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  th:href="@{/{username}(username=${user.nameUser})}"
+                >
+                  <i class="bi bi-person-circle fs-3"></i>
+                  <span>Cá nhân</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/setting"
+                >
+                  <i class="bi bi-gear fs-3"></i>
+                  <span>Cài đặt</span>
+                </a>
+              </li>
+              <li class="nav-item mt-2">
+                <a
+                  class="nav-link text-danger rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/logout"
+                >
+                  <i class="bi bi-box-arrow-right fs-3"></i>
+                  <span>Đăng xuất</span>
+                </a>
+              </li>
+            </ul>
+          </aside>
         </div>
+
+        <div class="col-lg-9">
+          <main>
+            <div class="card rounded-4">
+              <div class="card-body p-4">
+                <h3 class="mb-4">Bạn bè</h3>
+
+                <!-- Tabs điều hướng -->
+                <ul class="nav nav-pills mb-4">
+                  <li class="nav-item">
+                    <a
+                      class="nav-link active"
+                      data-bs-toggle="tab"
+                      href="#all-friends"
+                      >Tất cả bạn bè</a
+                    >
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      class="nav-link"
+                      data-bs-toggle="tab"
+                      href="#requests-received"
+                      >Đã nhận</a
+                    >
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      class="nav-link"
+                      data-bs-toggle="tab"
+                      href="#requests-sent"
+                      >Đã gửi</a
+                    >
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      class="nav-link"
+                      data-bs-toggle="tab"
+                      href="#blocked-users"
+                      >Đã chặn</a
+                    >
+                  </li>
+                </ul>
+
+                <!-- Nội dung các tab -->
+                <div class="tab-content">
+                  <!-- Tab Tất cả bạn bè -->
+                  <div class="tab-pane fade show active" id="all-friends">
+                    <div class="d-flex flex-column gap-3">
+                      <div
+                        th:each="friend : ${friends}"
+                        class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item"
+                      >
+                        <div class="d-flex align-items-center gap-3">
+                          <img
+                            th:src="${friend.avatarUrl}"
+                            class="rounded-circle"
+                            alt="Avatar"
+                            width="48"
+                            height="48"
+                          />
+                          <div>
+                            <h6
+                              th:text="${friend.fullName}"
+                              class="mb-0 fw-bold"
+                            ></h6>
+                            <a
+                              class="fw mb-0 user-link"
+                              th:text="${friend.nameUser}"
+                              th:href="@{/{username}(username=${friend.nameUser})}"
+                            ></a>
+                          </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                          <button class="btn btn-sm btn-primary rounded-pill">
+                            Nhắn tin
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Tab Lời mời đã nhận -->
+                  <div class="tab-pane fade" id="requests-received">
+                    <div class="d-flex flex-column gap-3">
+                      <div
+                        th:each="friend : ${beRequestFriends}"
+                        class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item"
+                      >
+                        <div class="d-flex align-items-center gap-3">
+                          <img
+                            th:src="${friend.avatarUrl}"
+                            class="rounded-circle"
+                            alt="Avatar"
+                            width="48"
+                            height="48"
+                          />
+                          <div>
+                            <h6
+                              th:text="${friend.fullName}"
+                              class="mb-0 fw-bold"
+                            ></h6>
+                            <a
+                              class="fw mb-0 user-link"
+                              th:text="${friend.nameUser}"
+                              th:href="@{/{username}(username=${friend.nameUser})}"
+                            ></a>
+                          </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                          <form action="/friend/accept" method="post">
+                            <input
+                              type="hidden"
+                              name="friendId"
+                              th:value="${friend.userId}"
+                            />
+                            <button
+                              type="submit"
+                              class="btn btn-sm btn-success rounded-pill"
+                            >
+                              Chấp nhận
+                            </button>
+                          </form>
+                          <form action="/friend/deny" method="post">
+                            <input
+                              type="hidden"
+                              name="friendId"
+                              th:value="${friend.userId}"
+                            />
+                            <button
+                              type="submit"
+                              class="btn btn-sm btn-danger rounded-pill"
+                            >
+                              Từ chối
+                            </button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Tab Lời mời đã gửi -->
+                  <div class="tab-pane fade" id="requests-sent">
+                    <div class="d-flex flex-column gap-3">
+                      <div
+                        th:each="friend : ${requestFriends}"
+                        class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item"
+                      >
+                        <div class="d-flex align-items-center gap-3">
+                          <img
+                            th:src="${friend.avatarUrl}"
+                            class="rounded-circle"
+                            alt="Avatar"
+                            width="48"
+                            height="48"
+                          />
+                          <div>
+                            <h6
+                              th:text="${friend.fullName}"
+                              class="mb-0 fw-bold"
+                            ></h6>
+                            <a
+                              class="fw mb-0 user-link"
+                              th:text="${friend.nameUser}"
+                              th:href="@{/{username}(username=${friend.nameUser})}"
+                            ></a>
+                          </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                          <form action="/friend/deny" method="post">
+                            <input
+                              type="hidden"
+                              name="friendId"
+                              th:value="${friend.userId}"
+                            />
+                            <button
+                              type="submit"
+                              class="btn btn-sm btn-outline-warning rounded-pill"
+                            >
+                              Hủy lời mời
+                            </button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Tab Đã chặn -->
+                  <div class="tab-pane fade" id="blocked-users">
+                    <div class="d-flex flex-column gap-3">
+                      <div
+                        th:if="${#lists.isEmpty(blockedUsers)}"
+                        class="text-center text-muted py-4"
+                      >
+                        <i class="bi bi-slash-circle fs-1"></i>
+                        <p class="mt-2">Bạn chưa chặn ai</p>
+                      </div>
+                      <div
+                        th:each="blocked : ${blockedUsers}"
+                        class="d-flex justify-content-between align-items-center p-3 rounded-3 friend-item"
+                      >
+                        <div class="d-flex align-items-center gap-3">
+                          <img
+                            th:src="${blocked.avatarUrl}"
+                            class="rounded-circle"
+                            alt="Avatar"
+                            width="48"
+                            height="48"
+                          />
+                          <div>
+                            <h6
+                              th:text="${blocked.fullName}"
+                              class="mb-0 fw-bold"
+                            ></h6>
+                            <a
+                              class="fw mb-0 user-link"
+                              th:text="${blocked.nameUser}"
+                              th:href="@{/{username}(username=${blocked.nameUser})}"
+                            ></a>
+                          </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                          <button
+                            class="btn btn-sm btn-success rounded-pill unblock-user-btn"
+                            th:attr="data-user-id=${blocked.userId}"
+                          >
+                            <i class="bi bi-unlock-fill me-1"></i> Bỏ chặn
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Xác Nhận Bỏ Chặn -->
+    <div class="modal fade" id="confirmUnblockModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title text-primary">
+              <i class="bi bi-check-circle me-2"></i>Xác nhận bỏ chặn
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            Bạn có chắc chắn muốn bỏ chặn người dùng này? Sau khi bỏ chặn, bạn
+            và người này có thể tương tác lại với nhau.
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary rounded-pill"
+              data-bs-dismiss="modal"
+            >
+              Hủy
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary rounded-pill"
+              id="confirmUnblockBtn"
+            >
+              <i class="bi bi-check-circle me-1"></i>Bỏ chặn
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Thông Báo -->
+    <div class="modal fade" id="notificationModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="notificationTitle">
+              <i class="bi bi-info-circle-fill me-2"></i>Thông báo
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-0" id="notificationMessage"></p>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-primary rounded-pill"
+              data-bs-dismiss="modal"
+            >
+              Đóng
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-<script th:src="@{/js/theme-toggle.js}"></script>
-</body>
-</html>
+    <script th:src="@{/js/theme-toggle.js}"></script>
 
+    <!-- JavaScript xử lý bỏ chặn -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const confirmUnblockModal = document.getElementById(
+          "confirmUnblockModal"
+        );
+        const confirmUnblockBtn = document.getElementById("confirmUnblockBtn");
+        const notificationModal = document.getElementById("notificationModal");
+        const notificationTitle = document.getElementById("notificationTitle");
+        const notificationMessage = document.getElementById(
+          "notificationMessage"
+        );
+
+        let currentBlockedUserId = null;
+
+        // Hàm hiển thị thông báo
+        function showNotification(title, message, isSuccess) {
+          notificationTitle.innerHTML = isSuccess
+            ? '<i class="bi bi-check-circle-fill text-success me-2"></i>Thành công'
+            : '<i class="bi bi-exclamation-circle-fill text-danger me-2"></i>Lỗi';
+          notificationMessage.textContent = message;
+          const notificationModalInstance = new bootstrap.Modal(
+            notificationModal
+          );
+          notificationModalInstance.show();
+        }
+
+        // Xử lý click nút bỏ chặn - hiển thị modal xác nhận
+        document.querySelectorAll(".unblock-user-btn").forEach((button) => {
+          button.addEventListener("click", function () {
+            currentBlockedUserId = parseInt(this.getAttribute("data-user-id"));
+            const confirmModalInstance = new bootstrap.Modal(
+              confirmUnblockModal
+            );
+            confirmModalInstance.show();
+          });
+        });
+
+        // Xử lý xác nhận bỏ chặn
+        if (confirmUnblockBtn) {
+          confirmUnblockBtn.addEventListener("click", function () {
+            fetch("/user/unblock", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ blockedUserId: currentBlockedUserId }),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                // Đóng modal xác nhận
+                const confirmModalInstance =
+                  bootstrap.Modal.getInstance(confirmUnblockModal);
+                if (confirmModalInstance) {
+                  confirmModalInstance.hide();
+                }
+
+                if (data.success) {
+                  // Hiển thị thông báo thành công
+                  showNotification(
+                    "Thành công",
+                    data.message || "Đã bỏ chặn người dùng thành công!",
+                    true
+                  );
+
+                  // Reload trang sau khi đóng modal thông báo
+                  notificationModal.addEventListener(
+                    "hidden.bs.modal",
+                    function () {
+                      window.location.reload();
+                    },
+                    { once: true }
+                  );
+                } else {
+                  // Hiển thị thông báo lỗi
+                  showNotification(
+                    "Lỗi",
+                    data.message || "Không thể bỏ chặn người dùng này",
+                    false
+                  );
+                }
+              })
+              .catch((error) => {
+                console.error("Error:", error);
+                // Đóng modal xác nhận
+                const confirmModalInstance =
+                  bootstrap.Modal.getInstance(confirmUnblockModal);
+                if (confirmModalInstance) {
+                  confirmModalInstance.hide();
+                }
+                // Hiển thị thông báo lỗi
+                showNotification(
+                  "Lỗi",
+                  "Có lỗi xảy ra khi bỏ chặn người dùng",
+                  false
+                );
+              });
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

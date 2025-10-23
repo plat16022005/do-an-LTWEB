@@ -40,8 +40,8 @@ public class UserSearchController {
 	    model.addAttribute("keyword", keyword);
 
 	    if (keyword != null && !keyword.isBlank()) {
-	        List<User> resultUsers = searchService.searchUser(keyword);
-	        List<Posts> resultPosts = searchService.searchPost(keyword);
+	        List<User> resultUsers = searchService.searchUser(keyword, user.getUserId());
+	        List<Posts> resultPosts = searchService.searchPost(keyword, user.getUserId());
 	        model.addAttribute("resultUsers", resultUsers);
 	        model.addAttribute("resultPosts", resultPosts);
 	        model.addAttribute("likedPostIds", postLikeService.getLikedPostIdsByUser(user, resultPosts));
@@ -58,8 +58,8 @@ public class UserSearchController {
 	@ResponseBody
 	public String handleSearch(@RequestParam("keyword") String keyword, RedirectAttributes redirectAttributes, Model model, HttpSession session) {
 		User user = (User) session.getAttribute("user");
-	    List<User> resultUsers = searchService.searchUser(keyword);
-	    List<Posts> resultPosts = searchService.searchPost(keyword);
+	    List<User> resultUsers = searchService.searchUser(keyword, user.getUserId());
+	    List<Posts> resultPosts = searchService.searchPost(keyword, user.getUserId());
 
 	    Map<String, Object> response = new HashMap<>();
 	    redirectAttributes.addFlashAttribute("resultUsers", resultUsers);

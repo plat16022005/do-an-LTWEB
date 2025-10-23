@@ -46,6 +46,8 @@ public class UserProfileController {
 	private aloute.com.service.PostLikeService postLikeService;
 	@Autowired
 	private aloute.com.service.PostRepostService postRepostService;
+	@Autowired
+	private aloute.com.service.BlockService blockService;
 
 	@GetMapping("/api/posts/{postId}/like")
 	public @ResponseBody String toggleLike(@PathVariable Integer postId, HttpSession session) {
@@ -82,9 +84,24 @@ public class UserProfileController {
 		boolean isFriend = friendService.checkFriend(user.getUserId(), information.getUserId());
 		boolean isBeRequest = friendService.checkBeRequest(information.getUserId(), user.getUserId());
 		boolean isPending = friendService.checkPending(user.getUserId(), information.getUserId());
+		
+		// Kiểm tra mối quan hệ chặn (chi tiết hơn)
+		boolean hasBlockRelationship = blockService.hasBlockRelationship(user.getUserId(), information.getUserId());
+		boolean isBlockedByMe = blockService.isBlockedByMe(user.getUserId(), information.getUserId()); // Tôi chặn họ
+		boolean isBlockedByThem = blockService.isBlockedByThem(user.getUserId(), information.getUserId()); // Họ chặn tôi
+		
+		// Nếu bị chặn, không cho xem profile
+		if (isBlockedByThem) {
+			model.addAttribute("errorMessage", "Bạn không thể xem trang cá nhân này.");
+			return "error/access-denied"; // Tạo trang error hoặc redirect
+		}
+		
 		model.addAttribute("isBeRequest", isBeRequest);
 		model.addAttribute("isPending", isPending);
 		model.addAttribute("isFriend", isFriend);
+		model.addAttribute("hasBlockRelationship", hasBlockRelationship);
+		model.addAttribute("isBlockedByMe", isBlockedByMe); // Thay đổi tên biến
+		model.addAttribute("isBlockedByThem", isBlockedByThem);
 		model.addAttribute("info", information);
 		model.addAttribute("isOwner", isOwner);
 		model.addAttribute("posts", posts);

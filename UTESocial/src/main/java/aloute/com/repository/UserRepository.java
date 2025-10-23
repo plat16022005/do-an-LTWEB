@@ -22,4 +22,13 @@ public interface UserRepository extends JpaRepository<User, Integer> {
         "LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
         "LOWER(u.nameUser) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<User> searchByFullNameOrNameUser(@Param("keyword") String keyword);
+    
+    /**
+     * Kiểm tra có mối quan hệ chặn giữa 2 user không
+     */
+    @Query("SELECT COUNT(b) > 0 FROM BlockedUser b " +
+           "WHERE (b.blocker.userId = :userId1 AND b.blocked.userId = :userId2) " +
+           "OR (b.blocker.userId = :userId2 AND b.blocked.userId = :userId1)")
+    boolean existsBlockRelationship(@Param("userId1") Integer userId1, 
+                                     @Param("userId2") Integer userId2);
 }

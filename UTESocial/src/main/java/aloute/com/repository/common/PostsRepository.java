@@ -50,6 +50,11 @@ public interface PostsRepository extends JpaRepository<Posts, Integer> {
 		                AND u.userId = :currentUserId
 		          )
 		      )
+		      AND NOT EXISTS (
+		          SELECT 1 FROM BlockedUser b
+		          WHERE (b.blocker.userId = :currentUserId AND b.blocked.userId = u.userId)
+		             OR (b.blocker.userId = u.userId AND b.blocked.userId = :currentUserId)
+		      )
 		    ORDER BY FUNCTION('RAND')
 		""")
 		List<Posts> findAllVisiblePosts(@Param("currentUserId") Integer currentUserId);
@@ -106,6 +111,11 @@ public interface PostsRepository extends JpaRepository<Posts, Integer> {
 		              AND p.visibility = 'public'
 		          )
 		      )
+		      AND NOT EXISTS (
+		          SELECT 1 FROM BlockedUser b
+		          WHERE (b.blocker.userId = :currentUserId AND b.blocked.userId = :targetUserId)
+		             OR (b.blocker.userId = :targetUserId AND b.blocked.userId = :currentUserId)
+		      )
 		    ORDER BY p.createdAt DESC
 		""")
 		List<Posts> findPostsOfUserWithVisibility(
@@ -122,8 +132,13 @@ public interface PostsRepository extends JpaRepository<Posts, Integer> {
 		    AND p.status = 'approved'
 		    AND p.isDeleted = false
 		    AND p.visibility = 'public'
+		    AND NOT EXISTS (
+		        SELECT 1 FROM BlockedUser b
+		        WHERE (b.blocker.userId = :currentUserId AND b.blocked.userId = u.userId)
+		           OR (b.blocker.userId = u.userId AND b.blocked.userId = :currentUserId)
+		    )
 		""")
-		List<Posts> searchPublicPostsByContent(@Param("keyword") String keyword);
+		List<Posts> searchPublicPostsByContent(@Param("keyword") String keyword, @Param("currentUserId") Integer currentUserId);
 
 	@Query("""
 		    SELECT DISTINCT p FROM Posts p

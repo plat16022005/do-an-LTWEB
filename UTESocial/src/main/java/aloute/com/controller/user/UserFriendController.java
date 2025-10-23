@@ -20,6 +20,9 @@ public class UserFriendController {
 	private FriendService friendService;
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	private aloute.com.service.BlockService blockService;
+	
 	@GetMapping("/friend")
 	public String showFriendForm(Model model, HttpSession session)
 	{
@@ -31,10 +34,12 @@ public class UserFriendController {
     	List<User> friends = friendService.getFriendList(user.getUserId());
     	List<User> beRequestFriends = friendService.getListBeingRequested(user.getUserId());
     	List<User> requestFriends = friendService.getListRequested(user.getUserId());
+    	List<User> blockedUsers = blockService.getBlockedUsers(user.getUserId());
     	
     	model.addAttribute("friends", friends);
     	model.addAttribute("beRequestFriends", beRequestFriends);
     	model.addAttribute("requestFriends", requestFriends);
+    	model.addAttribute("blockedUsers", blockedUsers);
 		return "user/friend";
 	}
 	@PostMapping("/friend/unfriend")

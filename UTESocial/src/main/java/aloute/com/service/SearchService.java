@@ -20,13 +20,24 @@ public class SearchService {
     @Autowired
     private PostsRepository postsRepository;
 
-    public List<User> searchUser(String keyword)
+    public List<User> searchUser(String keyword, Integer currentUserId)
     {
-    	return userRepository.searchByFullNameOrNameUser(keyword);
+    	List<User> allUsers = userRepository.searchByFullNameOrNameUser(keyword);
+    	
+    	// Nếu không có currentUserId, trả về tất cả
+    	if (currentUserId == null) {
+    		return allUsers;
+    	}
+    	
+    	// Lọc bỏ các user có mối quan hệ chặn với currentUser
+    	return allUsers.stream()
+    			.filter(user -> !userRepository.existsBlockRelationship(currentUserId, user.getUserId()))
+    			.toList();
     }
-    public List<Posts> searchPost(String keyword)
+    
+    public List<Posts> searchPost(String keyword, Integer currentUserId)
     {
-    	return postsRepository.searchPublicPostsByContent(keyword);
+    	return postsRepository.searchPublicPostsByContent(keyword, currentUserId);
     }
 //    @Transactional(readOnly = true)
 //    public List<Map<String, Object>> searchAll(String keyword) {
