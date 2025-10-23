@@ -61,11 +61,19 @@ public class BlockService {
             return "Đã tồn tại mối quan hệ chặn giữa hai người dùng này";
         }
 
-        // XÓA TẤT CẢ shares của blocked từ bài viết của blocker
-        long deletedSharesCount = sharesRepository.countSharesByBlockedUserFromBlockerPosts(blockerId, blockedId);
-        if (deletedSharesCount > 0) {
+        // XÓA TẤT CẢ shares HAI CHIỀU
+        // 1. Xóa shares của blocked từ bài viết của blocker (B đăng lại bài của A)
+        long deletedSharesCount1 = sharesRepository.countSharesByBlockedUserFromBlockerPosts(blockerId, blockedId);
+        if (deletedSharesCount1 > 0) {
             sharesRepository.deleteSharesByBlockedUserFromBlockerPosts(blockerId, blockedId);
-            System.out.println("✅ Đã xóa " + deletedSharesCount + " bài đăng lại của user " + blockedId + " từ bài viết của user " + blockerId);
+            System.out.println("✅ Đã xóa " + deletedSharesCount1 + " bài đăng lại của user " + blockedId + " từ bài viết của user " + blockerId);
+        }
+        
+        // 2. Xóa shares của blocker từ bài viết của blocked (A đăng lại bài của B)
+        long deletedSharesCount2 = sharesRepository.countSharesByBlockedUserFromBlockerPosts(blockedId, blockerId);
+        if (deletedSharesCount2 > 0) {
+            sharesRepository.deleteSharesByBlockedUserFromBlockerPosts(blockedId, blockerId);
+            System.out.println("✅ Đã xóa " + deletedSharesCount2 + " bài đăng lại của user " + blockerId + " từ bài viết của user " + blockedId);
         }
 
         // Tạo mới BlockedUser
