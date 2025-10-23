@@ -747,4 +747,120 @@ textarea#reply-input {
 .light-theme .comment-like-btn.liked i {
   color: #ef4444;
 }
-     
+         /* Bổ sung CSS cho tên người gửi trong chat nhóm */
+        .sender-name {
+            font-size: 0.8rem;
+            margin-bottom: 0.25rem;
+            color: #adb5bd;
+        }
+        .light-theme .sender-name {
+            color: #64748b;
+        }
+        .message-received .sender-name {
+            margin-left: 0.5rem;
+        }
+
+        /* CSS cho chat interface */
+        .chat-container {
+            display: flex;
+            height: calc(100vh - 120px);
+        }
+        .conversation-list {
+            width: 350px;
+            flex-shrink: 0;
+            overflow-y: auto;
+            border-right: 1px solid #334155;
+        }
+        .chat-window {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .conversation-item {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .conversation-item:hover, .conversation-item.active {
+            background-color: #334155;
+        }
+        .chat-header {
+            border-bottom: 1px solid #334155;
+        }
+        .chat-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .message {
+            max-width: 70%;
+            padding: 0.5rem 1rem;
+            border-radius: 1.25rem;
+            margin-bottom: 0.5rem;
+            word-wrap: break-word;
+        }
+        .message-sent {
+            background-color: #0ea5e9;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 0.25rem;
+        }
+        .message-received {
+            background-color: #334155;
+            align-self: flex-start;
+            border-bottom-left-radius: 0.25rem;
+        }
+        .chat-footer {
+            border-top: 1px solid #334155;
+        }
+
+        .message img, .message video {
+            max-width: 100%;
+            border-radius: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .message-file-display {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: inherit;
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            margin-top: 0.5rem;
+        }
+        .message-file-display:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* 🌞 Light Mode cho Chat */
+        .light-theme .conversation-list { border-right-color: #e2e8f0; }
+        .light-theme .conversation-item:hover, .light-theme .conversation-item.active { background-color: #e2e8f0; }
+        .light-theme .chat-header { border-bottom-color: #e2e8f0; }
+        .light-theme .message-received { background-color: #e2e8f0; }
+        .light-theme .chat-footer { border-top-color: #e2e8f0; }
+        .light-theme .message-file-display {
+            background-color: rgba(0, 0, 0, 0.05);
+            color: #1e293b;
+        }
+        .light-theme .message-file-display:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        /* 👤 Avatar trong chat */
+        .avatar-chat {
+            width: 36px;
+            height: 36px;
+            object-fit: cover;
+        }
+        .chat-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 0.5rem;
+        }
+        .chat-row.sent {
+            justify-content: flex-end;
+        }
