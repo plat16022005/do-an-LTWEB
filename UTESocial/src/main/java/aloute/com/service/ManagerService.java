@@ -11,10 +11,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import aloute.com.entity.Notification;
+import aloute.com.entity.PostModeration;
 import aloute.com.entity.Posts;
 import aloute.com.entity.Reports;
 import aloute.com.entity.User;
+import aloute.com.repository.NotificationRepository;
 import aloute.com.repository.UserRepository;
+import aloute.com.repository.admin.PostModerationRepository;
 import aloute.com.repository.common.PostsRepository;
 import aloute.com.repository.common.ReportsRepository;
 
@@ -137,16 +141,62 @@ public class ManagerService {
             postsRepository.save(post);
         }
     }
+
+    @Autowired
+    private NotificationRepository notificationRepository; // <-- THÊM DÒNG NÀY
+
+    @Autowired
+    private PostModerationRepository postModerationRepository;
     
+    // public void rejectPost(Integer postId, String reason) 
+    // {
+    //     Optional<Posts> postOptional = postsRepository.findById(postId);
+    //     if (postOptional.isPresent()) 
+    //     {
+    //         Posts post = postOptional.get();
+    //         post.setStatus("rejected");
+            
+    //         postsRepository.save(post);
+    //     }
+    // }
+
     public void rejectPost(Integer postId, String reason) 
     {
-        Optional<Posts> postOptional = postsRepository.findById(postId);
+        Optional<Posts> postOptional = postsRepository.findByIdWithUser(postId);
         if (postOptional.isPresent()) 
         {
             Posts post = postOptional.get();
+            User postOwner = post.getUser();
+
             post.setStatus("rejected");
-            
             postsRepository.save(post);
+
+            // Tạo bản ghi trong PostModeration
+            PostModeration moderation = new PostModeration();
+            moderation.setPost(post);
+            moderation.setStatus("rejected");
+            moderation.setReason(reason);
+            moderation.setModerator(null); 
+            moderation.setReviewedAt(LocalDateTime.now());
+            postModerationRepository.save(moderation);
+
+            // Gửi thông báo đến người dùng
+            if (postOwner != null) 
+            {
+                Notification notification = new Notification();
+                notification.setUser(postOwner);
+                notification.setRelatedId(post.getPostId());
+                notification.setType("POST_REJECTION");
+
+                String content = "Your post (ID: " + postId + ") has been rejected. Reason: " + reason;
+                notification.setContent(content);
+                notification.setCreatedAt(LocalDateTime.now());
+
+                notification.setActorAvatar(null);
+
+                notification.setIsRead(false);
+                notificationRepository.save(notification);
+            }
         }
     }
     
