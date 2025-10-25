@@ -9,9 +9,73 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <!-- Link to external stylesheet -->
-    <link rel="stylesheet" th:href="@{/css/style.css}" />
+<link rel="stylesheet" th:href="@{/css/style.css}" />
     <style>
+        /* === THAY BẰNG TOÀN BỘ ĐOẠN NÀY === */
 
+        /* 1. Thiết lập vùng chứa:
+           - Dùng 'flex' để các item xếp hàng ngang.
+           - Dùng 'wrap' để tự động xuống hàng khi hết chỗ.
+           - Dùng 'gap' để tạo khoảng cách đẹp mắt.
+        */
+        .message .attachment-scroll {
+            display: flex;
+            flex-wrap: wrap;    /* Đây là mấu chốt để tự động xuống hàng */
+            gap: 8px;           /* Khoảng cách giữa các tệp */
+            padding-top: 5px;
+            
+            /* Bỏ các thuộc tính cuộn ngang cũ */
+            overflow-x: hidden; 
+            padding-bottom: 0;
+        }
+
+        /* 2. Thiết lập kích thước CỤ THỂ cho TỪNG tệp đính kèm.
+           Bạn có thể thay đổi 100px thành kích thước bạn muốn.
+        */
+        .message .attachment-scroll .attachment-item img,
+        .message .attachment-scroll .attachment-item video,
+        .message .attachment-scroll .attachment-item .bg-dark-subtle {
+            
+            width: 100px !important;  /* Độ rộng CỤ THỂ */
+            height: 100px !important; /* Độ cao CỤ THỂ */
+            
+            /* Đảm bảo ảnh/video không bị méo, mà sẽ fill vừa khung */
+            object-fit: cover;
+            
+            /* Ghi đè các style inline cũ từ JS */
+            max-width: none !important;
+            max-height: none !important;
+            border-radius: 8px;
+        }
+
+        /* 3. Style riêng cho các tệp (không phải ảnh/video) 
+           để chúng cũng có kích thước 100x100
+        */
+        .message .attachment-scroll .attachment-item .bg-dark-subtle {
+            /* Đảm bảo nội dung file (icon, link) được căn giữa */
+            display: flex !important;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden; /* Ẩn chữ nếu quá dài */
+            padding: 5px !important; /* Ghi đè padding cũ */
+        }
+
+        /* 4. Tinh chỉnh link file cho gọn */
+        .message .attachment-scroll .attachment-item .bg-dark-subtle a {
+            font-size: 0.8rem;
+            word-break: break-all; /* Ngắt chữ nếu tên file quá dài */
+        }
+
+        /* 5. Gỡ bỏ lề phải 'me-2' mà JS đang thêm vào 
+           để dùng 'gap' cho đồng bộ
+        */
+        .message .attachment-scroll .attachment-item {
+            margin-right: 0 !important;
+        }
+
+        /* === HẾT === */
     </style>
 </head>
 <body class="text-light">
@@ -107,7 +171,7 @@
                                    <h4 class="mb-0">Tin nhắn</h4>
                                </div>
 								<div class="list-group list-group-flush">
-								    <div th:each="friend : ${friends}"
+								    <div th:each="friend : ${chatList}"
 								         class="list-group-item list-group-item-action bg-transparent p-3 conversation-item"
 								         th:attr="data-peer-id=${friend.userId},data-username=${friend.nameUser}"
 								         onclick="openChatWith(this)">
@@ -153,13 +217,23 @@
 								</div>
 
 
-                               <div class="chat-footer p-3">
-                                   <div class="input-group">
-                                       <button class="btn btn-outline-secondary"><i class="bi bi-paperclip"></i></button>
-                                       <input type="text" class="form-control" placeholder="Nhập tin nhắn...">
-                                       <button class="btn btn-primary"><i class="bi bi-send-fill"></i></button>
-                                   </div>
-                               </div>
+								<div class="chat-footer p-3">
+								    
+								    <div id="file-preview-container" 
+								         class="d-none mb-2 p-2 border rounded" 
+								         style="display: flex; flex-wrap: wrap; gap: 10px; max-height: 150px; overflow-y: auto;">
+								        </div>
+								
+								    <div class="input-group">
+								        <button class="btn btn-outline-secondary"><i class="bi bi-paperclip"></i></button>
+								        <input id="chat-input" type="text" class="form-control" placeholder="Nhập tin nhắn..." 
+								               onkeypress="if(event.key==='Enter'){sendMessage()}">
+								        <button class="btn btn-primary" onclick="sendMessage()">
+								            <i class="bi bi-send-fill"></i>
+								        </button>
+								    </div>
+								</div>
+
                            </div>
                        </div>
                     </div>
@@ -168,7 +242,21 @@
         </div>
     </div>
 <input type="hidden" id="auto-open-friend-id" th:value="${friendId}">
-
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content bg-transparent border-0">
+      
+      <div class="modal-header border-0 position-absolute top-0 end-0" style="z-index: 10;">
+         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      
+      <div class="modal-body text-center p-0">
+        <img src="" id="modalImage" class="img-fluid" alt="Ảnh phóng to" style="max-height: 90vh; width: auto; border-radius: 8px;">
+      </div>
+      
+    </div>
+  </div>
+</div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script th:src="@{/js/theme-toggle.js}"></script>
 <script>
@@ -236,7 +324,7 @@ function renderMessage(msg) {
 
     // ✅ Hiển thị attachments có thanh trượt ngang
     if (msg.attachments && msg.attachments.length > 0) {
-        messageContent += `<div class="attachment-scroll mt-2">`;
+    	messageContent += `<div class="attachment-scroll mt-2">`;
 
         msg.attachments.forEach(att => {
         	const fileUrl = att.fileUrl ?? att.fileURL ?? att.url ?? '';
@@ -254,10 +342,13 @@ function renderMessage(msg) {
             console.log("📄 Attachment Type:", fileType);
 
             if (fileType.startsWith('image')) {
-                // 🖼 Ảnh
+                // 🖼 Ảnh (ĐÃ CẬP NHẬT)
                 messageContent += `
                     <div class="attachment-item me-2">
-                        <img src="${absoluteUrl}" class="img-fluid rounded" style="max-width: 200px; max-height: 200px; object-fit: cover;">
+                        <img src="${absoluteUrl}" 
+                             class="img-fluid rounded" 
+                             style="max-width: 200px; max-height: 200px; object-fit: cover; cursor: pointer;"
+                             onclick="showImageModal('${absoluteUrl}')">
                     </div>
                 `;
             } else if (fileType.startsWith('video')) {
@@ -297,45 +388,252 @@ function renderMessage(msg) {
     document.getElementById('chat-body').appendChild(row);
 }
 
-</script>
+//... ngay bên dưới hàm renderMessage(msg) { ... }
 
- <script>
-document.querySelector('.chat-footer .btn-primary').addEventListener('click', async () => {
-    const input = document.querySelector('.chat-footer input[type="text"]');
-    const content = input.value.trim();
-    if (!content && !window.pendingAttachments?.length) return;
+function updateConversationPreview(msg) {
+    // Đảm bảo msg.sender và msg.receiver tồn tại
+    if (!msg.sender || !msg.receiver) {
+        console.warn("Bỏ qua update preview vì thiếu sender/receiver", msg);
+        return;
+    }
+    
+    const senderId = msg.sender.userId;
+    const receiverId = msg.receiver.userId;
+    const sentByMe = String(senderId) === USER_ID;
 
-    const formData = new FormData();
-    formData.append('content', content);
-    formData.append('receiverId', currentChatFriendId);
+    // ID của người bạn (người ở đầu bên kia)
+    const friendId = sentByMe ? String(receiverId) : String(senderId);
 
-    // 🗂 Thêm file đính kèm nếu có
-    if (window.pendingAttachments && window.pendingAttachments.length > 0) {
-        window.pendingAttachments.forEach(file => formData.append('attachments', file));
+    // 1. Tìm đúng item trong danh sách
+    const conversationElement = document.querySelector(`.conversation-item[data-peer-id="${friendId}"]`);
+    if (!conversationElement) return; // Không tìm thấy
+
+    // 2. Tìm phần tử span để update
+    const previewSpan = conversationElement.querySelector('.message-preview span');
+    if (!previewSpan) return;
+
+    // 3. Quyết định nội dung preview (chỉ nội dung tin nhắn)
+    let previewContent = msg.content; // Lấy nội dung text
+
+    if (!previewContent && msg.attachments && msg.attachments.length > 0) {
+        // Nếu không có text, nhưng có attachment, hiển thị thông báo chung
+        const firstAtt = msg.attachments[0];
+        let fileType = firstAtt.fileType ? firstAtt.fileType.toLowerCase() : '';
+        
+        if (fileType.startsWith('image')) previewContent = "🖼️ [Hình ảnh]";
+        else if (fileType.startsWith('video')) previewContent = "📹 [Video]";
+        else previewContent = "📎 [Tệp đính kèm]";
+        
+    } else if (!previewContent) {
+        previewContent = "..."; // Fallback nếu tin nhắn rỗng
+    }
+    
+    // 4. ⭐ NÂNG CẤP: Thêm tên người gửi hoặc "Bạn:"
+    let fullPreviewText = "";
+    if (sentByMe) {
+        // Nếu là mình gửi
+        fullPreviewText = "Bạn: " + previewContent;
+    } else {
+        // Nếu là người khác gửi (Yêu cầu mới)
+        const senderName = msg.sender.fullName || "Người gửi"; // Lấy tên người gửi
+        fullPreviewText = senderName + ": " + previewContent;
     }
 
-    const res = await fetch('/message/send', { method: 'POST', body: formData });
-    const msg = await res.json();
-
-    // ✅ Hiển thị ngay tin nhắn của bản thân
-    renderMessage(msg);
-
-    // Xoá input và reset file sau khi gửi
-    input.value = '';
-    window.pendingAttachments = [];
-});
+    // 5. Cập nhật nội dung
+    previewSpan.textContent = fullPreviewText;
+}
+function showImageModal(imageUrl) {
+    // 1. Tìm thẻ <img> bên trong modal
+    const modalImage = document.getElementById('modalImage');
+    
+    // 2. Gán đường dẫn ảnh cho nó
+    modalImage.src = imageUrl;
+    
+    // 3. Lấy thực thể (instance) của modal và hiển thị
+    // (Chúng ta dùng 'new' mỗi lần để đảm bảo nó luôn hoạt động
+    //  kể cả khi modal bị ẩn/hiện nhiều lần)
+    const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+    modal.show();
+}
 </script>
- <script>
+<script>
 document.querySelector('.chat-footer .btn-outline-secondary').addEventListener('click', () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.multiple = true;
+    input.value = null; // Reset để có thể chọn lại file y hệt
+
     input.onchange = (e) => {
+        // Thay thế danh sách cũ bằng danh sách file mới
+        // (Nếu muốn *thêm* vào, dùng: window.pendingAttachments = (window.pendingAttachments || []).concat(Array.from(e.target.files)) )
         window.pendingAttachments = Array.from(e.target.files);
+        
         console.log("📎 File đính kèm đã chọn:", window.pendingAttachments);
+        
+        // ⭐ BƯỚC 3: GỌI HÀM RENDER PREVIEW
+        renderFilePreviews();
     };
     input.click();
 });
+</script>
+<!-- SockJS -->
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+
+<!-- StompJS bản browser -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+
+<script>
+    let stompClient = null;
+
+    function connectWebSocket() {
+        const socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, (frame) => {
+            console.log('✅ Kết nối WS thành công:', frame);
+
+            // đăng ký nhận tin nhắn realtime cho user hiện tại
+         // đăng ký nhận tin nhắn realtime cho user hiện tại
+            stompClient.subscribe('/topic/messages/' + USER_ID, (message) => {
+                const msg = JSON.parse(message.body);
+                console.log("📩 Nhận tin nhắn websocket:", msg);
+
+                // ⭐ BƯỚC 3: LUÔN CẬP NHẬT PREVIEW KHI NHẬN
+                // (Hàm này sẽ tự kiểm tra xem tin nhắn là của mình hay của bạn)
+                updateConversationPreview(msg);
+
+                // --- Logic cũ của bạn để hiển thị tin nhắn trong khung chat ---
+                let isCurrentChat = false;
+                if(msg.sender && msg.receiver) {
+                    isCurrentChat = (String(msg.sender.userId) === String(currentChatFriendId)) || 
+                                    (String(msg.receiver.userId) === String(currentChatFriendId));
+                } else if (msg.senderId && msg.receiverId) {
+                     isCurrentChat = (String(msg.senderId) === String(currentChatFriendId)) || 
+                                    (String(msg.receiverId) === String(currentChatFriendId));
+                }
+                
+                if (isCurrentChat) {
+                    let senderId = msg.sender ? msg.sender.userId : msg.senderId; 
+                    if (String(senderId) !== USER_ID) {
+                         console.log("✅ Hiển thị tin nhắn từ người khác");
+                         renderMessage(msg);
+                    } else {
+                        console.log("ℹ️ Bỏ qua tin nhắn của chính mình (vì đã render bởi fetch)");
+                    }
+                } else {
+                    console.log("ℹ️ Không hiển thị tin nhắn vì không phải chat hiện tại");
+                }
+            });
+
+        });
+    }
+
+    async function sendMessage() {
+        if (!stompClient || !stompClient.connected) {
+            console.warn('⚠️ WebSocket chưa kết nối');
+            // Bạn vẫn có thể cho gửi qua fetch, nhưng nên log lỗi
+            // return; // Không nên return, cứ để fetch chạy
+        }
+
+        const input = document.querySelector('#chat-input');
+        const content = input.value.trim();
+        // (Kiểm tra file đính kèm)
+        const hasFiles = window.pendingAttachments && window.pendingAttachments.length > 0;
+        
+        if (content === '' && !hasFiles || !currentChatFriendId) return;
+
+        // 📨 Gửi về API backend để lưu DB + tạo DTO
+        const formData = new FormData();
+        formData.append('content', content);
+        formData.append('receiverId', currentChatFriendId);
+
+        if (hasFiles) {
+            window.pendingAttachments.forEach(file => formData.append('attachments', file));
+        }
+
+        const res = await fetch('/message/send', {
+            method: 'POST',
+            body: formData
+        });
+
+        const savedMsg = await res.json();
+
+        // ✅ Render tin nhắn mình gửi ngay lập tức
+        renderMessage(savedMsg);
+        
+        // ⭐ BƯỚC 2: CẬP NHẬT PREVIEW KHI GỬI
+        updateConversationPreview(savedMsg);
+
+        // reset input
+        input.value = '';
+        window.pendingAttachments = [];
+        
+        renderFilePreviews();
+    }
+
+    // ⭐⭐⭐ GỌI HÀM KẾT NỐI Ở ĐÂY ⭐⭐⭐
+    connectWebSocket();
+    function renderFilePreviews() {
+        const previewContainer = document.getElementById('file-preview-container');
+        previewContainer.innerHTML = ''; // Xóa preview cũ
+
+        if (!window.pendingAttachments || window.pendingAttachments.length === 0) {
+            previewContainer.classList.add('d-none'); // Ẩn container nếu không có file
+            return;
+        }
+
+        previewContainer.classList.remove('d-none'); // Hiển thị container
+
+        window.pendingAttachments.forEach((file, index) => {
+            const previewWrapper = document.createElement('div');
+            previewWrapper.className = 'file-preview-item position-relative';
+            previewWrapper.title = file.name; // Hiển thị tên file khi hover
+            
+            // Nút xóa file (chữ X nhỏ)
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'btn btn-danger btn-sm rounded-circle position-absolute top-0 end-0 m-1';
+            removeBtn.innerHTML = '<i class="bi bi-x" style="font-size: 0.8rem;"></i>';
+            removeBtn.style = 'width: 20px; height: 20px; line-height: 1; padding: 0; z-index: 10;';
+            removeBtn.onclick = () => removePendingFile(index);
+
+            if (file.type.startsWith('image/')) {
+                // Preview cho ảnh
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewWrapper.innerHTML = `<img src="${e.target.result}" style="height: 70px; width: 70px; object-fit: cover; border-radius: 5px;">`;
+                    previewWrapper.appendChild(removeBtn);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                // Preview cho file khác (hiện icon và tên)
+                let icon = 'bi-file-earmark'; // Icon mặc định
+                if (file.type.startsWith('video/')) icon = 'bi-file-earmark-play';
+                if (file.type.includes('pdf')) icon = 'bi-file-earmark-pdf';
+
+                previewWrapper.innerHTML = `
+                    <div class="d-flex flex-column align-items-center justify-content-center bg-body-tertiary rounded" 
+                         style="height: 70px; width: 70px; text-align: center; padding: 5px; overflow: hidden; border: 1px solid var(--bs-border-color);">
+                        <i class="bi ${icon}" style="font-size: 2rem;"></i>
+                        <small class="text-truncate" style="max-width: 65px;">${file.name}</small>
+                    </div>
+                `;
+                previewWrapper.appendChild(removeBtn);
+            }
+            
+            previewContainer.appendChild(previewWrapper);
+        });
+    }
+
+    /**
+     * Xóa một file khỏi danh sách chờ (pendingAttachments)
+     */
+    function removePendingFile(indexToRemove) {
+        // Lọc ra file bị xóa
+        window.pendingAttachments = window.pendingAttachments.filter((_, index) => index !== indexToRemove);
+        // Render lại danh sách preview
+        renderFilePreviews();
+    }
 </script>
  
 </body>

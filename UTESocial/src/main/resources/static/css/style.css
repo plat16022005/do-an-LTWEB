@@ -1038,3 +1038,46 @@ textarea#reply-input {
     background-color: #000; /* để nhìn rõ nếu ảnh không load */
 }
 
+/* =========================================================
+   ✅ FIX THANH CUỘN NGANG ATTACHMENT
+   ========================================================= */
+.message .attachment-scroll {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: 8px;
+  max-width: 100%;
+  margin-top: 0.5rem;
+  scroll-behavior: smooth;
+}
+
+.message .attachment-item {
+  flex: 0 0 auto;
+  min-width: 180px;   /* 👈 quan trọng để tạo chiều ngang dài */
+  max-width: 250px;
+}
+
+.message .attachment-item img,
+.message .attachment-item video {
+  max-width: unset !important;  /* ✅ override max-width cũ */
+  width: 100% !important;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.message:has(.attachment-scroll) {
+  max-width: 500px;  /* 👉 Cho phép message giãn ngang khi có nhiều file */
+}
+
+.attachment-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+.attachment-scroll::-webkit-scrollbar-thumb {
+  background-color: #6c757d;
+  border-radius: 4px;
+}
+.attachment-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}

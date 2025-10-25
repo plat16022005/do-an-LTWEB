@@ -92,7 +92,7 @@
               <li class="nav-item">
                 <a
                   class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
-                  href="#"
+                  href="/message"
                 >
                   <i class="bi bi-envelope fs-3"></i> <span>Tin nhắn</span>
                 </a>
@@ -241,12 +241,11 @@
                     </button>
                   </form>
                   <!-- Nhắn tin -->
-                  <button
-                    th:if="${!hasBlockRelationship}"
-                    class="btn btn-gray-custom rounded-pill"
-                  >
-                    <i class="bi bi-chat-dots-fill me-1"></i> Nhắn tin
-                  </button>
+					<a th:href="@{/message/{userId}(userId=${info.userId})}"
+					   th:if="${!hasBlockRelationship}"
+					   class="btn btn-gray-custom rounded-pill">
+					    <i class="bi bi-chat-dots-fill me-1"></i> Nhắn tin
+					</a>
 
                   <!-- Cảnh báo ngắn gọn khi có mối quan hệ chặn -->
                   <div

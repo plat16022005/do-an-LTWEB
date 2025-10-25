@@ -1,11 +1,31 @@
 package aloute.com.dto;
 
+import java.util.List;
+
 public class MessageDTO {
-    public Integer getId() {
-		return id;
+    public Integer getMessageId() {
+		return messageId;
 	}
-	public void setId(Integer id) {
-		this.id = id;
+	public void setMessageId(Integer messageId) {
+		this.messageId = messageId;
+	}
+	public String getContent() {
+		return content;
+	}
+	public void setContent(String content) {
+		this.content = content;
+	}
+	public String getCreatedAt() {
+		return createdAt;
+	}
+	public void setCreatedAt(String createdAt) {
+		this.createdAt = createdAt;
+	}
+	public Integer getSenderId() {
+		return senderId;
+	}
+	public void setSenderId(Integer senderId) {
+		this.senderId = senderId;
 	}
 	public String getSenderName() {
 		return senderName;
@@ -19,31 +39,30 @@ public class MessageDTO {
 	public void setSenderAvatar(String senderAvatar) {
 		this.senderAvatar = senderAvatar;
 	}
-	public String getContent() {
-		return content;
+	public Integer getReceiverId() {
+		return receiverId;
 	}
-	public void setContent(String content) {
-		this.content = content;
+	public void setReceiverId(Integer receiverId) {
+		this.receiverId = receiverId;
 	}
-	public String getTime() {
-		return time;
+	public List<AttachmentDTO> getAttachments() {
+		return attachments;
 	}
-	public void setTime(String time) {
-		this.time = time;
+	public void setAttachments(List<AttachmentDTO> attachments) {
+		this.attachments = attachments;
 	}
-	public boolean isSentByMe() {
-		return sentByMe;
-	}
-	public void setSentByMe(boolean sentByMe) {
-		this.sentByMe = sentByMe;
-	}
-	private Integer id;
+	private Integer messageId;
+    private String content;
+    private String createdAt;
+
+    private Integer senderId;
     private String senderName;
     private String senderAvatar;
-    private String content;
-    private String time;
-    private boolean sentByMe;
 
-    // getters + setters
+    private Integer receiverId;
+    private List<AttachmentDTO> attachments;
+
+    // getters / setters
 }
+
 

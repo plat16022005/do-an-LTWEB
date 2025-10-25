@@ -17,7 +17,7 @@ public class Message {
     private Integer messageId;
 
     // Người gửi
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "SenderID")
     @JsonIgnoreProperties({"sentMessages", "receivedMessages"})
     private User sender;

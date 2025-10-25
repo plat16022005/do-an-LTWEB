@@ -31,5 +31,10 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
 		""")
 		List<Message> findAllMessagesWithAttachments(@Param("userId1") Integer userId1,
 		                                             @Param("userId2") Integer userId2);
-
+	@Query("SELECT CASE WHEN m.sender.userId = :userId THEN m.receiver.userId ELSE m.sender.userId END as partnerId " +
+	           "FROM Message m " +
+	           "WHERE m.sender.userId = :userId OR m.receiver.userId = :userId " +
+	           "GROUP BY partnerId " +
+	           "ORDER BY MAX(m.createdAt) DESC")
+	    List<Integer> findDistinctConversationPartnerIdsSortedByRecent(@Param("userId") Integer userId);
 }
