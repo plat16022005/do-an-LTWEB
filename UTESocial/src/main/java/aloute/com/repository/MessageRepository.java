@@ -5,6 +5,7 @@ import aloute.com.entity.Message;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -37,4 +38,22 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
 	           "GROUP BY partnerId " +
 	           "ORDER BY MAX(m.createdAt) DESC")
 	    List<Integer> findDistinctConversationPartnerIdsSortedByRecent(@Param("userId") Integer userId);
+	@Modifying // Bắt buộc phải có cho @Query UPDATE/DELETE
+	@Query("UPDATE Message m SET m.isRead = true " +
+	       "WHERE m.sender.userId = :senderId " +
+	       "AND m.receiver.userId = :receiverId " +
+	       "AND m.isRead = false")
+	void updateReadStatus(@Param("senderId") Integer senderId, 
+	                      @Param("receiverId") Integer receiverId);
+	long countByReceiver_UserIdAndIsReadFalse(Integer receiverId);
+	public interface UnreadCountPerSender {
+	    Integer getSenderId();
+	    Long getUnreadCount();
+	}
+	@Query("SELECT m.sender.userId AS senderId, COUNT(m) AS unreadCount " +
+		       "FROM Message m " +
+		       "WHERE m.receiver.userId = :receiverId " +
+		       "AND m.isRead = false " +
+		       "GROUP BY m.sender.userId")
+		List<UnreadCountPerSender> getUnreadCountsPerSender(@Param("receiverId") Integer receiverId);
 }

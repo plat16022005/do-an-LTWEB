@@ -152,4 +152,27 @@ public class MessageService {
 
         return sortedPartners;
     }
+    @Transactional
+    public void markMessagesAsRead(Integer senderId, Integer receiverId) {
+        // Chúng ta sẽ tạo hàm này trong Repository
+        messageRepository.updateReadStatus(senderId, receiverId);
+    }
+    @Transactional(readOnly = true)
+    public long getUnreadMessageCount(Integer currentUserId) {
+        // (Chúng ta sẽ tạo hàm này ở bước 2c)
+        return messageRepository.countByReceiver_UserIdAndIsReadFalse(currentUserId);
+    }
+    @Transactional(readOnly = true)
+    public Map<Integer, Long> getUnreadCountsPerSender(Integer currentUserId) {
+        List<MessageRepository.UnreadCountPerSender> counts = 
+            messageRepository.getUnreadCountsPerSender(currentUserId);
+        
+        // Chuyển List<DTO> thành Map<Integer, Long>
+        return counts.stream().collect(
+            Collectors.toMap(
+                MessageRepository.UnreadCountPerSender::getSenderId,
+                MessageRepository.UnreadCountPerSender::getUnreadCount
+            )
+        );
+    }
 }

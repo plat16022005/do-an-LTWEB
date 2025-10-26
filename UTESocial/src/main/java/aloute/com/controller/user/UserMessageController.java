@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -311,5 +312,43 @@ public class UserMessageController {
 	    response.put("groupId", msg.getGroup().getGroupId()); // ⬅️ Đây là mấu chốt
 
 	    return response;
+	}
+	@PostMapping("/message/mark-as-read")
+	@ResponseBody // Trả về JSON (hoặc không cần gì cũng được)
+	public Map<String, String> markChatAsRead(
+	        @RequestBody Map<String, String> payload, 
+	        HttpSession session) {
+	    
+	    User currentUser = (User) session.getAttribute("user");
+	    if (currentUser == null) {
+	        return Map.of("status", "error", "message", "Chưa đăng nhập");
+	    }
+	    
+	    try {
+	        // Lấy ID của người bạn (người gửi) mà ta vừa đọc tin nhắn
+	        Integer friendId = Integer.parseInt(payload.get("friendId"));
+	        Integer currentUserId = currentUser.getUserId();
+	        
+	        // Gọi Service để cập nhật CSDL
+	        // (Chúng ta sẽ tạo hàm này ở bước tiếp theo)
+	        messageService.markMessagesAsRead(friendId, currentUserId);
+	        
+	        return Map.of("status", "success");
+	    } catch (Exception e) {
+	        return Map.of("status", "error", "message", e.getMessage());
+	    }
+	}
+	@GetMapping("/message/unread-count")
+	@ResponseBody
+	public Map<String, Long> getUnreadMessageCount(HttpSession session) {
+	    User user = (User) session.getAttribute("user");
+	    if (user == null) {
+	        return Map.of("count", 0L);
+	    }
+	    
+	    // (Chúng ta sẽ tạo hàm này ở bước 2b)
+	    long count = messageService.getUnreadMessageCount(user.getUserId());
+	    
+	    return Map.of("count", count);
 	}
 }
