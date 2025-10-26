@@ -60,173 +60,177 @@
                             </ul>
 
                             <!-- Tab content -->
-                            <div class="tab-content">
-								<!-- Tất cả -->
-								<div class="tab-pane fade show active" id="all-notifications">
-								    <div class="list-group list-group-flush">
-								        <a th:each="n : ${notifications}"
-								           th:if="${!n.isRead}"   
-								           th:href="@{'/notification/read/' + ${n.notificationId}}"
-								           th:classappend="${n.isRead} ? 'notification-item' : 'notification-item unread'"
-								           class="list-group-item list-group-item-action bg-transparent p-3">
-								            <div class="d-flex w-100 align-items-center">
-								                <div class="notification-avatar me-3 position-relative">
-								                    <img th:src="${n.actorAvatar != null ? n.actorAvatar : '/uploads/avatars/default.jpg'}"
-								                         class="rounded-circle" alt="Avatar" width="56" height="56">
-								                    <span class="notification-icon text-white"
-								                        th:classappend="${
-								                            n.type == 'LIKE' ? ' bg-danger' :
-								                            n.type == 'COMMENT' ? ' bg-primary' :
-								                            n.type == 'SHARE' ? ' bg-warning' :
-								                            n.type == 'FRIEND_REQUEST' ? ' bg-success' :
-								                            n.type == 'FRIEND_ACCEPT' ? ' bg-success' :
-								                            n.type == 'MESSAGE' ? ' bg-secondary' :
-								                            n.type == 'FRIEND_POST' ? ' bg-info' :
-								                            n.type == 'SYSTEM' ? ' bg-warning' : ''
-								                        }">
-								                        <i th:class="${
-								                            n.type == 'LIKE' ? 'bi bi-heart-fill' :
-								                            n.type == 'COMMENT' ? 'bi bi-chat-dots-fill' :
-								                            n.type == 'SHARE' ? 'bi bi-share-fill' :
-								                            n.type == 'FRIEND_REQUEST' ? 'bi bi-person-fill-add' :
-								                            n.type == 'FRIEND_ACCEPT' ? 'bi bi-person-check-fill' :
-								                            n.type == 'MESSAGE' ? 'bi bi-envelope-fill' :
-								                            n.type == 'FRIEND_POST' ? 'bi bi-megaphone-fill' :
-								                            n.type == 'SYSTEM' ? 'bi bi-gear-fill' : ''
-								                        }"></i>
-								                    </span>
-								                </div>
-								                <div class="flex-grow-1">
-								                    <p class="mb-1" th:text="${n.content}"></p>
-								                    <small th:text="${#temporals.format(n.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
-								                </div>
-								                <div class="unread-dot"></div>
-								            </div>
-								        </a>
-								
-								        <!-- Hiện khi không có thông báo chưa đọc -->
-								        <div th:if="${#lists.isEmpty(notifications)}" class="text-center p-4 text-muted">
-								            Không có thông báo chưa đọc.
-								        </div>
-								    </div>
-								</div>
+<div class="tab-content">
+    <div class="tab-pane fade show active" id="all-notifications">
+        <div class="list-group list-group-flush">
+            <a th:each="n : ${notifications}"
+               th:if="${!n.isRead}"
+               th:href="@{'/notification/read/' + ${n.notificationId}}"
+               class="list-group-item list-group-item-action bg-transparent p-3 notification-item unread">
+                <div class="d-flex w-100 align-items-center">
+                    <div class="notification-avatar me-3 position-relative">
+                        <img th:src="${n.actorAvatar != null ? n.actorAvatar : '/uploads/avatars/default.jpg'}"
+                             class="rounded-circle" alt="Avatar" width="56" height="56">
+                        <span class="notification-icon text-white"
+                            th:classappend="${
+                                n.type == 'LIKE' ? ' bg-danger' :
+                                n.type == 'COMMENT' ? ' bg-primary' :
+                                n.type == 'SHARE' ? ' bg-warning' :
+                                n.type == 'FRIEND_REQUEST' ? ' bg-success' :
+                                n.type == 'FRIEND_ACCEPT' ? ' bg-success' :
+                                n.type == 'MESSAGE' ? ' bg-secondary' :
+                                n.type == 'FRIEND_POST' ? ' bg-info' :
+                                n.type == 'SYSTEM' ? ' bg-warning' : ''
+                            }">
+                            <i th:class="${
+                                n.type == 'LIKE' ? 'bi bi-heart-fill' :
+                                n.type == 'COMMENT' ? 'bi bi-chat-dots-fill' :
+                                n.type == 'SHARE' ? 'bi bi-share-fill' :
+                                n.type == 'FRIEND_REQUEST' ? 'bi bi-person-fill-add' :
+                                n.type == 'FRIEND_ACCEPT' ? 'bi bi-person-check-fill' :
+                                n.type == 'MESSAGE' ? 'bi bi-envelope-fill' :
+                                n.type == 'FRIEND_POST' ? 'bi bi-megaphone-fill' :
+                                n.type == 'SYSTEM' ? 'bi bi-gear-fill' : ''
+                            }"></i>
+                        </span>
+                    </div>
+                    <div class="flex-grow-1">
+                        <p class="mb-1" th:text="${n.content}"></p>
+                        <small th:text="${#temporals.format(n.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
+                    </div>
+                    <div class="unread-dot"></div>
+                </div>
+            </a>
 
+            <div th:if="${#lists.isEmpty(notifications.?[!isRead])}" class="text-center p-4 text-muted">
+                Không có thông báo chưa đọc.
+            </div>
+        </div>
+    </div>
 
-                                <!-- Người dùng -->
-                                <div class="tab-pane fade" id="tab-user">
-                                    <div class="list-group list-group-flush">
-                                        <a th:each="n : ${notifications}"
-                                           th:if="${n.type == 'FRIEND_REQUEST' || n.type == 'FRIEND_ACCEPT'}"
-                                           th:href="@{'/notification/read/' + ${n.notificationId}}"
-                                           th:classappend="${n.isRead} ? 'notification-item' : 'notification-item unread'"
-                                           class="list-group-item list-group-item-action bg-transparent p-3">
-                                            <div class="d-flex w-100 align-items-center">
-                                                <div class="notification-avatar me-3 position-relative">
-                                                    <img th:src="${n.actorAvatar != null ? n.actorAvatar : '/uploads/avatars/default.jpg'}"
-                                                         class="rounded-circle" alt="Avatar" width="56" height="56">
-                                                    <span class="notification-icon text-white bg-success">
-                                                        <i th:class="${n.type == 'FRIEND_REQUEST' ? 'bi bi-person-fill-add' : 'bi bi-person-check-fill'}"></i>
-                                                    </span>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <p class="mb-1" th:text="${n.content}"></p>
-                                                    <small th:text="${#temporals.format(n.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
-                                                </div>
-                                                <div th:if="${!n.isRead}" class="unread-dot"></div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                </div>
+    <div class="tab-pane fade" id="tab-user">
+        <div class="list-group list-group-flush">
+            <a th:each="n : ${notifications}"
+               th:if="${(n.type == 'FRIEND_REQUEST' || n.type == 'FRIEND_ACCEPT') and !n.isRead}"
+               th:href="@{'/notification/read/' + ${n.notificationId}}"
+               class="list-group-item list-group-item-action bg-transparent p-3 notification-item unread">
+                <div class="d-flex w-100 align-items-center">
+                    <div class="notification-avatar me-3 position-relative">
+                        <img th:src="${n.actorAvatar != null ? n.actorAvatar : '/uploads/avatars/default.jpg'}"
+                             class="rounded-circle" alt="Avatar" width="56" height="56">
+                        <span class="notification-icon text-white bg-success">
+                            <i th:class="${n.type == 'FRIEND_REQUEST' ? 'bi bi-person-fill-add' : 'bi bi-person-check-fill'}"></i>
+                        </span>
+                    </div>
+                    <div class="flex-grow-1">
+                        <p class="mb-1" th:text="${n.content}"></p>
+                        <small th:text="${#temporals.format(n.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
+                    </div>
+                    <div class="unread-dot"></div>
+                </div>
+            </a>
+            <div th:if="${#lists.isEmpty(notifications.?[ (type == 'FRIEND_REQUEST' || type == 'FRIEND_ACCEPT') and !isRead ])}"
+                 class="text-center p-4 text-muted">
+                Không có thông báo người dùng chưa đọc.
+            </div>
+        </div>
+    </div>
 
-                                <!-- Bài viết -->
-                                <div class="tab-pane fade" id="tab-post">
-                                    <div class="list-group list-group-flush">
-                                        <a th:each="n : ${notifications}"
-                                           th:if="${n.type == 'LIKE' || n.type == 'COMMENT' || n.type == 'SHARE' || n.type == 'FRIEND_POST'}"
-                                           th:href="@{'/notification/read/' + ${n.notificationId}}"
-                                           th:classappend="${n.isRead} ? 'notification-item' : 'notification-item unread'"
-                                           class="list-group-item list-group-item-action bg-transparent p-3">
-                                            <div class="d-flex w-100 align-items-center">
-                                                <div class="notification-avatar me-3 position-relative">
-                                                    <img th:src="${n.actorAvatar != null ? n.actorAvatar : '/uploads/avatars/default.jpg'}"
-                                                         class="rounded-circle" alt="Avatar" width="56" height="56">
-                                                    <span class="notification-icon text-white"
-                                                        th:classappend="${
-                                                            n.type == 'LIKE' ? ' bg-danger' :
-                                                            n.type == 'COMMENT' ? ' bg-primary' :
-                                                            n.type == 'SHARE' ? ' bg-warning' :
-                                                            n.type == 'FRIEND_POST' ? ' bg-info' : ''
-                                                        }">
-                                                        <i th:class="${
-                                                            n.type == 'LIKE' ? 'bi bi-heart-fill' :
-                                                            n.type == 'COMMENT' ? 'bi bi-chat-dots-fill' :
-                                                            n.type == 'SHARE' ? 'bi bi-share-fill' :
-                                                            n.type == 'FRIEND_POST' ? 'bi bi-megaphone-fill' : ''
-                                                        }"></i>
-                                                    </span>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <p class="mb-1" th:text="${n.content}"></p>
-                                                    <small th:text="${#temporals.format(n.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
-                                                </div>
-                                                <div th:if="${!n.isRead}" class="unread-dot"></div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                </div>
+    <div class="tab-pane fade" id="tab-post">
+        <div class="list-group list-group-flush">
+            <a th:each="n : ${notifications}"
+               th:if="${(n.type == 'LIKE' || n.type == 'COMMENT' || n.type == 'SHARE' || n.type == 'FRIEND_POST') and !n.isRead}"
+               th:href="@{'/notification/read/' + ${n.notificationId}}"
+               class="list-group-item list-group-item-action bg-transparent p-3 notification-item unread">
+                <div class="d-flex w-100 align-items-center">
+                    <div class="notification-avatar me-3 position-relative">
+                        <img th:src="${n.actorAvatar != null ? n.actorAvatar : '/uploads/avatars/default.jpg'}"
+                             class="rounded-circle" alt="Avatar" width="56" height="56">
+                        <span class="notification-icon text-white"
+                            th:classappend="${
+                                n.type == 'LIKE' ? ' bg-danger' :
+                                n.type == 'COMMENT' ? ' bg-primary' :
+                                n.type == 'SHARE' ? ' bg-warning' :
+                                n.type == 'FRIEND_POST' ? ' bg-info' : ''
+                            }">
+                            <i th:class="${
+                                n.type == 'LIKE' ? 'bi bi-heart-fill' :
+                                n.type == 'COMMENT' ? 'bi bi-chat-dots-fill' :
+                                n.type == 'SHARE' ? 'bi bi-share-fill' :
+                                n.type == 'FRIEND_POST' ? 'bi bi-megaphone-fill' : ''
+                            }"></i>
+                        </span>
+                    </div>
+                    <div class="flex-grow-1">
+                        <p class="mb-1" th:text="${n.content}"></p>
+                        <small th:text="${#temporals.format(n.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
+                    </div>
+                    <div class="unread-dot"></div>
+                </div>
+            </a>
+            <div th:if="${#lists.isEmpty(notifications.?[ (type == 'LIKE' || type == 'COMMENT' || type == 'SHARE' || type == 'FRIEND_POST') and !isRead ])}"
+                 class="text-center p-4 text-muted">
+                Không có thông báo bài viết chưa đọc.
+            </div>
+        </div>
+    </div>
 
-                                <!-- Tin nhắn -->
-                                <div class="tab-pane fade" id="tab-message">
-                                    <div class="list-group list-group-flush">
-                                        <a th:each="n : ${notifications}"
-                                           th:if="${n.type == 'MESSAGE' || n.type == 'GROUP_MESSAGE'}"
-                                           th:href="@{'/notification/read/' + ${n.notificationId}}"
-                                           th:classappend="${n.isRead} ? 'notification-item' : 'notification-item unread'"
-                                           class="list-group-item list-group-item-action bg-transparent p-3">
-                                            <div class="d-flex w-100 align-items-center">
-                                                <div class="notification-avatar me-3 position-relative">
-                                                    <img th:src="${n.actorAvatar != null ? n.actorAvatar : '/uploads/avatars/default.jpg'}"
-                                                         class="rounded-circle" alt="Avatar" width="56" height="56">
-													<span class="notification-icon bg-secondary text-white">
-													    <i th:class="${n.type == 'MESSAGE' ? 'bi bi-envelope-fill' : 
-													                 (n.type == 'GROUP_MESSAGE' ? 'bi bi-people-fill' : '')}"></i>
-													</span>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <p class="mb-1" th:text="${n.content}"></p>
-                                                    <small th:text="${#temporals.format(n.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
-                                                </div>
-                                                <div th:if="${!n.isRead}" class="unread-dot"></div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                </div>
+    <div class="tab-pane fade" id="tab-message">
+        <div class="list-group list-group-flush">
+            <a th:each="n : ${notifications}"
+               th:if="${(n.type == 'MESSAGE' || n.type == 'GROUP_MESSAGE') and !n.isRead}"
+               th:href="@{'/notification/read/' + ${n.notificationId}}"
+               class="list-group-item list-group-item-action bg-transparent p-3 notification-item unread">
+                <div class="d-flex w-100 align-items-center">
+                    <div class="notification-avatar me-3 position-relative">
+                        <img th:src="${n.actorAvatar != null ? n.actorAvatar : '/uploads/avatars/default.jpg'}"
+                             class="rounded-circle" alt="Avatar" width="56" height="56">
+                        <span class="notification-icon bg-secondary text-white">
+                            <i th:class="${n.type == 'MESSAGE' ? 'bi bi-envelope-fill' : 
+                                         (n.type == 'GROUP_MESSAGE' ? 'bi bi-people-fill' : '')}"></i>
+                        </span>
+                    </div>
+                    <div class="flex-grow-1">
+                        <p class="mb-1" th:text="${n.content}"></p>
+                        <small th:text="${#temporals.format(n.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
+                    </div>
+                    <div class="unread-dot"></div>
+                </div>
+            </a>
+            <div th:if="${#lists.isEmpty(notifications.?[ (type == 'MESSAGE' || type == 'GROUP_MESSAGE') and !isRead ])}"
+                 class="text-center p-4 text-muted">
+                Không có thông báo tin nhắn chưa đọc.
+            </div>
+        </div>
+    </div>
 
-                                <!-- Hệ thống -->
-                                <div class="tab-pane fade" id="tab-system">
-                                    <div class="list-group list-group-flush">
-                                        <a th:each="n : ${notifications}"
-                                           th:if="${n.type == 'SYSTEM'}"
-                                           th:href="@{'/notification/read/' + ${n.notificationId}}"
-                                           th:classappend="${n.isRead} ? 'notification-item' : 'notification-item unread'"
-                                           class="list-group-item list-group-item-action bg-transparent p-3">
-                                            <div class="d-flex w-100 align-items-center">
-                                                <div class="notification-avatar me-3 position-relative">
-                                                    <img src="/uploads/avatars/default-system.jpg" class="rounded-circle" alt="System" width="56" height="56">
-                                                    <span class="notification-icon bg-warning text-white">
-                                                        <i class="bi bi-gear-fill"></i>
-                                                    </span>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <p class="mb-1" th:text="${n.content}"></p>
-                                                    <small th:text="${#temporals.format(n.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
-                                                </div>
-                                                <div th:if="${!n.isRead}" class="unread-dot"></div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div> <!-- end tab-content -->
+    <div class="tab-pane fade" id="tab-system">
+        <div class="list-group list-group-flush">
+            <a th:each="n : ${notifications}"
+               th:if="${n.type == 'SYSTEM' and !n.isRead}"
+               th:href="@{'/notification/read/' + ${n.notificationId}}"
+               class="list-group-item list-group-item-action bg-transparent p-3 notification-item unread">
+                <div class="d-flex w-100 align-items-center">
+                    <div class="notification-avatar me-3 position-relative">
+                        <img src="/uploads/avatars/default-system.jpg" class="rounded-circle" alt="System" width="56" height="56">
+                        <span class="notification-icon bg-warning text-white">
+                            <i class="bi bi-gear-fill"></i>
+                        </span>
+                    </div>
+                    <div class="flex-grow-1">
+                        <p class="mb-1" th:text="${n.content}"></p>
+                        <small th:text="${#temporals.format(n.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
+                    </div>
+                    <div class="unread-dot"></div>
+                </div>
+            </a>
+            <div th:if="${#lists.isEmpty(notifications.?[ type == 'SYSTEM' and !isRead ])}"
+                 class="text-center p-4 text-muted">
+                Không có thông báo hệ thống chưa đọc.
+            </div>
+        </div>
+    </div>
+</div>
                         </div>
                     </div>
                 </main>
