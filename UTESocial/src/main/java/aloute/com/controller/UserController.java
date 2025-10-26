@@ -71,6 +71,9 @@ public class UserController
 //        	redirectAttributes.addFlashAttribute("user", user);
         	if (user.getRole().equals("Admin"))
         		return "redirect:/admin/dashboard";
+            else if (user.getRole().equals("manager")) {
+                return "redirect:/manager/posts";
+            }
         	else
         	{
         		if (user.getIsLocked() == false)

@@ -9,6 +9,7 @@ import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import aloute.com.entity.Notification;
@@ -22,6 +23,7 @@ import aloute.com.repository.admin.PostModerationRepository;
 import aloute.com.repository.common.PostsRepository;
 import aloute.com.repository.common.ReportsRepository;
 
+@Service
 public class ManagerService {
     @Autowired
     private AuditLogService auditLogService;

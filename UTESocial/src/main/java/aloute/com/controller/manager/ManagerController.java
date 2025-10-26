@@ -24,26 +24,30 @@ public class ManagerController {
     @Autowired
     private ManagerService managerService;
 
+    public boolean isNotManager(HttpSession session) 
+    {
+        User user = (User) session.getAttribute("user");
+        return user == null || (!"manager".equals(user.getRole()) && !"Admin".equals(user.getRole()));
+    }
+
     // Post 
     @GetMapping("/posts")
     public String managePosts(Model model, HttpSession session) 
     {
-        User user = (User) session.getAttribute("user");
-        if (user == null)
+        if (isNotManager(session))
         {
             return "redirect:/access-deniel";
         }
         List<Posts> posts = managerService.getAllPosts(); 
         model.addAttribute("posts", posts);
-        return "admin/posts";
+        return "manager/posts";
     }
     
     @PostMapping("/posts/delete")
     public String deletePost(@RequestParam Integer postId, RedirectAttributes redirectAttributes, HttpSession session) 
     {
-    	// Kiểm tra quyền Admin (nên có trong mọi action của Admin)
-        User user = (User) session.getAttribute("user");
-        if (user == null || !"Admin".equals(user.getRole() ) ) 
+    	// Kiểm tra quyền Manager (nên có trong mọi action của Manager)
+        if (isNotManager(session)) 
         {
             return "redirect:/access-deniel";
         }
@@ -58,15 +62,14 @@ public class ManagerController {
             System.err.println("Error deleting post ID " + postId + ": " + e.getMessage());
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi xóa bài đăng."); // Thông báo lỗi
         }
-        return "redirect:/admin/posts";
+        return "redirect:/manager/posts";
     }
 
     // Xem bài đăng chi tiết
     @GetMapping("/posts/view")
     public String viewPost(@RequestParam Integer postId, Model model, HttpSession session) 
     {
-        User user = (User) session.getAttribute("user");
-        if (user == null)
+        if (isNotManager(session))
         {
             return "redirect:/access-deniel";
         }
@@ -74,7 +77,7 @@ public class ManagerController {
         model.addAttribute("post", post);
         model.addAttribute("headerTitle", "Chi tiết Bài đăng");
         model.addAttribute("headerDescription", "Thông tin chi tiết của bài đăng.");
-        return "admin/post_detail";
+        return "manager/post_detail";
     }
     
     //Duyệt bài
@@ -82,35 +85,34 @@ public class ManagerController {
     public String approvePost(@RequestParam Integer postId) 
     {
         managerService.approvePost(postId);
-        return "redirect:/admin/posts";
+        return "redirect:/manager/posts";
     }
 
     // Hiển thị danh sách khiếu nại và xử lý
     @GetMapping("/reports")
     public String manageReports(Model model, HttpSession session) 
     {
-    	User user = (User) session.getAttribute("user");
-    	if (user == null)
-    	{
-    		return "redirect:/access-deniel";
-    	}
+        if (isNotManager(session))
+        {
+            return "redirect:/access-deniel";
+        }
         List<Reports> reports = managerService.getAllReports();
         model.addAttribute("reports", reports);
-        return "admin/reports";
+        return "manager/reports";
     }
 
     @PostMapping("/reports/resolve")
     public String resolveReport(@RequestParam Integer reportId) 
     {
         managerService.resolveReport(reportId);
-        return "redirect:/admin/reports";
+        return "redirect:/manager/reports";
     }
 
     @PostMapping("/reports/reject")
     public String rejectReport(@RequestParam Integer reportId) 
     {
         managerService.rejectReport(reportId);
-        return "redirect:/admin/reports";
+        return "redirect:/manager/reports";
     }
 
 
@@ -118,8 +120,7 @@ public class ManagerController {
     @GetMapping("/posts/reject")
     public String showRejectPostForm(@RequestParam Integer postId, Model model, HttpSession session) 
     {
-        User user = (User) session.getAttribute("user");
-        if (user == null || !"Admin".equals(user.getRole())) 
+        if (isNotManager(session))
         {
             return "redirect:/access-deniel";
         }
@@ -127,19 +128,18 @@ public class ManagerController {
         if (post == null) 
         {
             // Xử lý trường hợp không tìm thấy bài đăng (ví dụ: redirect về trang posts với thông báo lỗi)
-            return "redirect:/admin/posts?error=PostNotFound";
+            return "redirect:/manager/posts?error=PostNotFound";
         }
         model.addAttribute("post", post);
         model.addAttribute("postId", postId);
-        return "admin/reject_post"; // Tạo file HTML này ở bước sau
+        return "manager/reject_post"; 
     }
 
     // Xử lý việc từ chối bài đăng
     @PostMapping("/posts/reject")
     public String rejectPost(@RequestParam Integer postId, @RequestParam String reason, HttpSession session, RedirectAttributes redirectAttributes) 
     {
-        User user = (User) session.getAttribute("user");
-        if (user == null || !"Admin".equals(user.getRole())) 
+        if (isNotManager(session))
         {
             return "redirect:/access-deniel";
         }
@@ -148,10 +148,9 @@ public class ManagerController {
             managerService.rejectPost(postId, reason);
             redirectAttributes.addFlashAttribute("successMessage", "Đã từ chối bài đăng ID: " + postId);
         } catch (Exception e) {
-            // Ghi log lỗi nếu cần
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi từ chối bài đăng.");
         }
-        return "redirect:/admin/posts";
+        return "redirect:/manager/posts";
     }
 
 }
