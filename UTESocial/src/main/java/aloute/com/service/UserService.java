@@ -64,4 +64,8 @@ public class UserService {
     	user.setPasswordHash(PasswordUtil.hashPassword(password));
     	userRepository.save(user);
     }
+    public User findById(Integer id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng có ID: " + id));
+    }
 }

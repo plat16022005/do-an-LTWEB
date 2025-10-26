@@ -20,15 +20,22 @@ import aloute.com.dto.AttachmentDTO;
 import aloute.com.dto.MessageDTO;
 import aloute.com.entity.Message;
 import aloute.com.entity.Attachments;
+import aloute.com.entity.GroupMessage;
+import aloute.com.entity.GroupsUTE;
 import aloute.com.entity.User;
+import aloute.com.repository.UserGroupRepository;
 import aloute.com.repository.UserRepository;
 import aloute.com.service.FriendService;
+import aloute.com.service.GroupMessageService;
+import aloute.com.service.GroupService;
 import aloute.com.service.MessageService;
 import aloute.com.service.UserService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class UserMessageController {
+	@Autowired
+	private GroupService groupService;
 	@Autowired
 	private FriendService friendService;
 	@Autowired
@@ -37,6 +44,10 @@ public class UserMessageController {
 	private UserRepository userRepository;
 	@Autowired
 	private MessageService messageService;
+	@Autowired
+	private GroupMessageService groupMessageService;
+	@Autowired
+	private UserGroupRepository userGroupRepository;
 	@Autowired
 	private SimpMessagingTemplate messagingTemplate;
 	// (Hãy chắc chắn rằng bạn đã tiêm @Autowired MessageService ở đầu Controller)
@@ -64,7 +75,10 @@ public class UserMessageController {
 	    // 3. Đưa danh sách người đã chat ra model
 	    model.addAttribute("chatList", chatList); // Đổi tên từ "friends" -> "chatList"
 	    model.addAttribute("lastMessages", lastMessages);
-
+	    List<User> friends = friendService.getFriendList(user.getUserId());
+	    model.addAttribute("friends", friends);
+	    List<GroupsUTE> groupList = groupService.getGroupsByUserId(user.getUserId());
+	    model.addAttribute("groupList", groupList);
 	    // ▲▲▲ THAY ĐỔI ĐẾN ĐÂY ▲▲▲
 
 	    return "user/message";
@@ -120,7 +134,8 @@ public class UserMessageController {
 	    model.addAttribute("chatList", chatList);
 	    model.addAttribute("lastMessages", lastMessages);
 	    model.addAttribute("friendId", friendId); // Rất quan trọng để JS auto-open
-
+	    List<GroupsUTE> groupList = groupService.getGroupsByUserId(currentUser.getUserId());
+	    model.addAttribute("groupList", groupList);
 	    return "user/message";
 	}
 	@PostMapping("/message/send")
@@ -161,11 +176,110 @@ public class UserMessageController {
 	    response.put("receiver", receiver);
 	    response.put("attachments", attachmentList);
 
+	    // ⭐ CHỈNH SỬA QUAN TRỌNG: Thêm dòng này ⭐
+	    // Báo cho JS biết đây là tin nhắn 1-1 (không phải nhóm)
+	    response.put("groupId", null);
+
 	    // ✅ Gửi đúng cấu trúc client đang subscribe
 	    messagingTemplate.convertAndSend("/topic/messages/" + receiverId, response);
 	    messagingTemplate.convertAndSend("/topic/messages/" + currentUser.getUserId(), response);
 
 	    return response;
 	}
+	@GetMapping("/group/messages/{groupId}")
+	@ResponseBody
+	public List<Map<String, Object>> loadGroupMessages(@PathVariable Integer groupId, HttpSession session) {
+	    User currentUser = (User) session.getAttribute("user");
+	    if (currentUser == null) {
+	        return List.of(); 
+	    }
 
+	    // (Nên kiểm tra xem user có trong nhóm này không)
+	    if (!groupService.isUserInGroup(currentUser.getUserId(), groupId)) {
+	    	// (Giả sử bạn có hàm này trong GroupService)
+	        return List.of(); 
+	    }
+
+	    // 1. Lấy danh sách tin nhắn nhóm từ service
+	    List<GroupMessage> messages = groupMessageService.getMessagesByGroupId(groupId);
+
+	    // 2. Chuyển đổi sang cấu trúc JSON thống nhất mà front-end có thể hiểu
+	    return messages.stream()
+	            .map(this::convertGroupMessageToMap) // Dùng hàm helper bên dưới
+	            .collect(Collectors.toList());
+	}
+
+	/**
+	 * Gửi một tin nhắn mới vào nhóm.
+	 * Được gọi bởi sendMessage() trong JS.
+	 */
+	@PostMapping("/group/send-message")
+	@ResponseBody
+	public Map<String, Object> sendGroupMessage(
+	        @RequestParam("content") String content,
+	        @RequestParam("groupId") Integer groupId, 
+	        @RequestParam(value = "attachments", required = false) List<MultipartFile> attachments,
+	        HttpSession session
+	) {
+	    User currentUser = (User) session.getAttribute("user");
+	    if (currentUser == null) {
+	        return Map.of("error", "User not authenticated");
+	    }
+
+	    // 1. Lưu tin nhắn nhóm (dùng service mới)
+	    // (Hàm này cần trả về GroupMessage đã lưu, bao gồm sender, group, attachments)
+	    GroupMessage saved = groupMessageService.saveGroupMessage(currentUser, groupId, content, attachments);
+
+	    // 2. Chuyển đổi sang cấu trúc JSON thống nhất
+	    Map<String, Object> response = convertGroupMessageToMap(saved);
+
+	    // 3. Gửi WebSocket đến TẤT CẢ thành viên nhóm
+	    // (Bạn cần có hàm getGroupMembers trong GroupService)
+	    List<User> members = groupService.getGroupMembers(groupId); 
+	    
+	    for (User member : members) {
+	        // Gửi đến topic cá nhân của từng người
+	        messagingTemplate.convertAndSend("/topic/messages/" + member.getUserId(), response);
+	    }
+
+	    // 4. Trả về cho người gửi (để JS renderMessage ngay lập tức)
+	    return response;
+	}
+
+	/**
+	 * HÀM HELPER: Chuyển đổi GroupMessage sang Map JSON
+	 * để thống nhất với cấu trúc của tin nhắn 1-1.
+	 */
+	private Map<String, Object> convertGroupMessageToMap(GroupMessage msg) {
+	    // 1. Tạo thông tin sender
+	    Map<String, Object> sender = new HashMap<>();
+	    sender.put("userId", msg.getSender().getUserId());
+	    sender.put("fullName", msg.getSender().getFullName());
+	    sender.put("avatarUrl", msg.getSender().getAvatarUrl());
+
+	    // 2. Tạo danh sách attachments
+	    List<Map<String, Object>> attachmentList = msg.getAttachments() != null
+	            ? msg.getAttachments().stream().map(att -> {
+	                Map<String, Object> a = new HashMap<>();
+	                // Tên cột của bạn là 'fileURL' (chữ L hoa)
+	                // JS (renderMessage) mong muốn 'fileUrl'
+	                // (Nếu att.getFileURL() là đúng)
+	                a.put("fileUrl", att.getFileURL()); 
+	                a.put("fileType", att.getFileType());
+	                return a;
+	            }).toList()
+	            : List.of();
+
+	    // 3. Tạo đối tượng response chính
+	    Map<String, Object> response = new HashMap<>();
+	    response.put("messageId", msg.getGroupMessageId()); // ⬅️ Dùng ID của tin nhắn nhóm
+	    response.put("content", msg.getContent());
+	    response.put("createdAt", msg.getCreatedAt());
+	    response.put("sender", sender);
+	    response.put("receiver", null); // ⬅️ Tin nhắn nhóm không có receiver cụ thể
+	    response.put("attachments", attachmentList);
+	    response.put("groupId", msg.getGroup().getGroupId()); // ⬅️ Đây là mấu chốt
+
+	    return response;
+	}
 }

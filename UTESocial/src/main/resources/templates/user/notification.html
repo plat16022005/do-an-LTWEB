@@ -179,7 +179,7 @@
                                 <div class="tab-pane fade" id="tab-message">
                                     <div class="list-group list-group-flush">
                                         <a th:each="n : ${notifications}"
-                                           th:if="${n.type == 'MESSAGE'}"
+                                           th:if="${n.type == 'MESSAGE' || n.type == 'GROUP_MESSAGE'}"
                                            th:href="@{'/notification/read/' + ${n.notificationId}}"
                                            th:classappend="${n.isRead} ? 'notification-item' : 'notification-item unread'"
                                            class="list-group-item list-group-item-action bg-transparent p-3">
@@ -187,9 +187,10 @@
                                                 <div class="notification-avatar me-3 position-relative">
                                                     <img th:src="${n.actorAvatar != null ? n.actorAvatar : '/uploads/avatars/default.jpg'}"
                                                          class="rounded-circle" alt="Avatar" width="56" height="56">
-                                                    <span class="notification-icon bg-secondary text-white">
-                                                        <i class="bi bi-envelope-fill"></i>
-                                                    </span>
+													<span class="notification-icon bg-secondary text-white">
+													    <i th:class="${n.type == 'MESSAGE' ? 'bi bi-envelope-fill' : 
+													                 (n.type == 'GROUP_MESSAGE' ? 'bi bi-people-fill' : '')}"></i>
+													</span>
                                                 </div>
                                                 <div class="flex-grow-1">
                                                     <p class="mb-1" th:text="${n.content}"></p>
