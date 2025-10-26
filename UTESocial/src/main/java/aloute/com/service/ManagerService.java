@@ -102,11 +102,11 @@ public class ManagerService {
     @Transactional(readOnly = true)
     public Posts getPostById(Integer postId) 
     {
-    	Optional<Posts> postOptional = postsRepository.findByIdWithUser(postId);
+        Optional<Posts> postOptional = postsRepository.findByIdWithUser(postId);
         if (postOptional.isPresent()) 
         {
             Posts post = postOptional.get();
-
+            Hibernate.initialize(post.getUser());
             // Khởi tạo các collection 
             // lấy dữ liệu attachments và moderations ( lịch sử duyệt/từ chối)
             Hibernate.initialize(post.getAttachments());
@@ -118,7 +118,8 @@ public class ManagerService {
                 post.getModerations().forEach(mod -> Hibernate.initialize(mod.getModerator()));
             }
 
-            return post; // Trả về post với các collection đã được tải
+            Hibernate.initialize(post.getComments());
+            return post; 
         }
         return null; 
     }
@@ -218,7 +219,7 @@ public class ManagerService {
     @Transactional(readOnly = true) 
     public Optional<Reports> getReportWithDetails(Integer reportId) 
     {
-    	Optional<Reports> reportOpt = reportsRepository.findByIdWithDetails(reportId);
+        Optional<Reports> reportOpt = reportsRepository.findByIdWithDetails(reportId);
 
         if (reportOpt.isPresent()) 
         {
@@ -228,6 +229,7 @@ public class ManagerService {
             // Kiểm tra xem report này có liên quan đến post không
             if (post != null) 
             {
+                Hibernate.initialize(post.getAttachments());
                 // Khởi tạo collection moderations của post đó
                 Hibernate.initialize(post.getModerations());
 
@@ -237,6 +239,9 @@ public class ManagerService {
                     post.getModerations().forEach(mod -> Hibernate.initialize( mod.getModerator()) );
                 }
             }
+
+            Hibernate.initialize(report.getReporter());
+            Hibernate.initialize(report.getReportedUser());
         }
 
         return reportOpt;
