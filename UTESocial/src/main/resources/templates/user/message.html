@@ -286,6 +286,7 @@
         </div>
     </div>
 <input type="hidden" id="auto-open-friend-id" th:value="${friendId}">
+<input type="hidden" id="auto-open-group-id" th:value="${groupId}">
 <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content bg-transparent border-0">
@@ -482,14 +483,26 @@ async function openChatWith(element) {
     chatBody.scrollTop = chatBody.scrollHeight;
 }
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. Lấy cả hai ID
     const autoFriendId = document.getElementById('auto-open-friend-id')?.value;
-    if (autoFriendId) {
-        // tìm đúng phần tử cuộc trò chuyện tương ứng với friendId
+    const autoGroupId = document.getElementById('auto-open-group-id')?.value; // ⬅️ MỚI
+
+    // 2. Ưu tiên kiểm tra Friend ID trước
+    if (autoFriendId && autoFriendId !== 'null') {
         const element = document.querySelector(`.conversation-item[data-peer-id="${autoFriendId}"]`);
         if (element) {
             openChatWith(element);
         } else {
             console.warn("⚠ Không tìm thấy friendId để auto open chat:", autoFriendId);
+        }
+    } 
+    // 3. Nếu không có Friend ID, kiểm tra Group ID
+    else if (autoGroupId && autoGroupId !== 'null') { // ⬅️ MỚI
+        const element = document.querySelector(`.conversation-item[data-group-id="${autoGroupId}"]`);
+        if (element) {
+            openGroupChat(element); // ⬅️ MỚI: Gọi hàm mở chat nhóm
+        } else {
+            console.warn("⚠ Không tìm thấy groupId để auto open chat:", autoGroupId);
         }
     }
 });

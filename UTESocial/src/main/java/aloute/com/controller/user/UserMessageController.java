@@ -138,6 +138,36 @@ public class UserMessageController {
 	    model.addAttribute("groupList", groupList);
 	    return "user/message";
 	}
+	@GetMapping("/message/group/{groupId}")
+    public String openGroupMessagePage(@PathVariable Integer groupId, Model model, HttpSession session) {
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+	    // 1. Lấy danh sách 1-1
+	    List<User> chatList = messageService.getConversationPartners(currentUser.getUserId());
+	    // 2. Lấy danh sách nhóm
+	    List<GroupsUTE> groupList = groupService.getGroupsByUserId(currentUser.getUserId());
+
+	    // 3. ⭐ SỬA LẠI: Chỉ lấy preview cho 1-1
+	    Map<Integer, String> lastMessages = new HashMap<>();
+	    for (User partner : chatList) {
+	        String preview = messageService.getLatestMessagePreview(currentUser.getUserId(), partner.getUserId());
+	        lastMessages.put(partner.getUserId(), (preview != null ? preview : ""));
+	    }
+        // (Đã xóa vòng lặp lấy preview nhóm)
+
+	    // 4. Đưa ra Model
+	    model.addAttribute("chatList", chatList);
+	    model.addAttribute("groupList", groupList);
+	    model.addAttribute("lastMessages", lastMessages); // ⬅️ Dùng lại tên cũ
+	    
+	    model.addAttribute("friendId", null);     
+	    model.addAttribute("groupId", groupId);   
+
+	    return "user/message";
+    }
 	@PostMapping("/message/send")
 	@ResponseBody
 	public Map<String, Object> sendMessage(
