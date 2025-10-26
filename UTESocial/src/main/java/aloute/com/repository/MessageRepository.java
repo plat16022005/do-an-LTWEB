@@ -56,4 +56,5 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
 		       "AND m.isRead = false " +
 		       "GROUP BY m.sender.userId")
 		List<UnreadCountPerSender> getUnreadCountsPerSender(@Param("receiverId") Integer receiverId);
+	long countBySender_UserIdAndReceiver_UserIdAndIsReadFalse(Integer senderId, Integer receiverId);
 }

@@ -57,33 +57,53 @@ public class UserMessageController {
 	public String showMessageForm(Model model, HttpSession session) {
 	    User user = (User) session.getAttribute("user");
 	    if (user == null) {
-	        // (Lỗi chính tả: Sửa "access-deniel" thành "access-denied" nếu bạn muốn)
-	        return "redirect:/access-deniel"; 
+	        return "redirect:/access-deniel";
 	    }
 
-	    // ▼▼▼ THAY ĐỔI TỪ ĐÂY ▼▼▼
+	    // 1. Lấy ID người dùng
+	    Integer currentUserId = user.getUserId();
 
-	    // 1. Lấy danh sách người đã chat (thay vì toàn bộ bạn bè)
-	    List<User> chatList = messageService.getConversationPartners(user.getUserId());
+	    // 2. Lấy danh sách (có thể chứa null)
+	    List<User> chatList = messageService.getConversationPartners(currentUserId);
+	    List<GroupsUTE> groupList = groupService.getGroupsByUserId(currentUserId);
+	    List<User> friends = friendService.getFriendList(currentUserId); // Lấy friends ở đây
 
-	    // 2. Map tin nhắn mới nhất
-	    Map<Integer, String> lastMessages = new HashMap<>();
-	    for (User partner : chatList) { // Lặp qua danh sách người đã chat
-	        String preview = messageService.getLatestMessagePreview(user.getUserId(), partner.getUserId());
-	        lastMessages.put(partner.getUserId(), preview);
+	    // --- LỌC NULL ---
+	    List<User> cleanChatList = chatList.stream()
+	                                       .filter(u -> u != null)
+	                                       .collect(Collectors.toList());
+	    List<GroupsUTE> cleanGroupList = groupList.stream()
+	                                              .filter(g -> g != null)
+	                                              .collect(Collectors.toList());
+	    List<User> cleanFriendsList = friends.stream()
+	                                         .filter(f -> f != null)
+	                                         .collect(Collectors.toList());
+	    // -----------------
+
+	    // 4. Lấy Map tin nhắn cuối (Lặp qua danh sách SẠCH)
+	    Map<Object, String> lastMessages = new HashMap<>();
+	    for (User partner : cleanChatList) { // Dùng danh sách sạch
+	        String preview = messageService.getLatestMessagePreview(currentUserId, partner.getUserId());
+	        lastMessages.put(partner.getUserId(), (preview != null ? preview : ""));
 	    }
+	    // (Bỏ qua preview nhóm)
 
-	    // 3. Đưa danh sách người đã chat ra model
-	    model.addAttribute("chatList", chatList); // Đổi tên từ "friends" -> "chatList"
+	    // 5. Lấy số lượng tin nhắn chưa đọc
+	    Map<Integer, Long> unreadUserCounts =
+	        messageService.getUnreadCountsPerSender(currentUserId);
+	    Map<Integer, Long> unreadGroupCounts = new HashMap<>();
+
+	    // 6. Đưa TẤT CẢ (danh sách SẠCH) ra Model
+	    model.addAttribute("chatList", cleanChatList);
+	    model.addAttribute("groupList", cleanGroupList);
 	    model.addAttribute("lastMessages", lastMessages);
-	    List<User> friends = friendService.getFriendList(user.getUserId());
-	    model.addAttribute("friends", friends);
-	    List<GroupsUTE> groupList = groupService.getGroupsByUserId(user.getUserId());
-	    model.addAttribute("groupList", groupList);
-	    // ▲▲▲ THAY ĐỔI ĐẾN ĐÂY ▲▲▲
+	    model.addAttribute("friends", cleanFriendsList); // Dùng danh sách friends đã lọc
+	    model.addAttribute("unreadUserCounts", unreadUserCounts);
+	    model.addAttribute("unreadGroupCounts", unreadGroupCounts);
 
-	    return "user/message";
-	}
+	    // 7. Trả về tên view
+	    return "user/message"; // Dấu chấm phẩy ở cuối hàm return
+	} // Dấu ngoặc nhọn đóng hàm
 	@GetMapping("/message/load/{friendId}")
 	@ResponseBody
 	public List<Message> loadMessages(@PathVariable Integer friendId, HttpSession session) {
@@ -99,76 +119,120 @@ public class UserMessageController {
 	    if (currentUser == null) {
 	        return "redirect:/login";
 	    }
+	    Integer currentUserId = currentUser.getUserId();
 
-	    // 1. Lấy danh sách người đã chat (sắp xếp theo tin nhắn mới nhất)
-	    List<User> chatList = messageService.getConversationPartners(currentUser.getUserId());
+	    // 1. Lấy danh sách (có thể chứa null)
+	    List<User> chatList = messageService.getConversationPartners(currentUserId);
+	    List<GroupsUTE> groupList = groupService.getGroupsByUserId(currentUserId);
+	    List<User> friends = friendService.getFriendList(currentUserId);
 
-	    // 2. ⭐ LOGIC MỚI QUAN TRỌNG ⭐
-	    // Kiểm tra xem người muốn chat (friendId) đã có trong danh sách chưa
+	    // 2. Logic thêm user mới vào chat (nếu chat lần đầu)
 	    if (friendId != null) {
+	        // (Kiểm tra xem user đã có trong danh sách CHƯA LỌC không)
 	        boolean isAlreadyInList = chatList.stream()
+	                                          .filter(u -> u != null) // Lọc null trước khi check
 	                                          .anyMatch(user -> user.getUserId().equals(friendId));
-
-	        // Nếu CHƯA CÓ trong danh sách (đây là tin nhắn mới)
 	        if (!isAlreadyInList) {
-	            // Lấy thông tin của người đó từ DB
 	            User userToChat = userRepository.findById(friendId).orElse(null); 
-	            // (Hoặc dùng: userService.findUserById(friendId))
-
 	            if (userToChat != null) {
-	                // Thêm người đó vào ĐẦU danh sách để hiển thị
-	                chatList.add(0, userToChat);
+	                chatList.add(0, userToChat); // Thêm vào danh sách CHƯA LỌC
 	            }
 	        }
 	    }
+	    
+	    // --- ⭐ LỌC NULL (GIỐNG HÀM TRÊN) ⭐ ---
+	    List<User> cleanChatList = chatList.stream()
+	                                       .filter(u -> u != null)
+	                                       .collect(Collectors.toList());
+	    List<GroupsUTE> cleanGroupList = groupList.stream()
+	                                              .filter(g -> g != null)
+	                                              .collect(Collectors.toList());
+	    List<User> cleanFriendsList = friends.stream()
+	                                         .filter(f -> f != null)
+	                                         .collect(Collectors.toList());
+	    // ----------------------------------------
 
-	    // 3. Lấy tin nhắn cuối cùng (như cũ)
-	    Map<Integer, String> lastMessages = new HashMap<>();
-	    for (User partner : chatList) {
-	        String preview = messageService.getLatestMessagePreview(currentUser.getUserId(), partner.getUserId());
-	        
-	        // Nếu preview là null (vì là chat mới), đặt là chuỗi rỗng
+	    // 4. Lấy Map tin nhắn cuối (Lặp qua danh sách SẠCH)
+	    Map<Object, String> lastMessages = new HashMap<>(); 
+	    for (User partner : cleanChatList) { 
+	        String preview = messageService.getLatestMessagePreview(currentUserId, partner.getUserId());
 	        lastMessages.put(partner.getUserId(), (preview != null ? preview : ""));
 	    }
+	    // (Bỏ qua preview nhóm theo yêu cầu của bạn)
 
-	    // 4. Đưa ra Model (như cũ)
-	    model.addAttribute("chatList", chatList);
-	    model.addAttribute("lastMessages", lastMessages);
-	    model.addAttribute("friendId", friendId); // Rất quan trọng để JS auto-open
-	    List<GroupsUTE> groupList = groupService.getGroupsByUserId(currentUser.getUserId());
-	    model.addAttribute("groupList", groupList);
+	    // 5. Lấy số lượng tin nhắn chưa đọc
+	    Map<Integer, Long> unreadUserCounts = 
+	        messageService.getUnreadCountsPerSender(currentUserId);
+	    Map<Integer, Long> unreadGroupCounts = new HashMap<>();
+
+	    // 6. Đưa TẤT CẢ (danh sách SẠCH) ra Model
+	    model.addAttribute("chatList", cleanChatList);
+	    model.addAttribute("groupList", cleanGroupList); 
+	    model.addAttribute("lastMessages", lastMessages); 
+	    model.addAttribute("friends", cleanFriendsList);
+	    model.addAttribute("unreadUserCounts", unreadUserCounts); 
+	    model.addAttribute("unreadGroupCounts", unreadGroupCounts);
+	    
+	    // 7. Thêm ID để JS tự động mở
+	    model.addAttribute("friendId", friendId); 
+	    model.addAttribute("groupId", null);     
+
 	    return "user/message";
 	}
 	@GetMapping("/message/group/{groupId}")
-    public String openGroupMessagePage(@PathVariable Integer groupId, Model model, HttpSession session) {
-        User currentUser = (User) session.getAttribute("user");
-        if (currentUser == null) {
-            return "redirect:/login";
-        }
+	public String openGroupMessagePage(@PathVariable Integer groupId, Model model, HttpSession session) {
+	    User currentUser = (User) session.getAttribute("user");
+	    if (currentUser == null) {
+	        return "redirect:/login";
+	    }
+	    Integer currentUserId = currentUser.getUserId();
 
-	    // 1. Lấy danh sách 1-1
-	    List<User> chatList = messageService.getConversationPartners(currentUser.getUserId());
-	    // 2. Lấy danh sách nhóm
-	    List<GroupsUTE> groupList = groupService.getGroupsByUserId(currentUser.getUserId());
+	    // 1. Lấy danh sách (có thể chứa null)
+	    List<User> chatList = messageService.getConversationPartners(currentUserId);
+	    List<GroupsUTE> groupList = groupService.getGroupsByUserId(currentUserId);
+	    List<User> friends = friendService.getFriendList(currentUserId);
 
-	    // 3. ⭐ SỬA LẠI: Chỉ lấy preview cho 1-1
-	    Map<Integer, String> lastMessages = new HashMap<>();
-	    for (User partner : chatList) {
-	        String preview = messageService.getLatestMessagePreview(currentUser.getUserId(), partner.getUserId());
+	    // --- ⭐ LỌC NULL (GIỐNG HÀM TRÊN) ⭐ ---
+	    List<User> cleanChatList = chatList.stream()
+	                                       .filter(u -> u != null)
+	                                       .collect(Collectors.toList());
+	    List<GroupsUTE> cleanGroupList = groupList.stream()
+	                                              .filter(g -> g != null)
+	                                              .collect(Collectors.toList());
+	    List<User> cleanFriendsList = friends.stream()
+	                                         .filter(f -> f != null)
+	                                         .collect(Collectors.toList());
+	    // ----------------------------------------
+
+	    // 3. Lấy Map tin nhắn cuối (Lặp qua danh sách SẠCH)
+	    Map<Object, String> lastMessages = new HashMap<>(); 
+	    for (User partner : cleanChatList) { 
+	        String preview = messageService.getLatestMessagePreview(currentUserId, partner.getUserId());
 	        lastMessages.put(partner.getUserId(), (preview != null ? preview : ""));
 	    }
-        // (Đã xóa vòng lặp lấy preview nhóm)
+	    // (Bỏ qua preview nhóm theo yêu cầu của bạn)
 
-	    // 4. Đưa ra Model
-	    model.addAttribute("chatList", chatList);
-	    model.addAttribute("groupList", groupList);
-	    model.addAttribute("lastMessages", lastMessages); // ⬅️ Dùng lại tên cũ
+	    // 4. Lấy số lượng tin nhắn chưa đọc
+	    Map<Integer, Long> unreadUserCounts = 
+	        messageService.getUnreadCountsPerSender(currentUserId);
+	    Map<Integer, Long> unreadGroupCounts = new HashMap<>();
+
+	    // 5. Đưa TẤT CẢ (danh sách SẠCH) ra Model
+	    model.addAttribute("chatList", cleanChatList);
+	    model.addAttribute("groupList", cleanGroupList); 
+	    model.addAttribute("lastMessages", lastMessages); 
+	    model.addAttribute("friends", cleanFriendsList);
+	    model.addAttribute("unreadUserCounts", unreadUserCounts); 
+	    model.addAttribute("unreadGroupCounts", unreadGroupCounts);
 	    
+	    // 6. Thêm ID để JS tự động mở
 	    model.addAttribute("friendId", null);     
 	    model.addAttribute("groupId", groupId);   
 
 	    return "user/message";
-    }
+	}
+	// Trong file: UserMessageController.java
+
 	@PostMapping("/message/send")
 	@ResponseBody
 	public Map<String, Object> sendMessage(
@@ -178,44 +242,54 @@ public class UserMessageController {
 	        HttpSession session
 	) {
 	    User currentUser = (User) session.getAttribute("user");
-	    Message saved = messageService.saveMessage(currentUser.getUserId(), receiverId, content, attachments);
+	    // Lấy ID người gửi
+	    Integer senderId = currentUser.getUserId(); 
 
-	    // ✅ Tạo object sender để client đọc msg.sender.fullName không bị undefined
-	    Map<String, Object> sender = new HashMap<>();
-	    sender.put("userId", saved.getSender().getUserId());
-	    sender.put("fullName", saved.getSender().getFullName());
-	    sender.put("avatarUrl", saved.getSender().getAvatarUrl());
+	    // 1. Lưu tin nhắn (như cũ)
+	    Message saved = messageService.saveMessage(senderId, receiverId, content, attachments);
 
-	    Map<String, Object> receiver = new HashMap<>();
-	    receiver.put("userId", saved.getReceiver().getUserId());
-
-	    // ✅ Đính attachments
+	    // 2. Tạo đối tượng JSON cơ bản (như cũ)
+	    Map<String, Object> senderMap = Map.of(
+	        "userId", saved.getSender().getUserId(),
+	        "fullName", saved.getSender().getFullName(),
+	        "avatarUrl", saved.getSender().getAvatarUrl()
+	    );
+	    Map<String, Object> receiverMap = Map.of("userId", saved.getReceiver().getUserId());
 	    List<Map<String, Object>> attachmentList = saved.getAttachments() != null
-	            ? saved.getAttachments().stream().map(att -> {
-	                Map<String, Object> a = new HashMap<>();
-	                a.put("fileUrl", att.getFileUrl());
-	                a.put("fileType", att.getFileType());
-	                return a;
-	            }).toList()
-	            : List.of();
+	            ? saved.getAttachments().stream().map(att -> Map.<String, Object>of(
+	                "fileUrl", att.getFileUrl(),
+	                "fileType", att.getFileType()
+	            )).toList() : List.of();
 
-	    Map<String, Object> response = new HashMap<>();
-	    response.put("messageId", saved.getMessageId());
-	    response.put("content", saved.getContent());
-	    response.put("createdAt", saved.getCreatedAt());
-	    response.put("sender", sender);
-	    response.put("receiver", receiver);
-	    response.put("attachments", attachmentList);
+	    Map<String, Object> baseResponse = new HashMap<>();
+	    baseResponse.put("messageId", saved.getMessageId());
+	    baseResponse.put("content", saved.getContent());
+	    baseResponse.put("createdAt", saved.getCreatedAt());
+	    baseResponse.put("sender", senderMap);
+	    baseResponse.put("receiver", receiverMap);
+	    baseResponse.put("attachments", attachmentList);
+	    baseResponse.put("groupId", null); // Tin nhắn 1-1
 
-	    // ⭐ CHỈNH SỬA QUAN TRỌNG: Thêm dòng này ⭐
-	    // Báo cho JS biết đây là tin nhắn 1-1 (không phải nhóm)
-	    response.put("groupId", null);
+	    // --- ⭐ BẮT ĐẦU THAY ĐỔI ⭐ ---
 
-	    // ✅ Gửi đúng cấu trúc client đang subscribe
-	    messagingTemplate.convertAndSend("/topic/messages/" + receiverId, response);
-	    messagingTemplate.convertAndSend("/topic/messages/" + currentUser.getUserId(), response);
+	    // 3. Tính số lượng tin nhắn chưa đọc MÀ NGƯỜI GỬI (senderId) đã gửi cho NGƯỜI NHẬN (receiverId)
+	    long unreadCountFromSender = messageService.getUnreadCountFromSender(senderId, receiverId);
 
-	    return response;
+	    // 4. Gửi tin nhắn GỐC đến người gửi (KHÔNG cần số lượng)
+	    messagingTemplate.convertAndSend("/topic/messages/" + senderId, baseResponse);
+
+	    // 5. Tạo một bản sao payload RIÊNG cho người nhận
+	    Map<String, Object> responseForReceiver = new HashMap<>(baseResponse);
+	    // Thêm số lượng chưa đọc TỪ NGƯỜI GỬI này vào payload
+	    responseForReceiver.put("unreadFromSender", unreadCountFromSender); 
+
+	    // 6. Gửi payload ĐÃ BỔ SUNG đến người nhận
+	    messagingTemplate.convertAndSend("/topic/messages/" + receiverId, responseForReceiver);
+
+	    // --- ⭐ KẾT THÚC THAY ĐỔI ⭐ ---
+
+	    // 7. Trả về response GỐC cho AJAX của người gửi (để render ngay)
+	    return baseResponse;
 	}
 	@GetMapping("/group/messages/{groupId}")
 	@ResponseBody

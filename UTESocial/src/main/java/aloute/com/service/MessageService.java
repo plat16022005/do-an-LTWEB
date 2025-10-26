@@ -175,4 +175,8 @@ public class MessageService {
             )
         );
     }
+    @Transactional(readOnly = true) // Quan trọng: chỉ đọc
+    public long getUnreadCountFromSender(Integer senderId, Integer receiverId) {
+        return messageRepository.countBySender_UserIdAndReceiver_UserIdAndIsReadFalse(senderId, receiverId);
+    }
 }
