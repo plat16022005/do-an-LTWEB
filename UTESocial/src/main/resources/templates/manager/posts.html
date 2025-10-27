@@ -1,378 +1,453 @@
 <!DOCTYPE html>
 <html lang="vi" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- SỬA: Title -->
-    <title>Duyệt Bài đăng - AloUTE Manager</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      :root {
-        --bg-dark: #0f172a;
-        --card-bg: #1e293b;
-        --sidebar-bg: #1e293b;
-        --border-color: #334155;
-        --text-light: #e2e8f0;
-        --text-muted: #94a3b8;
-        --primary-color: #0ea5e9;
-        --shadow-medium: rgba(0, 0, 0, 0.4);
-      }
-      body {
-        font-family: "Open Sans", sans-serif;
-        background-color: var(--bg-dark);
-        color: var(--text-light);
-        display: flex;
-        min-height: 100vh;
-        margin: 0;
-        padding: 0;
-      }
-      h1,
-      h2,
-      h3,
-      h4,
-      h5,
-      h6 {
-        font-family: "Montserrat", sans-serif;
-      }
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: var(--bg-dark);
-      }
-      ::-webkit-scrollbar-thumb {
-        background: var(--border-color);
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #475569;
-      }
-      .main-wrapper {
-        display: flex;
-        width: 100%;
-        padding: 20px;
-        gap: 20px;
-      }
-      .sidebar-container {
-        flex-shrink: 0;
-        width: 280px;
-        position: sticky;
-        top: 20px;
-        height: calc(100vh - 40px);
-      }
-      .sidebar {
-        background-color: var(--sidebar-bg);
-        border-radius: 15px;
-        padding: 20px 0;
-        box-shadow: 0 10px 30px var(--shadow-medium);
-        border: 1px solid var(--border-color);
-        height: 100%;
-      }
-      .sidebar .navbar-brand {
-        padding: 10px 20px;
-        color: var(--primary-color);
-        border-bottom: 1px solid var(--border-color);
-        margin-bottom: 20px;
-        display: block;
-        text-align: center;
-      }
-      .sidebar .nav-link {
-        color: var(--text-muted);
-        padding: 12px 25px;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        transition: background-color 0.2s, color 0.2s, transform 0.3s ease;
-      }
-      .sidebar .nav-link:hover,
-      .sidebar .nav-link.active {
-        background-color: rgba(14, 165, 233, 0.1);
-        color: var(--text-light);
-        border-left: 4px solid var(--primary-color);
-        padding-left: 21px;
-        transform: translateX(5px);
-      }
-      .sidebar .nav-link.active {
-        font-weight: bold;
-      }
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- SỬA: Title -->
+<title>Duyệt Bài đăng - AloUTE Manager</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+	rel="stylesheet" />
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+	href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap"
+	rel="stylesheet" />
+<style>
+:root {
+	--bg-dark: #0f172a;
+	--card-bg: #1e293b;
+	--sidebar-bg: #1e293b;
+	--border-color: #334155;
+	--text-light: #e2e8f0;
+	--text-muted: #94a3b8;
+	--primary-color: #0ea5e9;
+	--shadow-medium: rgba(0, 0, 0, 0.4);
+}
 
-      /* SỬA: Thêm style cho đường kẻ phân cách */
-      .sidebar .nav-item.border-top {
-        border-top: 1px solid var(--border-color) !important;
-      }
+body {
+	font-family: "Open Sans", sans-serif;
+	background-color: var(--bg-dark);
+	color: var(--text-light);
+	display: flex;
+	min-height: 100vh;
+	margin: 0;
+	padding: 0;
+}
 
-      .main-content {
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-      }
-      .main-header {
-        background-color: var(--card-bg);
-        border-radius: 15px;
-        padding: 20px 30px;
-        box-shadow: 0 10px 30px var(--shadow-medium);
-        border: 1px solid var(--border-color);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 15px;
-      }
-      .main-header .form-control {
-        background-color: var(--bg-dark);
-        border-color: var(--border-color);
-        color: var(--text-light);
-        max-width: 300px;
-        border-radius: 50rem;
-      }
-      .main-header .form-control::placeholder {
-        color: var(--text-muted);
-      }
-      .main-header .input-group {
-        flex-grow: 1;
-        max-width: 400px;
-      }
-      .main-header .search-icon {
-        color: var(--text-muted);
-        font-size: 1.25rem;
-      }
-      .main-header .profile-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid var(--primary-color);
-      }
-      .content-card {
-        background-color: var(--card-bg);
-        border-radius: 15px;
-        padding: 25px;
-        box-shadow: 0 8px 25px var(--shadow-medium);
-        border: 1px solid var(--border-color);
-      }
-      .bi {
-        font-size: 1.25rem;
-        width: 25px;
-        text-align: center;
-      }
-      .nav-link.active .bi {
-        color: var(--primary-color);
-      }
-      .nav-link .bi {
-        color: var(--text-muted);
-      }
-      .table {
-        color: var(--text-light);
-        background-color: transparent;
-        border-radius: 15px;
-        overflow: hidden;
-      }
-      .table thead th {
-        border-bottom: 1px solid var(--border-color);
-        color: var(--text-muted);
-      }
-      .table tbody tr:last-child td {
-        border-bottom: none;
-      }
-      .table tbody td {
-        border-top: 1px solid var(--border-color);
-      }
+h1, h2, h3, h4, h5, h6 {
+	font-family: "Montserrat", sans-serif;
+}
 
-      /* CSS cho thông báo */
-      .alert-container {
-        padding-left: 0;
-        padding-right: 0;
-      }
+::-webkit-scrollbar {
+	width: 8px;
+}
 
-      @media (max-width: 992px) {
-        .main-wrapper {
-          flex-direction: column;
-        }
-        .sidebar-container {
-          width: 100%;
-          margin-right: 0;
-          margin-bottom: 20px;
-          position: static;
-          height: auto;
-        }
-        .main-content {
-          margin-left: 0;
-        }
-        .main-header {
-          flex-direction: column;
-          align-items: flex-start;
-        }
-        .main-header .input-group {
-          width: 100%;
-          max-width: none;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="main-wrapper">
-      <div class="sidebar-container">
-        <div class="sidebar">
-          <!-- SỬA: Title và link trỏ về trang posts của manager -->
-          <a
-            class="navbar-brand fw-bold fs-4 d-flex align-items-center justify-content-center gap-2"
-            th:href="@{/manager/posts}"
-          >
-            <svg
-              class="bi me-2"
-              width="32"
-              height="32"
-              fill="var(--primary-color)"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 6.253v11.494m-9-5.747h18"
-                stroke="currentColor"
-              ></path>
-            </svg>
-            AloUTE Manager
-          </a>
+::-webkit-scrollbar-track {
+	background: var(--bg-dark);
+}
 
-          <!-- SỬA: Đã loại bỏ các mục thừa, chỉ giữ 2 chức năng -->
-          <ul class="nav flex-column mt-4">
-            <li class="nav-item">
-              <a class="nav-link active" th:href="@{/manager/posts}">
-                <i class="bi bi-journals"></i>
-                <span>Duyệt Bài đăng</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" th:href="@{/manager/reports}">
-                <i class="bi bi-flag-fill"></i>
-                <span>Khiếu nại</span>
-              </a>
-            </li>
+::-webkit-scrollbar-thumb {
+	background: var(--border-color);
+	border-radius: 4px;
+}
 
-            <!-- THÊM MỚI: Nút quay lại trang chủ -->
-            <li class="nav-item border-top mt-2 pt-2">
-              <a class="nav-link" th:href="@{/}">
-                <!-- Giả sử trang chủ là / -->
-                <i class="bi bi-house-door-fill"></i>
-                <span>Quay lại trang chủ</span>
-              </a>
-            </li>
+::-webkit-scrollbar-thumb:hover {
+	background: #475569;
+}
 
-            <li class="nav-item">
-              <a class="nav-link" th:href="@{/logout}">
-                <i class="bi bi-box-arrow-right"></i>
-                <span>Đăng xuất</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
+.main-wrapper {
+	display: flex;
+	width: 100%;
+	padding: 20px;
+	gap: 20px;
+}
 
-      <div class="main-content">
-        <div class="main-header">
-          <div>
-            <!-- SỬA: Title -->
-            <h2 class="mb-0">Duyệt Bài đăng</h2>
-            <p class="text-muted mb-0">
-              Xem và quản lý các bài đăng đang chờ duyệt.
-            </p>
-          </div>
+.sidebar-container {
+	flex-shrink: 0;
+	width: 280px;
+	position: sticky;
+	top: 20px;
+	height: calc(100vh - 40px);
+}
 
-          <div class="d-flex align-items-center gap-3">
-            <div class="input-group">
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Tìm kiếm bài đăng..."
-                aria-label="Tìm kiếm"
-              />
-              <span class="input-group-text"><i class="bi bi-search"></i></span>
-            </div>
-            <!-- SỬA: Lấy avatar từ session của manager (nếu có) -->
-            <img
-              th:src="${session.user != null ? session.user.avatar : 'https://placehold.co/40x40/0ea5e9/FFFFFF?text=M'}"
-              alt="Manager Avatar"
-              class="profile-avatar"
-            />
-          </div>
-        </div>
+.sidebar {
+	background-color: var(--sidebar-bg);
+	border-radius: 15px;
+	padding: 20px 0;
+	box-shadow: 0 10px 30px var(--shadow-medium);
+	border: 1px solid var(--border-color);
+	height: 100%;
+	overflow-y: auto; /* Thêm scroll cho sidebar */
+}
 
-        <!-- SỬA: Chuyển thông báo ra ngoài để dễ thấy hơn -->
-        <div class="alert-container container-fluid p-0">
-          <div
-            th:if="${successMessage}"
-            class="alert alert-success alert-dismissible fade show"
-            role="alert"
-          >
-            <i class="bi bi-check-circle-fill me-2"></i>
-            <span th:text="${successMessage}"></span>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="alert"
-              aria-label="Close"
-            ></button>
-          </div>
+.sidebar .navbar-brand {
+	padding: 10px 20px;
+	color: var(--primary-color);
+	border-bottom: 1px solid var(--border-color);
+	margin-bottom: 20px;
+	display: block;
+	text-align: center;
+}
 
-          <div
-            th:if="${errorMessage}"
-            class="alert alert-danger alert-dismissible fade show"
-            role="alert"
-          >
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-            <span th:text="${errorMessage}"></span>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="alert"
-              aria-label="Close"
-            ></button>
-          </div>
-        </div>
+.sidebar .nav-link {
+	color: var(--text-muted);
+	padding: 12px 25px;
+	display: flex;
+	align-items: center;
+	gap: 15px;
+	transition: background-color 0.2s, color 0.2s, transform 0.3s ease;
+}
 
-        <div class="content-card p-0">
-          <div class="table-responsive">
-            <table class="table table-hover mb-0">
-              <thead>
-                <tr>
-                  <th class="py-3 px-4">ID</th>
-                  <th class="py-3 px-4">Nội dung</th>
-                  <th class="py-3 px-4">Người đăng</th>
-                  <th class="py-3 px-4">Ngày đăng</th>
-                  <th class="py-3 px-4">Trạng thái</th>
-                  <th class="py-3 px-4">Thao tác</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr th:each="post : ${posts}">
-                  <td class="py-3 px-4" th:text="${post.postId}"></td>
-                  <td class="py-3 px-4" style="max-width: 300px">
-                    <!-- SỬA: Rút gọn nội dung -->
-                    <span
-                      th:text="${post.content.length() > 100 ? #strings.substring(post.content, 0, 100) + '...' : post.content}"
-                    ></span>
+.sidebar .nav-link:hover, .sidebar .nav-link.active {
+	background-color: rgba(14, 165, 233, 0.1);
+	color: var(--text-light);
+	border-left: 4px solid var(--primary-color);
+	padding-left: 21px;
+	transform: translateX(5px);
+}
+
+.sidebar .nav-link.active {
+	font-weight: bold;
+}
+
+/* SỬA: Thêm style cho đường kẻ phân cách */
+.sidebar .nav-item.border-top {
+	border-top: 1px solid var(--border-color) !important;
+}
+
+.main-content {
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.main-header {
+	background-color: var(--card-bg);
+	border-radius: 15px;
+	padding: 20px 30px;
+	box-shadow: 0 10px 30px var(--shadow-medium);
+	border: 1px solid var(--border-color);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 15px;
+}
+
+.main-header .form-control {
+	background-color: var(--bg-dark);
+	border-color: var(--border-color);
+	color: var(--text-light);
+	max-width: 300px;
+	border-radius: 50rem;
+}
+
+.main-header .form-control::placeholder {
+	color: var(--text-muted);
+}
+
+.main-header .input-group {
+	flex-grow: 1;
+	max-width: 400px; /* Bỏ giới hạn để nút Lọc vừa */
+}
+
+.main-header .search-icon {
+	color: var(--text-muted);
+	font-size: 1.25rem;
+}
+
+.main-header .profile-avatar {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	object-fit: cover;
+	border: 2px solid var(--primary-color);
+}
+
+.content-card {
+	background-color: var(--card-bg);
+	border-radius: 15px;
+	padding: 25px;
+	box-shadow: 0 8px 25px var(--shadow-medium);
+	border: 1px solid var(--border-color);
+}
+/* Style cho form control và select chung */
+.form-control, .form-select {
+	background-color: var(--bg-dark);
+	border-color: var(--border-color);
+	color: var(--text-light);
+}
+
+.form-control:focus, .form-select:focus {
+	border-color: var(--primary-color);
+	box-shadow: 0 0 0 0.25rem rgba(14, 165, 233, 0.25);
+	background-color: var(--bg-dark);
+	color: var(--text-light);
+}
+
+.form-control::placeholder {
+	color: var(--text-muted);
+}
+
+.form-label {
+	font-size: 0.875rem;
+	color: var(--text-muted);
+} /* Thu nhỏ label */
+.bi {
+	font-size: 1.25rem;
+	width: 25px;
+	text-align: center;
+	vertical-align: middle; /* Căn icon với text */
+}
+
+.nav-link.active .bi {
+	color: var(--primary-color);
+}
+
+.nav-link .bi {
+	color: var(--text-muted);
+}
+
+.table {
+	color: var(--text-light);
+	background-color: transparent;
+	border-radius: 15px;
+	overflow: hidden; /* Cần thiết nếu card p-0 */
+}
+
+.table thead th {
+	border-bottom: 1px solid var(--border-color);
+	color: var(--text-muted);
+	background-color: var(--card-bg); /* Thêm nền cho header */
+	position: sticky; /* Giữ header khi scroll */
+	top: 0;
+}
+
+.table tbody tr:last-child td {
+	border-bottom: none;
+}
+
+.table tbody td {
+	border-top: 1px solid var(--border-color);
+	vertical-align: middle; /* Căn giữa nội dung cell */
+}
+
+.table-hover tbody tr:hover {
+	background-color: rgba(255, 255, 255, 0.05); /* Hiệu ứng hover nhẹ */
+	color: var(--text-light); /* Đảm bảo màu chữ không đổi */
+}
+
+/* CSS cho thông báo */
+.alert-container {
+	padding-left: 0;
+	padding-right: 0;
+}
+/* CSS cho phân trang */
+.pagination .page-link {
+	background-color: var(--card-bg);
+	border-color: var(--border-color);
+	color: var(--text-muted);
+}
+
+.pagination .page-link:hover {
+	background-color: #334155;
+	color: var(--text-light);
+}
+
+.pagination .page-item.active .page-link {
+	background-color: var(--primary-color);
+	border-color: var(--primary-color);
+	color: #fff;
+}
+
+.pagination .page-item.disabled .page-link {
+	background-color: var(--card-bg);
+	border-color: var(--border-color);
+	color: #6c757d; /* Màu xám mờ hơn */
+}
+
+@media ( max-width : 992px) {
+	.main-wrapper {
+		flex-direction: column;
+	}
+	.sidebar-container {
+		width: 100%;
+		margin-right: 0;
+		margin-bottom: 20px;
+		position: static;
+		height: auto;
+	}
+	.main-content {
+		margin-left: 0;
+	}
+	.main-header {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+	.main-header .input-group {
+		width: 100%;
+		max-width: none;
+	}
+}
+</style>
+</head>
+<body>
+	<div class="main-wrapper">
+		<div class="sidebar-container">
+			<div class="sidebar">
+				<a
+					class="navbar-brand fw-bold fs-4 d-flex align-items-center justify-content-center gap-2"
+					th:href="@{/manager/posts}"> <svg class="bi me-2"
+						width="32" height="32" fill="var(--primary-color)">
+              <path stroke-linecap="round" stroke-linejoin="round"
+							stroke-width="2" d="M12 6.253v11.494m-9-5.747h18"
+							stroke="currentColor"></path>
+            </svg> AloUTE Manager
+				</a>
+
+				<ul class="nav flex-column mt-4">
+					<li class="nav-item"><a class="nav-link active"
+						th:href="@{/manager/posts}"> <i class="bi bi-journals"></i> <span>Duyệt
+								Bài đăng</span>
+					</a></li>
+					<li class="nav-item"><a class="nav-link"
+						th:href="@{/manager/reports}"> <i class="bi bi-flag-fill"></i>
+							<span>Khiếu nại</span>
+					</a></li>
+					<li class="nav-item border-top mt-2 pt-2"><a class="nav-link"
+						th:href="@{/}"> <i class="bi bi-house-door-fill"></i> <span>Quay
+								lại trang chủ</span>
+					</a></li>
+					<li class="nav-item"><a class="nav-link" th:href="@{/logout}">
+							<i class="bi bi-box-arrow-right"></i> <span>Đăng xuất</span>
+					</a></li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="main-content">
+			<div class="main-header">
+				<div>
+					<h2 class="mb-0">Duyệt Bài đăng</h2>
+					<p class="text-muted mb-0">Xem và quản lý các bài đăng trên hệ
+						thống.</p>
+				</div>
+
+				<div class="d-flex align-items-center gap-3">
+					<!-- Input tìm kiếm trong header có thể bỏ nếu dùng form lọc riêng -->
+					<!--
+             <div class="input-group">
+                <input type="text" class="form-control" placeholder="Tìm kiếm bài đăng..." aria-label="Tìm kiếm" />
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+             </div>
+             -->
+					<img
+						th:src="${session.user != null ? session.user.avatar : 'https://placehold.co/40x40/0ea5e9/FFFFFF?text=M'}"
+						alt="Manager Avatar" class="profile-avatar" />
+				</div>
+			</div>
+
+			<div class="alert-container container-fluid p-0">
+				<div th:if="${successMessage}"
+					class="alert alert-success alert-dismissible fade show mb-3"
+					role="alert">
+					<i class="bi bi-check-circle-fill me-2"></i> <span
+						th:text="${successMessage}"></span>
+					<button type="button" class="btn-close" data-bs-dismiss="alert"
+						aria-label="Close"></button>
+				</div>
+
+				<div th:if="${errorMessage}"
+					class="alert alert-danger alert-dismissible fade show mb-3"
+					role="alert">
+					<i class="bi bi-exclamation-triangle-fill me-2"></i> <span
+						th:text="${errorMessage}"></span>
+					<button type="button" class="btn-close" data-bs-dismiss="alert"
+						aria-label="Close"></button>
+				</div>
+			</div>
+
+			<!-- ⭐ THÊM FORM LỌC -->
+			<div class="content-card mb-3">
+				<!-- Thêm mb-3 -->
+				<h5 class="mb-3">Bộ lọc bài đăng</h5>
+				<form th:action="@{/manager/posts}" method="get"
+					class="row g-3 align-items-end">
+					<div class="col-lg-4 col-md-6">
+						<!-- Điều chỉnh cột cho responsive -->
+						<label for="keyword" class="form-label">Từ khóa</label> <input
+							type="text" class="form-control form-control-sm" id="keyword"
+							name="keyword" placeholder="Nội dung, tên, username..."
+							th:value="${currentKeyword}" />
+					</div>
+					<div class="col-lg-2 col-md-6">
+						<label for="status" class="form-label">Trạng thái</label> <select
+							id="status" name="status" class="form-select form-select-sm">
+							<option value=""
+								th:selected="${currentStatus == null or currentStatus == ''}">
+								Tất cả</option>
+							<option value="approved"
+								th:selected="${currentStatus == 'approved'}">
+								Đã duyệt</option>
+							<option value="pending"
+								th:selected="${currentStatus == 'pending'}">
+								Chờ duyệt</option>
+							<option value="rejected"
+								th:selected="${currentStatus == 'rejected'}">
+								Bị từ chối</option>
+						</select>
+					</div>
+					<div class="col-lg-2 col-md-6">
+						<label for="startDate" class="form-label">Từ ngày</label> <input
+							type="date" class="form-control form-control-sm" id="startDate"
+							name="startDate" th:value="${currentStartDate}" />
+					</div>
+					<div class="col-lg-2 col-md-6">
+						<label for="endDate" class="form-label">Đến ngày</label> <input
+							type="date" class="form-control form-control-sm" id="endDate"
+							name="endDate" th:value="${currentEndDate}" />
+					</div>
+					<div class="col-lg-2 col-md-12 d-flex gap-2 mt-md-0 mt-3">
+						<!-- Điều chỉnh responsive cho nút -->
+						<button type="submit" class="btn btn-primary btn-sm flex-grow-1">
+							<i class="bi bi-funnel-fill"></i> Lọc
+						</button>
+						<a th:href="@{/manager/posts}"
+							class="btn btn-secondary btn-sm flex-grow-1" title="Xóa bộ lọc"><i
+							class="bi bi-x-lg"></i> Xóa lọc</a>
+					</div>
+				</form>
+			</div>
+
+			<div class="content-card p-0">
+				<div class="table-responsive">
+					<table class="table table-hover mb-0">
+						<thead>
+							<tr>
+								<th class="py-3 px-4">ID</th>
+								<th class="py-3 px-4">Nội dung</th>
+								<th class="py-3 px-4">Người đăng</th>
+								<th class="py-3 px-4">Ngày đăng</th>
+								<th class="py-3 px-4">Trạng thái</th>
+								<th class="py-3 px-4" style="min-width: 210px">Thao tác</th>
+								<!-- Đặt chiều rộng tối thiểu -->
+							</tr>
+						</thead>
+						<tbody>
+							<!-- ⭐ SỬA: Lặp qua content của Page -->
+							<tr th:each="post : ${postsPage.content}">
+								<td class="py-3 px-4" th:text="${post.postId}"></td>
+								<td class="py-3 px-4" style="max-width: 300px"><span
+									th:text="${post.content != null ? (post.content.length() > 100 ? #strings.substring(post.content, 0, 100) + '...' : post.content) : ''}"></span>
+								</td>
+								<td class="py-3 px-4" th:text="${post.user?.fullName ?: 'N/A'}"></td>
+								<td class="py-3 px-4"
+									th:text="${post.createdAt != null ? #temporals.format(post.createdAt, 'dd-MM-yy HH:mm') : 'N/A'}">
                   </td>
-                  <td class="py-3 px-4" th:text="${post.user?.fullName}"></td>
-                  <!-- Thêm ? để tránh lỗi Null -->
-                  <td
-                    class="py-3 px-4"
-                    th:text="${#temporals.format(post.createdAt, 'dd-MM-yyyy HH:mm')}"
-                  ></td>
                   <td class="py-3 px-4">
                     <span
                       th:text="${post.status}"
@@ -380,45 +455,33 @@
                     ></span>
                   </td>
                   <td class="py-3 px-4">
-                    <!-- SỬA: Cập nhật link theo @PathVariable -->
                     <a
                       th:href="@{/manager/posts/{id}(id=${post.postId})}"
                       class="btn btn-sm btn-info me-1"
                       title="Xem chi tiết"
                       ><i class="bi bi-eye-fill"></i
                     ></a>
-
-                    <!-- SỬA: Cập nhật action theo @PathVariable -->
                     <form
                       th:if="${post.status != 'approved'}"
                       th:action="@{/manager/posts/{id}/approve(id=${post.postId})}"
                       method="post"
-                      style="display: inline-block; margin-right: 5px"
+                      style="display: inline-block; margin-right: 4px"
                     >
-                      <input
-                        type="hidden"
-                        name="postId"
-                        th:value="${post.postId}"
-                      />
                       <button
                         type="submit"
                         class="btn btn-sm btn-success"
                         title="Duyệt bài"
                       >
-                        <i class="bi bi-check-circle-fill"></i> Duyệt
+                        <i class="bi bi-check-circle-fill"></i>
                       </button>
                     </form>
-
-                    <!-- SỬA: Cập nhật link theo @PathVariable -->
                     <a
                       th:if="${post.status != 'rejected'}"
                       th:href="@{/manager/posts/{id}/reject(id=${post.postId})}"
-                      class="btn btn-sm btn-warning"
+                      class="btn btn-sm btn-warning me-1"
                       title="Từ chối bài"
-                      ><i class="bi bi-x-octagon-fill"></i> Từ chối</a
-                    >
-
-                    <!-- SỬA: Cập nhật action theo @PathVariable -->
+                      ><i class="bi bi-x-octagon-fill"></i
+                    ></a>
                     <form
                       th:action="@{/manager/posts/{id}/delete(id=${post.postId})}"
                       method="post"
@@ -430,22 +493,54 @@
                         class="btn btn-sm btn-danger"
                         title="Xóa bài"
                       >
-                        <i class="bi bi-trash3-fill"></i> Xóa
+                        <i class="bi bi-trash3-fill"></i>
                       </button>
                     </form>
                   </td>
                 </tr>
-                <tr th:if="${posts.isEmpty()}">
-                  <td colspan="6" class="text-center py-3 px-4">
-                    Không có bài đăng nào.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+                <!-- ⭐ SỬA: Kiểm tra empty của Page -->
+							<tr th:if="${postsPage.empty}">
+								<td colspan="6"
+									class="text-center py-4 px-4 text-muted fst-italic">
+									Không tìm thấy bài đăng nào phù hợp.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<!-- ⭐ THÊM PHÂN TRANG -->
+				<nav aria-label="Page navigation"
+					th:if="${postsPage.totalPages > 1}" class="p-3 border-top"
+					style="border-color: var(--border-color) !important">
+					<ul class="pagination justify-content-center mb-0">
+						<!-- Nút Previous -->
+						<li class="page-item"
+							th:classappend="${postsPage.first} ? 'disabled'">
+							<a class="page-link"
+							th:href="@{/manager/posts(page=${postsPage.number - 1}, size=${postsPage.size}, keyword=${currentKeyword}, status=${currentStatus}, startDate=${currentStartDate}, endDate=${currentEndDate})}">&laquo;</a>
+						</li>
+
+						<!-- Các nút số trang -->
+						<li class="page-item"
+							th:each="pageNumber : ${#numbers.sequence( T(java.lang.Math).max(0, postsPage.number - 2), T(java.lang.Math).min(postsPage.totalPages - 1, postsPage.number + 2) )}"
+							th:classappend="${pageNumber == postsPage.number} ? 'active'">
+							<a class="page-link"
+							th:href="@{/manager/posts(page=${pageNumber}, size=${postsPage.size}, keyword=${currentKeyword}, status=${currentStatus}, startDate=${currentStartDate}, endDate=${currentEndDate})}"
+							th:text="${pageNumber + 1}"></a>
+						</li>
+
+						<!-- Nút Next -->
+						<li class="page-item"
+							th:classappend="${postsPage.last} ? 'disabled'">
+							<a class="page-link"
+							th:href="@{/manager/posts(page=${postsPage.number + 1}, size=${postsPage.size}, keyword=${currentKeyword}, status=${currentStatus}, startDate=${currentStartDate}, endDate=${currentEndDate})}">&raquo;</a>
+						</li>
+					</ul>
+				</nav>
+			</div>
+		</div>
+	</div>
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>

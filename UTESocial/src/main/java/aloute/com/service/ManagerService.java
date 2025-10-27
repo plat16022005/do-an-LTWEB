@@ -1,5 +1,6 @@
 package aloute.com.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -96,20 +97,23 @@ public class ManagerService {
 
     public List<Posts> getAllPosts() 
     {
-    	return postsRepository.findAllWithUserForAdmin();
+        return postsRepository.findAllWithUserForAdmin();
+    }
+
+
+    @Transactional(readOnly = true) // Quan trọng để fetch user
+    public Page<Posts> findFilteredPosts(String keyword, String status, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        return postsRepository.findPostsWithFiltersForAdmin(keyword, status, startDate, endDate, pageable);
     }
     
     @Transactional(readOnly = true)
     public Posts getPostById(Integer postId) 
     {
-        Optional<Posts> postOptional = postsRepository.findByIdWithUser(postId);
+        Optional<Posts> postOptional = postsRepository.findPostWithUser(postId);
         if (postOptional.isPresent()) 
         {
             Posts post = postOptional.get();
-            Hibernate.initialize(post.getUser());
-            // Khởi tạo các collection 
-            // lấy dữ liệu attachments và moderations ( lịch sử duyệt/từ chối)
-            Hibernate.initialize(post.getAttachments());
+
             Hibernate.initialize(post.getModerations());
 
             
@@ -118,7 +122,6 @@ public class ManagerService {
                 post.getModerations().forEach(mod -> Hibernate.initialize(mod.getModerator()));
             }
 
-            Hibernate.initialize(post.getComments());
             return post; 
         }
         return null; 
@@ -165,7 +168,7 @@ public class ManagerService {
 
     public void rejectPost(Integer postId, String reason) 
     {
-        Optional<Posts> postOptional = postsRepository.findByIdWithUser(postId);
+        Optional<Posts> postOptional = postsRepository.findPostWithUser(postId);
         if (postOptional.isPresent()) 
         {
             Posts post = postOptional.get();
@@ -173,15 +176,6 @@ public class ManagerService {
 
             post.setStatus("rejected");
             postsRepository.save(post);
-
-            // Tạo bản ghi trong PostModeration
-            PostModeration moderation = new PostModeration();
-            moderation.setPost(post);
-            moderation.setStatus("rejected");
-            moderation.setReason(reason);
-            moderation.setModerator(null); 
-            moderation.setReviewedAt(LocalDateTime.now());
-            postModerationRepository.save(moderation);
 
             // Gửi thông báo đến người dùng
             if (postOwner != null) 
@@ -213,7 +207,12 @@ public class ManagerService {
     
     public List<Reports> getAllReports() 
     {
-    	return reportsRepository.findAllWithReporterAndReportedUserOrderByCreatedAtDesc();
+        return reportsRepository.findAllWithReporterAndReportedUserOrderByCreatedAtDesc();
+    }
+
+    @Transactional(readOnly = true) 
+    public Page<Reports> findFilteredReports(String keyword, String type, String status, String resolutionStatus, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        return reportsRepository.findReportsWithFilters(keyword, type, status, resolutionStatus, startDate, endDate, pageable);
     }
     
     @Transactional(readOnly = true) 
@@ -224,7 +223,7 @@ public class ManagerService {
         if (reportOpt.isPresent()) 
         {
             Reports report = reportOpt.get();
-            Posts post = report.getPost(); // Lấy post từ report
+            Posts post = report.getPost(); 
 
             // Kiểm tra xem report này có liên quan đến post không
             if (post != null) 

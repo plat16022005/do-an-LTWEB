@@ -80,6 +80,7 @@
         box-shadow: 0 10px 30px var(--shadow-medium);
         border: 1px solid var(--border-color);
         height: 100%;
+        overflow-y: auto; /* Thêm scroll */
       }
       .sidebar .navbar-brand {
         padding: 10px 20px;
@@ -131,6 +132,7 @@
         gap: 15px;
       }
       .main-header .form-control {
+        /* Style search header (nếu giữ lại) */
         background-color: var(--bg-dark);
         border-color: var(--border-color);
         color: var(--text-light);
@@ -143,10 +145,6 @@
       .main-header .input-group {
         flex-grow: 1;
         max-width: 400px;
-      }
-      .main-header .search-icon {
-        color: var(--text-muted);
-        font-size: 1.25rem;
       }
       .main-header .profile-avatar {
         width: 40px;
@@ -161,16 +159,34 @@
         padding: 25px;
         box-shadow: 0 8px 25px var(--shadow-medium);
         border: 1px solid var(--border-color);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
       }
-      .content-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 40px var(--shadow-medium);
+      /* Style cho form control và select chung */
+      .form-control,
+      .form-select {
+        background-color: var(--bg-dark);
+        border-color: var(--border-color);
+        color: var(--text-light);
       }
+      .form-control:focus,
+      .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(14, 165, 233, 0.25);
+        background-color: var(--bg-dark);
+        color: var(--text-light);
+      }
+      .form-control::placeholder {
+        color: var(--text-muted);
+      }
+      .form-label {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+      }
+
       .bi {
         font-size: 1.25rem;
         width: 25px;
         text-align: center;
+        vertical-align: middle;
       }
       .nav-link.active .bi {
         color: var(--primary-color);
@@ -178,44 +194,67 @@
       .nav-link .bi {
         color: var(--text-muted);
       }
+
       .table {
         color: var(--text-light);
         background-color: transparent;
-        border-radius: 15px;
+        border-radius: 15px; /* Áp dụng cho table-responsive hoặc card cha */
         overflow: hidden;
       }
       .table thead th {
         border-bottom: 1px solid var(--border-color);
         color: var(--text-muted);
+        background-color: var(--card-bg);
+        position: sticky;
+        top: 0;
+        z-index: 1; /* Để header nổi lên trên */
       }
       .table tbody tr:last-child td {
         border-bottom: none;
       }
       .table tbody td {
         border-top: 1px solid var(--border-color);
+        vertical-align: middle;
       }
-      .form-select-sm {
-        background-color: var(--bg-dark);
-        border-color: var(--border-color);
+      .table-hover tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.05);
         color: var(--text-light);
-        border-radius: 8px;
       }
-      .form-select-sm:focus {
+      /* CSS cho thông báo */
+      .alert-container {
+        padding-left: 0;
+        padding-right: 0;
+      }
+      /* CSS cho phân trang */
+      .pagination .page-link {
+        background-color: var(--card-bg);
+        border-color: var(--border-color);
+        color: var(--text-muted);
+      }
+      .pagination .page-link:hover {
+        background-color: #334155;
+        color: var(--text-light);
+      }
+      .pagination .page-item.active .page-link {
+        background-color: var(--primary-color);
         border-color: var(--primary-color);
-        box-shadow: 0 0 0 0.25rem rgba(14, 165, 233, 0.25);
+        color: #fff;
       }
+      .pagination .page-item.disabled .page-link {
+        background-color: var(--card-bg);
+        border-color: var(--border-color);
+        color: #6c757d;
+      }
+
       @media (max-width: 992px) {
         .main-wrapper {
           flex-direction: column;
         }
         .sidebar-container {
           width: 100%;
-          margin-right: 0;
-          margin-bottom: 20px;
           position: static;
-        }
-        .sidebar {
           height: auto;
+          margin-bottom: 20px;
         }
         .main-content {
           margin-left: 0;
@@ -264,6 +303,7 @@
               </a>
             </li>
             <li class="nav-item">
+              <!-- SỬA: Đặt active -->
               <a class="nav-link active" th:href="@{/manager/reports}">
                 <i class="bi bi-flag-fill"></i>
                 <span>Khiếu nại</span>
@@ -271,7 +311,6 @@
             </li>
             <li class="nav-item border-top mt-2 pt-2">
               <a class="nav-link" th:href="@{/}">
-                <!-- Giả sử trang chủ là / -->
                 <i class="bi bi-house-door-fill"></i>
                 <span>Quay lại trang chủ</span>
               </a>
@@ -294,16 +333,7 @@
             </p>
           </div>
           <div class="d-flex align-items-center gap-3">
-            <div class="input-group">
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Tìm kiếm khiếu nại..."
-                aria-label="Tìm kiếm"
-              />
-              <span class="input-group-text"><i class="bi bi-search"></i></span>
-            </div>
-            <!-- SỬA: Lấy avatar từ session -->
+            <!-- Có thể bỏ input tìm kiếm ở đây -->
             <img
               th:src="${session.user != null ? session.user.avatar : 'https://placehold.co/40x40/0ea5e9/FFFFFF?text=M'}"
               alt="Manager Avatar"
@@ -311,6 +341,171 @@
             />
           </div>
         </div>
+
+        <!-- Thông báo -->
+        <div class="alert-container container-fluid p-0">
+          <div
+            th:if="${successMessage}"
+            class="alert alert-success alert-dismissible fade show mb-3"
+            role="alert"
+          >
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${successMessage}"></span>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div
+            th:if="${errorMessage}"
+            class="alert alert-danger alert-dismissible fade show mb-3"
+            role="alert"
+          >
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${errorMessage}"></span>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+            ></button>
+          </div>
+        </div>
+
+        <!-- ⭐ GIỮ NGUYÊN FORM LỌC -->
+        <div class="content-card mb-3">
+          <h5 class="mb-3">Bộ lọc khiếu nại</h5>
+          <form
+            th:action="@{/manager/reports}"
+            method="get"
+            class="row g-3 align-items-end"
+          >
+            <div class="col-lg-3 col-md-6">
+              <label for="keyword" class="form-label">Từ khóa</label>
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                id="keyword"
+                name="keyword"
+                placeholder="Lý do, tên người dùng..."
+                th:value="${currentKeyword}"
+              />
+            </div>
+            <div class="col-lg-2 col-md-6">
+              <label for="type" class="form-label">Loại</label>
+              <select id="type" name="type" class="form-select form-select-sm">
+                <option
+                  value=""
+                  th:selected="${currentType == null or currentType == ''}"
+                >
+                  Tất cả
+                </option>
+                <option value="user" th:selected="${currentType == 'user'}">
+                  Người dùng
+                </option>
+                <option value="post" th:selected="${currentType == 'post'}">
+                  Bài viết
+                </option>
+              </select>
+            </div>
+            <div class="col-lg-2 col-md-6">
+              <label for="status" class="form-label">Trạng thái</label>
+              <select
+                id="status"
+                name="status"
+                class="form-select form-select-sm"
+              >
+                <option
+                  value=""
+                  th:selected="${currentStatus == null or currentStatus == ''}"
+                >
+                  Tất cả
+                </option>
+                <option
+                  value="pending"
+                  th:selected="${currentStatus == 'pending'}"
+                >
+                  Chờ xử lý
+                </option>
+                <option
+                  value="completed"
+                  th:selected="${currentStatus == 'completed'}"
+                >
+                  Đã hoàn thành
+                </option>
+              </select>
+            </div>
+            <div class="col-lg-2 col-md-6">
+              <label for="resolutionStatus" class="form-label">Kết quả</label>
+              <select
+                id="resolutionStatus"
+                name="resolutionStatus"
+                class="form-select form-select-sm"
+              >
+                <option
+                  value=""
+                  th:selected="${currentResolutionStatus == null or currentResolutionStatus == ''}"
+                >
+                  Tất cả
+                </option>
+                <option
+                  value="pending"
+                  th:selected="${currentResolutionStatus == 'pending'}"
+                >
+                  Chưa có
+                </option>
+                <option
+                  value="resolved"
+                  th:selected="${currentResolutionStatus == 'resolved'}"
+                >
+                  Resolved
+                </option>
+                <option
+                  value="rejected"
+                  th:selected="${currentResolutionStatus == 'rejected'}"
+                >
+                  Rejected
+                </option>
+              </select>
+            </div>
+            <div class="col-lg-3 row gx-2">
+              <div class="col-6">
+                <label for="startDate" class="form-label">Từ ngày</label>
+                <input
+                  type="date"
+                  class="form-control form-control-sm"
+                  id="startDate"
+                  name="startDate"
+                  th:value="${currentStartDate}"
+                />
+              </div>
+              <div class="col-6">
+                <label for="endDate" class="form-label">Đến ngày</label>
+                <input
+                  type="date"
+                  class="form-control form-control-sm"
+                  id="endDate"
+                  name="endDate"
+                  th:value="${currentEndDate}"
+                />
+              </div>
+            </div>
+            <div class="col-lg-2 col-md-12 d-flex gap-2 mt-md-0 mt-3">
+              <button type="submit" class="btn btn-primary btn-sm flex-grow-1">
+                <i class="bi bi-funnel-fill"></i> Lọc
+              </button>
+              <a
+                th:href="@{/manager/reports}"
+                class="btn btn-secondary btn-sm flex-grow-1"
+                title="Xóa bộ lọc"
+                ><i class="bi bi-x-lg"></i> Xóa lọc</a
+              >
+            </div>
+          </form>
+        </div>
+
         <div class="content-card p-0">
           <div class="table-responsive">
             <table class="table table-hover mb-0">
@@ -319,20 +514,26 @@
                   <th class="py-3 px-4">ID</th>
                   <th class="py-3 px-4">Người tố cáo</th>
                   <th class="py-3 px-4">Đối tượng bị tố cáo</th>
+                  <!-- Đổi tên cột này -->
                   <th class="py-3 px-4">Loại & Chi tiết</th>
-                  <th class="py-3 px-4">Lý do</th>
+                  <th class="py-3 px-4" style="min-width: 200px">Lý do</th>
                   <th class="py-3 px-4">Ngày tố cáo</th>
+                  <!-- Đổi tên cột này -->
                   <th class="py-3 px-4">Trạng thái</th>
+                  <!-- Bỏ cột Kết quả và Hành động khỏi thead -->
                 </tr>
               </thead>
               <tbody>
-                <tr th:each="report : ${reports}">
+                <!-- ⭐ SỬA: Quay lại cấu trúc lặp gốc và kiểm tra empty -->
+                <tr th:each="report : ${reportsPage.content}">
+                  <!-- Lặp qua Page content -->
                   <td class="py-3 px-4" th:text="${report.reportId}"></td>
                   <td
                     class="py-3 px-4"
                     th:text="${report.reporter?.fullName ?: 'N/A'}"
                   ></td>
                   <td class="py-3 px-4">
+                    <!-- Link đến profile người bị report (nếu là user) -->
                     <a
                       th:if="${report.type == 'user' and report.reportedUser != null}"
                       th:href="@{'/' + ${report.reportedUser.nameUser}}"
@@ -341,18 +542,20 @@
                       th:text="${report.reportedUser.fullName ?: 'N/A'}"
                     >
                     </a>
+                    <!-- Hiển thị tên người đăng bài bị report (nếu là post) -->
                     <span
-                      th:if="${report.type == 'post' and report.reportedUser != null}"
-                      th:text="${report.reportedUser.fullName ?: 'N/A'}"
+                      th:if="${report.type == 'post' and report.post?.user != null}"
+                      th:text="${report.post.user.fullName ?: 'N/A'}"
                     ></span>
-                    <span th:unless="${report.reportedUser != null}">N/A</span>
+                    <!-- Hiển thị N/A nếu không có thông tin -->
+                    <span
+                      th:unless="${(report.type == 'user' and report.reportedUser != null) or (report.type == 'post' and report.post?.user != null)}"
+                      >N/A</span
+                    >
                   </td>
-
                   <td class="py-3 px-4">
                     <span th:text="${#strings.capitalize(report.type)}"></span>
-
-                    <!-- Tố cáo bài viết -->
-                    <!-- SỬA: Cập nhật link -->
+                    <!-- Link xem chi tiết Report & Post (giữ nguyên) -->
                     <a
                       th:if="${report.type == 'post'}"
                       th:href="@{/manager/reports/view-post/{reportId}(reportId=${report.reportId})}"
@@ -361,8 +564,7 @@
                     >
                       <i class="bi bi-eye-fill"></i> Xem chi tiết
                     </a>
-                    <!-- Tố cáo người dùng -->
-                    <!-- SỬA: Cập nhật link -->
+                    <!-- Link xem chi tiết Report & User (giữ nguyên) -->
                     <a
                       th:if="${report.type == 'user'}"
                       th:href="@{/manager/reports/view-user/{reportId}(reportId=${report.reportId})}"
@@ -375,9 +577,10 @@
                   <td class="py-3 px-4" th:text="${report.reason}"></td>
                   <td
                     class="py-3 px-4"
-                    th:text="${#temporals.format(report.createdAt, 'dd-MM-yyyy HH:mm')}"
+                    th:text="${report.createdAt != null ? #temporals.format(report.createdAt, 'dd-MM-yyyy HH:mm') : 'N/A'}"
                   ></td>
                   <td class="py-3 px-4">
+                    <!-- Hiển thị trạng thái như phiên bản gốc -->
                     <span
                       th:if="${report.status == 'pending'}"
                       class="badge bg-warning text-dark"
@@ -394,15 +597,66 @@
                       >Đã từ chối</span
                     >
                   </td>
+                  <!-- Bỏ cột Kết quả và Hành động riêng biệt -->
                 </tr>
-                <tr th:if="${reports.isEmpty()}">
-                  <td colspan="7" class="text-center py-3 px-4 text-muted">
-                    Không có khiếu nại nào.
+                <tr th:if="${reportsPage.empty}">
+                  <!-- Kiểm tra empty của Page -->
+                  <td
+                    colspan="7"
+                    class="text-center py-4 px-4 text-muted fst-italic"
+                  >
+                    <!-- Giảm colspan -->
+                    Không tìm thấy khiếu nại nào phù hợp.
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
+
+          <!-- ⭐ GIỮ NGUYÊN PHÂN TRANG -->
+          <nav
+            aria-label="Page navigation"
+            th:if="${reportsPage.totalPages > 1}"
+            class="p-3 border-top"
+            style="border-color: var(--border-color) !important"
+          >
+            <ul class="pagination justify-content-center mb-0">
+              <!-- Previous -->
+              <li
+                class="page-item"
+                th:classappend="${reportsPage.first} ? 'disabled'"
+              >
+                <a
+                  class="page-link"
+                  th:href="@{/manager/reports(page=${reportsPage.number - 1}, size=${reportsPage.size}, keyword=${currentKeyword}, type=${currentType}, status=${currentStatus}, resolutionStatus=${currentResolutionStatus}, startDate=${currentStartDate}, endDate=${currentEndDate})}"
+                  >&laquo;</a
+                >
+              </li>
+              <!-- Page Numbers -->
+              <li
+                class="page-item"
+                th:each="pageNumber : ${#numbers.sequence( T(java.lang.Math).max(0, reportsPage.number - 2), T(java.lang.Math).min(reportsPage.totalPages - 1, reportsPage.number + 2) )}"
+                th:classappend="${pageNumber == reportsPage.number} ? 'active'"
+              >
+                <a
+                  class="page-link"
+                  th:href="@{/manager/reports(page=${pageNumber}, size=${reportsPage.size}, keyword=${currentKeyword}, type=${currentType}, status=${currentStatus}, resolutionStatus=${currentResolutionStatus}, startDate=${currentStartDate}, endDate=${currentEndDate})}"
+                  th:text="${pageNumber + 1}"
+                ></a>
+              </li>
+              <!-- Next -->
+              <li
+                class="page-item"
+                th:classappend="${reportsPage.last} ? 'disabled'"
+              >
+                <a
+                  class="page-link"
+                  th:href="@{/manager/reports(page=${reportsPage.number + 1}, size=${reportsPage.size}, keyword=${currentKeyword}, type=${currentType}, status=${currentStatus}, resolutionStatus=${currentResolutionStatus}, startDate=${currentStartDate}, endDate=${currentEndDate})}"
+                  >&raquo;</a
+                >
+              </li>
+            </ul>
+          </nav>
         </div>
       </div>
     </div>
