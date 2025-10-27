@@ -185,6 +185,20 @@
             border-color: var(--primary-color);
             box-shadow: 0 0 0 0.25rem rgba(14, 165, 233, 0.25);
         }
+        .search-bar-container .form-select {
+		    color: var(--text-muted); /* Màu chữ giống placeholder */
+		    padding-right: 2rem; /* Thêm khoảng trống cho mũi tên dropdown */
+		}
+		.search-bar-container .form-select:focus {
+		    box-shadow: none; /* Bỏ shadow khi focus */
+		    color: var(--text-light); /* Đổi màu chữ khi focus/chọn */
+		}
+		.search-bar-container option {/* Đổi màu option khi chọn */
+		     background-color: var(--card-bg);
+		     color: var(--text-light);
+		}
+        
+        
         @media (max-width: 992px) {
             .main-wrapper {
                 flex-direction: column;
@@ -251,6 +265,12 @@
 					        <span>Lịch sử Hoạt động</span>
 					    </a>
 					</li>
+					<li class="nav-item">
+					    <a class="nav-link" th:href="@{/home}">  
+					    	<i class="bi bi-house-door-fill"></i> 
+					    	<span>Trang chủ User</span>
+					    </a>
+					</li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">
                             <i class="bi bi-gear-fill"></i>
@@ -273,13 +293,46 @@
                     <p class="text-muted mb-0">Xem và quản lý tất cả người dùng hệ thống.</p>
                 </div>
                 <div class="d-flex align-items-center gap-3">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Tìm kiếm người dùng..." aria-label="Tìm kiếm">
-                        <span class="input-group-text"><i class="bi bi-search"></i></span>
-                    </div>
                     <img src="https://placehold.co/40x40/0ea5e9/FFFFFF?text=A" alt="Admin Avatar" class="profile-avatar">
                 </div>
             </div>
+            
+			<div class="search-bar-container mb-3 px-md-3">
+			    <form th:action="@{/admin/users}" method="get" class="search-form"> 
+				    <div class="input-group border rounded-pill shadow-sm" style="border-color: var(--border-color) !important; background-color: var(--card-bg);">
+			            <span class="input-group-text bg-transparent border-0 ps-3 pe-1 text-muted">
+			                <i class="bi bi-search"></i>
+			            </span>
+			            <input type="search" name="keyword" class="form-control bg-transparent border-0 shadow-none"
+			                   th:placeholder="'Tìm theo Tên, Email, Username...'"
+			                   th:value="${param.keyword}"
+			                   aria-label="Tìm kiếm">
+			            
+			            <select name="role" class="form-select flex-grow-0 w-auto border-0 bg-transparent shadow-none ms-2" onchange="this.form.submit()">
+						    <option value="" th:selected="${role == null or #strings.isEmpty(role)}">Vai trò  </option>
+						    <option value="user" th:selected="${role == 'user'}">User</option>
+						    <option value="manager" th:selected="${role == 'manager'}">Manager</option>
+						</select>
+						
+						<select name="status" class="form-select flex-grow-0 w-auto border-0 bg-transparent shadow-none me-2" onchange="this.form.submit()">
+						    <option value="" th:selected="${status == null or #strings.isEmpty(status)}">Trạng thái  </option>
+						    <option value="active" th:selected="${status == 'active'}">Hoạt động</option>
+						    <option value="locked" th:selected="${status == 'locked'}">Đã khóa</option>
+						</select>
+						
+						<button type="submit" 
+			            class="btn btn-primary rounded-pill px-3 py-1 me-1 my-1 d-flex align-items-center gap-1">
+			                <i class="bi bi-funnel-fill"></i> Lọc
+			            </button>
+			            <a th:href="@{/admin/users}" class="btn btn-outline-secondary rounded-pill px-3 py-1 me-1 my-1 d-flex align-items-center gap-1"
+			               title="Tải lại danh sách gốc">
+			                <i class="bi bi-arrow-clockwise"></i> Làm mới
+			            </a>
+			            
+			        </div>
+			    </form>
+			</div>            
+            
             <div class="content-card p-0">
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
@@ -288,6 +341,7 @@
                                 <th class="py-3 px-4">ID</th>
                                 <th class="py-3 px-4">Email</th>
                                 <th class="py-3 px-4">Họ và Tên</th>
+                                <th class="py-3 px-4">Username</th>
                                 <th class="py-3 px-4">Role</th>
                                 <th class="py-3 px-4">Trạng thái</th>
                                 <th class="py-3 px-4">Thao tác</th>
@@ -298,12 +352,25 @@
                                 <td class="py-3 px-4" th:text="${user.userId}"></td>
                                 <td class="py-3 px-4" th:text="${user.email}"></td>
                                 <td class="py-3 px-4" th:text="${user.fullName}"></td>
+                                <td class="py-3 px-4">
+						             <a th:if="${user.nameUser != null}"
+						                th:href="@{'/' + ${user.nameUser}}"
+						                target="_blank"
+						                class="text-decoration-none user-link"
+						                th:text="${user.nameUser}">
+						             </a>
+						             <span th:unless="${user.nameUser != null}" class="text-muted fst-italic">Chưa có</span>
+						         </td>
                                 <td class="py-3 px-4" th:text="${user.role}"></td>
                                 <td class="py-3 px-4">
                                     <span th:if="${user.isLocked}" class="badge bg-danger">Đã khóa</span>
                                     <span th:unless="${user.isLocked}" class="badge bg-success">Hoạt động</span>
                                 </td>
                                 <td class="py-3 px-4">
+                                	<a th:href="@{/admin/users/view/{userId}(userId=${user.userId})}"
+								        class="btn btn-sm btn-outline-info me-1" title="Xem chi tiết">
+								         <i class="bi bi-person-lines-fill"></i> 
+								    </a>
                                     <form th:if="${!user.isLocked}" th:action="@{/admin/users/lock}" method="get" style="display:inline-block; margin-right: 5px;">
                                         <input type="hidden" name="userId" th:value="${user.userId}" />
                                         <button type="submit" class="btn btn-sm btn-danger">Khóa</button>

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="vi" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết Người dùng - AloUTE Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+            :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --sidebar-bg: #1e293b;
+            --border-color: #334155;
+            --text-light: #e2e8f0;
+            --text-muted: #94a3b8;
+            --primary-color: #0ea5e9;
+            --shadow-medium: rgba(0, 0, 0, 0.4);
+        }
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Montserrat', sans-serif;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .main-wrapper {
+            display: flex;
+            width: 100%;
+            padding: 20px;
+            gap: 20px;
+        }
+        .sidebar-container {
+            flex-shrink: 0;
+            width: 280px;
+            position: sticky;
+            top: 20px;
+            height: calc(100vh - 40px);
+        }
+        .sidebar {
+            background-color: var(--sidebar-bg);
+            border-radius: 15px;
+            padding: 20px 0;
+            box-shadow: 0 10px 30px var(--shadow-medium);
+            border: 1px solid var(--border-color);
+            height: 100%;
+            
+        }
+        .sidebar .navbar-brand {
+            padding: 10px 20px;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            display: block;
+            text-align: center;
+        }
+        .sidebar .nav-link {
+            color: var(--text-muted);
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: background-color 0.2s, color 0.2s, transform 0.3s ease;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background-color: rgba(14, 165, 233, 0.1);
+            color: var(--text-light);
+            border-left: 4px solid var(--primary-color);
+            padding-left: 21px;
+            transform: translateX(5px);
+        }
+        .sidebar .nav-link.active {
+            font-weight: bold;
+        }
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .main-header {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px 30px;
+            box-shadow: 0 10px 30px var(--shadow-medium);
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .main-header .form-control {
+            background-color: var(--bg-dark);
+            border-color: var(--border-color);
+            color: var(--text-light);
+            max-width: 300px;
+            border-radius: 50rem;
+        }
+        .main-header .form-control::placeholder {
+            color: var(--text-muted);
+        }
+        .main-header .input-group {
+            flex-grow: 1;
+            max-width: 400px;
+        }
+        .main-header .search-icon {
+            color: var(--text-muted);
+            font-size: 1.25rem;
+        }
+        .main-header .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+        }
+        .content-card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px var(--shadow-medium);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px var(--shadow-medium);
+        }
+        .bi {
+            font-size: 1.25rem;
+            width: 25px;
+            text-align: center;
+        }
+        .nav-link.active .bi {
+            color: var(--primary-color);
+        }
+        .nav-link .bi {
+            color: var(--text-muted);
+        }
+        .table {
+            color: var(--text-light);
+            background-color: transparent;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .table thead th {
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-muted);
+        }
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .table tbody td {
+            border-top: 1px solid var(--border-color);
+        }
+        .form-select-sm {
+            background-color: var(--bg-dark);
+            border-color: var(--border-color);
+            color: var(--text-light);
+            border-radius: 8px;
+        }
+        .form-select-sm:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(14, 165, 233, 0.25);
+        }
+        .search-bar-container .form-select {
+		    color: var(--text-muted); /* Màu chữ giống placeholder */
+		    padding-right: 2rem; /* Thêm khoảng trống cho mũi tên dropdown */
+		}
+		.search-bar-container .form-select:focus {
+		    box-shadow: none; /* Bỏ shadow khi focus */
+		    color: var(--text-light); /* Đổi màu chữ khi focus/chọn */
+		}
+		.search-bar-container option {/* Đổi màu option khi chọn */
+		     background-color: var(--card-bg);
+		     color: var(--text-light);
+		}
+        
+        
+        @media (max-width: 992px) {
+            .main-wrapper {
+                flex-direction: column;
+            }
+            .sidebar-container {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 20px;
+                position: static;
+            }
+            .sidebar {
+                height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .main-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .main-header .input-group {
+                width: 100%;
+                max-width: none;
+            }
+        }
+        .profile-card .avatar { width: 120px; height: 120px; border: 4px solid var(--primary-color); }
+        
+        .profile-card {
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+             padding-top: 1rem;
+             padding-bottom: 1rem;
+         }
+
+         .profile-card .avatar {
+             margin-bottom: 1rem; /* Thêm khoảng cách dưới avatar */
+         }
+
+         /* Style cho list-group trong cột phải */
+         .list-group-item {
+             border-bottom: 1px solid var(--border-color) !important; /* Đảm bảo có border */
+         }
+         .list-group-item:last-child {
+             border-bottom: none !important; /* Bỏ border cho item cuối */
+         }
+         .list-group-item strong {
+             min-width: 150px; /* Đảm bảo các label thẳng hàng */
+             display: inline-block;
+         }
+
+         /* Style cho khu vực thao tác */
+         .main-content h5 { /* Thêm icon vào tiêu đề phụ */
+             display: flex;
+             align-items: center;
+         }
+         .main-content h5 .bi {
+             font-size: 1.1em; /* Kích thước icon trong h5 */
+             width: auto; /* Bỏ width cố định */
+         }
+         
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+        <div class="sidebar-container">
+		    <div class="sidebar">
+		        <a class="navbar-brand fw-bold fs-4 d-flex align-items-center justify-content-center gap-2" th:href="@{/admin/dashboard}">
+		            <svg class="bi me-2" width="32" height="32" fill="var(--primary-color)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18" stroke="currentColor"></path></svg>
+		            AloUTE Admin
+		        </a>
+		        <ul class="nav flex-column mt-4">
+		            <li class="nav-item">
+		                <a class="nav-link" th:href="@{/admin/dashboard}"> <i class="bi bi-speedometer2"></i>
+		                    <span>Dashboard</span>
+		                </a>
+		            </li>
+		            <li class="nav-item">
+		                <a class="nav-link active" th:href="@{/admin/users}"> <i class="bi bi-people-fill"></i>
+		                    <span>Quản lý Người dùng</span>
+		                </a>
+		            </li>
+		            <li class="nav-item">
+		                <a class="nav-link" th:href="@{/admin/posts}"> <i class="bi bi-journals"></i>
+		                    <span>Quản lý Bài đăng</span>
+		                </a>
+		            </li>
+		            <li class="nav-item">
+		                <a class="nav-link" th:href="@{/admin/reports}"> <i class="bi bi-flag-fill"></i>
+		                    <span>Khiếu nại</span>
+		                </a>
+		            </li>
+		            <li class="nav-item">
+		                <a class="nav-link" th:href="@{/admin/audit-logs}"> <i class="bi bi-clock-history"></i>
+		                    <span>Lịch sử Hoạt động</span>
+		                </a>
+		            </li>
+		            <li class="nav-item">
+		                <a class="nav-link" th:href="@{/home}">
+		                    <i class="bi bi-house-door-fill"></i>
+		                    <span>Trang chủ User</span>
+		                </a>
+		            </li>
+		            <li class="nav-item">
+		                <a class="nav-link" href="#">
+		                    <i class="bi bi-gear-fill"></i>
+		                    <span>Cài đặt</span>
+		                </a>
+		            </li>
+		            <li class="nav-item">
+		                <a class="nav-link" th:href="@{/logout}">
+		                    <i class="bi bi-box-arrow-right"></i>
+		                    <span>Đăng xuất</span>
+		                </a>
+		            </li>
+		        </ul>
+		        </div>
+		</div>
+         <div class="main-content">
+            <div class="main-header">
+                 <div>
+                     <h2 class="mb-0">Chi tiết Người dùng</h2>
+                     <p class="text-muted mb-0">Thông tin chi tiết và lịch sử của người dùng.</p>
+                 </div>
+                 <div class="d-flex align-items-center gap-3">
+                     <img src="https://placehold.co/40x40/0ea5e9/FFFFFF?text=A" alt="Admin Avatar" class="profile-avatar">
+                 </div>
+             </div>
+             <div class="content-card" th:if="${targetUser != null}">
+			    <div class="row g-4"> <div class="col-md-4 text-center profile-card border-end" style="border-color: var(--border-color) !important;"> <img class="rounded-circle avatar mb-3"
+			                 th:src="${targetUser.avatarUrl ?: '/uploads/avatars/default.jpg'}"
+			                 alt="Avatar">
+			            <h3 th:text="${targetUser.fullName}"></h3>
+			            <p class="text-muted fs-5 mb-2" th:text="${targetUser.nameUser}"></p>
+			            <a th:if="${targetUser.nameUser != null}"
+			                th:href="@{'/' + ${targetUser.nameUser}}"
+			                target="_blank"
+			                class="btn btn-sm btn-outline-light rounded-pill mb-3">
+			                 <i class="bi bi-person-circle me-1"></i> Xem Profile
+			             </a>
+			        </div>
+			        <div class="col-md-8"> <h5><i class="bi bi-person-vcard me-2"></i>Thông tin Tài khoản</h5>
+			            <ul class="list-group list-group-flush bg-transparent mb-4"> <li class="list-group-item bg-transparent px-0 py-2"><strong>ID:</strong> <span th:text="${targetUser.userId}"></span></li>
+			                <li class="list-group-item bg-transparent px-0 py-2"><strong>Email:</strong> <span th:text="${targetUser.email}"></span></li>
+			                <li class="list-group-item bg-transparent px-0 py-2"><strong>Vai trò:</strong> <span th:text="${targetUser.role}"></span></li>
+			                <li class="list-group-item bg-transparent px-0 py-2"><strong>Ngày tham gia:</strong> <span th:text="${#temporals.format(targetUser.createdAt, 'dd-MM-yyyy HH:mm')}"></span></li>
+			                <li class="list-group-item bg-transparent px-0 py-2"><strong>Trạng thái:</strong>
+			                   <span th:if="${targetUser.isLocked}" class="badge bg-danger">Đã khóa</span>
+			                   <span th:unless="${targetUser.isLocked}" class="badge bg-success">Hoạt động</span>
+			                </li>
+			                <li th:if="${targetUser.isLocked}" class="list-group-item bg-transparent px-0 py-2"><strong>Lý do khóa:</strong> <span th:text="${targetUser.lockedReason}"></span></li>
+			                <li class="list-group-item bg-transparent px-0 py-2 text-warning">
+			                   <strong><i class="bi bi-exclamation-triangle-fill me-1"></i>Số lần bị xử lý khiếu nại:</strong>
+			                   <span class="fw-bold fs-5 ms-2" th:text="${resolvedReportCount}">0</span>
+			                </li>
+			            </ul>
+			            <hr style="border-color: var(--border-color);"> <h5 class="mt-4"><i class="bi bi-sliders me-2"></i>Thao tác Quản trị</h5>
+			            <div class="d-flex flex-wrap align-items-center gap-3 mt-3"> <form th:if="${!targetUser.isLocked}" th:action="@{/admin/users/lock}" method="get" class="mb-0">
+			                    <input type="hidden" name="userId" th:value="${targetUser.userId}" />
+			                    <button type="submit" class="btn btn-danger"><i class="bi bi-lock-fill me-1"></i> Khóa tài khoản</button> </form>
+			                <form th:if="${targetUser.isLocked}" th:action="@{/admin/users/unlock}" method="post" class="mb-0">
+			                    <input type="hidden" name="userId" th:value="${targetUser.userId}" />
+			                    <button type="submit" class="btn btn-success"><i class="bi bi-unlock-fill me-1"></i> Mở khóa</button> </form>
+			
+			                <form th:action="@{/admin/users/change-role}" method="post" class="mb-0">
+			                    <input type="hidden" name="userId" th:value="${targetUser.userId}" />
+			                    <div class="input-group"> <select name="newRole" class="form-select" style="max-width: 120px;"> <option value="user" th:selected="${targetUser.role == 'user'}">User</option>
+			                            <option value="manager" th:selected="${targetUser.role == 'manager'}">Manager</option>
+			                        </select>
+			                        <button type="submit" class="btn btn-outline-info">Đổi Role</button>
+			                    </div>
+			                </form>
+			                 </div>
+			             </div>
+			        </div>
+			
+			    <div class="mt-5 text-center"> <a th:href="@{/admin/users}" class="btn btn-secondary rounded-pill px-4"><i class="bi bi-arrow-left-circle me-2"></i> Quay lại danh sách</a>
+			    </div>
+			</div>
+             <div class="content-card text-center" th:if="${targetUser == null}">
+                <i class="bi bi-emoji-frown display-1 text-warning"></i>
+                <h3 class="mt-3" th:text="${errorMessage ?: 'Không tìm thấy người dùng'}"></h3>
+                <a th:href="@{/admin/users}" class="btn btn-primary mt-3"><i class="bi bi-arrow-left-circle me-2"></i> Quay lại danh sách</a>
+             </div>
+             </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

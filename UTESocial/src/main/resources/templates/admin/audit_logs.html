@@ -210,8 +210,6 @@
              color: #6c757d; 
              opacity: 0.65; 
         }
-
-         
         @media (max-width: 992px) {
             .main-wrapper {
                 flex-direction: column;
@@ -276,6 +274,12 @@
                             <span>Lịch sử Hoạt động</span>
                         </a>
                      </li>
+                     <li class="nav-item">
+					    <a class="nav-link" th:href="@{/home}">  
+					    	<i class="bi bi-house-door-fill"></i> 
+					    	<span>Trang chủ User</span>
+					    </a>
+					</li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">
                             <i class="bi bi-gear-fill"></i>
@@ -299,14 +303,48 @@
                     <p class="text-muted mb-0">Xem lại các hành động quan trọng trên hệ thống.</p>
                 </div>
                  <div class="d-flex align-items-center gap-3">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Tìm kiếm..." aria-label="Tìm kiếm">
-                        <span class="input-group-text"><i class="bi bi-search search-icon"></i></span>
-                    </div>
                     <img src="https://placehold.co/40x40/0ea5e9/FFFFFF?text=A" alt="Admin Avatar" class="profile-avatar">
                 </div>
             </div>
-
+            
+			<div class="search-bar-container mb-3 px-md-3">
+			    <form th:action="@{/admin/audit-logs}" method="get" class="search-form">
+			        <div class="input-group border rounded-pill shadow-sm" style="border-color: var(--border-color) !important; background-color: var(--card-bg);">
+			            <span class="input-group-text bg-transparent border-0 ps-3 pe-1 text-muted">
+			                <i class="bi bi-search"></i>
+			            </span>
+			            <input type="search" name="keyword" class="form-control bg-transparent border-0 shadow-none"
+			                   th:placeholder="'Tìm theo Chi tiết, Người thực hiện...'" th:value="${keyword}"
+			                   aria-label="Tìm kiếm">
+			
+			            <select name="action" class="form-select flex-grow-0 w-auto border-0 bg-transparent shadow-none ms-2">
+			                <option value="" th:selected="${action == null or #strings.isEmpty(action)}">Hành động</option>
+			                <option value="LOGIN_SUCCESS" th:selected="${action == 'LOGIN_SUCCESS'}">Đăng nhập thành công</option>
+			                <option value="LOGIN_FAILURE" th:selected="${action == 'LOGIN_FAILURE'}">Đăng nhập thất bại</option>
+			                <option value="LOCK_USER" th:selected="${action == 'LOCK_USER'}">Khóa User</option>
+			                <option value="UNLOCK_USER" th:selected="${action == 'UNLOCK_USER'}">Mở khóa User</option>
+			                </select>
+			            <input type="date" name="startDate" class="form-control form-control-sm bg-transparent border-0 shadow-none mx-1"
+			                   style="max-width: 150px; color-scheme: dark;"
+			                   th:value="${startDate}"
+			                   title="Từ ngày">
+			            <span class="input-group-text bg-transparent border-0 px-1 text-muted">đến</span>
+			            <input type="date" name="endDate" class="form-control form-control-sm bg-transparent border-0 shadow-none mx-1 me-2"
+			                   style="max-width: 150px; color-scheme: dark;"
+			                   th:value="${endDate}"
+			                   title="Đến ngày">
+			            <button type="submit" class="btn btn-primary rounded-pill px-3 py-1 me-1 my-1 d-flex align-items-center gap-1">
+			                <i class="bi bi-funnel-fill"></i> Lọc
+			            </button>
+			            <a th:href="@{/admin/audit-logs}"
+			               class="btn btn-outline-secondary rounded-pill px-3 py-1 me-1 my-1 d-flex align-items-center gap-1"
+			               title="Tải lại danh sách gốc">
+			                <i class="bi bi-arrow-clockwise"></i> Làm mới
+			            </a>
+			        </div>
+			    </form>
+			</div>
+			
             <div class="content-card p-0">
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
@@ -337,15 +375,15 @@
                     </table>
                 </div>
                  <nav aria-label="Page navigation" th:if="${logPage.totalPages > 1}" class="p-3">
-                     <ul class="pagination">
+                     <ul class="pagination justify-content-center">
                          <li class="page-item" th:classappend="${logPage.first} ? 'disabled'">
-                             <a class="page-link" th:href="@{/admin/audit-logs(page=${currentPage - 1}, size=${pageSize})}">Trước</a>
+                             <a class="page-link" th:href="@{/admin/audit-logs(page=${currentPage - 1}, size=${pageSize}, keyword=${keyword}, action=${action}, startDate=${startDate}, endDate=${endDate})}">Trước</a>
                          </li>
                          <li class="page-item" th:each="i : ${#numbers.sequence( T(java.lang.Math).max(0, currentPage - 2), T(java.lang.Math).min(logPage.totalPages - 1, currentPage + 2) )}" th:classappend="${i == currentPage} ? 'active'">
-                             <a class="page-link" th:href="@{/admin/audit-logs(page=${i}, size=${pageSize})}" th:text="${i + 1}"></a>
+							<a class="page-link" th:href="@{/admin/audit-logs(page=${i}, size=${pageSize}, keyword=${keyword}, action=${action}, startDate=${startDate}, endDate=${endDate})}" th:text="${i + 1}"></a>
                          </li>
                          <li class="page-item" th:classappend="${logPage.last} ? 'disabled'">
-                             <a class="page-link" th:href="@{/admin/audit-logs(page=${currentPage + 1}, size=${pageSize})}">Sau</a>
+                             <a class="page-link" th:href="@{/admin/audit-logs(page=${currentPage + 1}, size=${pageSize}, keyword=${keyword}, action=${action}, startDate=${startDate}, endDate=${endDate})}">Sau</a>
                          </li>
                      </ul>
                  </nav>

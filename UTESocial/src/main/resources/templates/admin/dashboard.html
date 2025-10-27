@@ -6,7 +6,6 @@
     <title>Dashboard - AloUTE Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -140,7 +139,7 @@
         }
         .content-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(5, 1fr);
             gap: 20px;
         }
         .content-card {
@@ -232,6 +231,12 @@
 					        <span>Lịch sử Hoạt động</span>
 					    </a>
 					</li>
+					<li class="nav-item">
+					    <a class="nav-link" th:href="@{/home}">  
+					    	<i class="bi bi-house-door-fill"></i> 
+					    	<span>Trang chủ User</span>
+					    </a>
+					</li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">
                             <i class="bi bi-gear-fill"></i>
@@ -254,16 +259,12 @@
                     <p class="text-muted mb-0">Đây là bảng điều khiển tổng quan của bạn.</p>
                 </div>
                 <div class="d-flex align-items-center gap-3">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Tìm kiếm..." aria-label="Tìm kiếm">
-                        <span class="input-group-text"><i class="bi bi-search"></i></span>
-                    </div>
                     <img src="https://placehold.co/40x40/0ea5e9/FFFFFF?text=A" alt="Admin Avatar" class="profile-avatar">
                 </div>
             </div>
             <div class="content-grid">
                 <div class="content-card">
-                    <h5 class="text-primary mb-3">Tổng số người dùng</h5>
+                    <h5 class="text-primary mb-3">Tổng người dùng</h5>
                     <h2 class="display-4 fw-bold mb-1" th:text="${totalUsers}"></h2>
                     <p class="text-muted mb-0">Tính đến hiện tại</p>
                 </div>
@@ -291,23 +292,150 @@
                     <h2 class="display-4 fw-bold mb-1" th:text="${pendingReports}"></h2>
                     <p class="text-muted mb-0">Cần hành động ngay!</p>
                 </div>
+                
                 <div class="content-card" style="grid-column: span 2;">
-                    <h5 class="text-primary mb-3">Hoạt động người dùng</h5>
-                    <div style="height: 250px; background-color: #334155; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
-                        [Biểu đồ sẽ hiển thị ở đây]
-                    </div>
+                    <h5 class="text-primary mb-3">Lịch sử Hoạt động Gần đây</h5> 
+                    <div style="height: 250px; overflow-y: auto;">
+                    	<ul class="list-group list-group-flush">
+					        <li th:if="${#lists.isEmpty(recentActivityLogs)}" class="list-group-item bg-transparent text-muted text-center">
+				                Chưa có hoạt động nào gần đây.
+				            </li>
+				            <li th:each="log : ${recentActivityLogs}" class="list-group-item bg-transparent px-0 border-bottom border-secondary">
+				                <div class="d-flex w-100 justify-content-between">
+				                    <small class="text-muted" th:text="${#temporals.format(log.createdAt, 'HH:mm dd/MM')}"></small>
+				                </div>
+				                <p class="mb-1 small">
+				                    <strong th:text="${log.user?.fullName ?: 'Hệ thống'}"></strong>
+				                    <span th:text="'đã ' + ${log.action}"></span>:
+				                    <span class="text-muted" th:text="${#strings.abbreviate(log.details, 100)}"></span> </p>
+				            </li>
+					    </ul>
+					</div>
                 </div>
-                <div class="content-card">
-                    <h5 class="text-primary mb-3">Thông báo gần đây</h5>
-                    <ul class="list-unstyled mb-0">
-                        <li class="mb-2"><i class="bi bi-bell-fill me-2 text-warning"></i><span>Người dùng mới đăng ký: Nguyễn Văn A</span></li>
-                        <li class="mb-2"><i class="bi bi-bell-fill me-2 text-info"></i><span>Bài đăng mới của Trần Thị B</span></li>
-                        <li class="mb-2"><i class="bi bi-bell-fill me-2 text-danger"></i><span>Khiếu nại mới từ user C</span></li>
-                    </ul>
+                <div class="content-card" style="grid-column: span 3;">
+                    <h5 class="text-primary mb-3">Khiếu nại Mới nhất</h5>
+                    <ul class="list-unstyled mb-0" style="max-height: 220px; overflow-y: auto;"> 
+	                    <li th:each="report : ${recentReports}" class="mb-3 d-flex align-items-start">
+				            <i class="bi bi-flag-fill me-2 mt-1"
+				               th:classappend="${report.status == 'pending'} ? 'text-warning' : 'text-secondary'"></i> <div class="flex-grow-1">
+				                <a th:href="@{'/admin/reports/view-' + ${report.type} + '/' + ${report.reportId}}" class="text-decoration-none">
+				                    <span class="fw-bold" th:text="${report.reporter?.fullName ?: 'Ẩn danh'}"></span>
+				                    <span th:text="' đã khiếu nại ' + (${report.type == 'post'} ? 'bài viết' : 'người dùng')"></span>
+				                    <span class="fw-bold" th:text="${report.reportedUser?.fullName ?: ''}"></span>
+				                </a>
+				                <p class="small text-muted mb-1" th:text="${#strings.abbreviate(report.reason, 50)}"></p> <small class="d-block text-muted" th:text="${#temporals.format(report.createdAt, 'HH:mm dd/MM/yyyy')}"></small>
+				            </div>
+					    </li>
+					</ul>
                 </div>
+                
+                	<div class="content-card" style="grid-column: span 2;">
+                		<h5 class="text-primary mb-3">Thống kê Người dùng</h5>
+                		<div class="row align-items-center"> 
+                			<div class="col-md-6"> 
+		                		<ul class="list-group list-group-flush">
+					            	<li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0 border-bottom" style="border-color: var(--border-color) !important;">
+		                                <span><i class="bi bi-people-fill me-2"></i>Tổng số (User & Manager)</span>
+		                                <span class="badge bg-primary rounded-pill fs-6" th:text="${totalUsers}">0</span>
+		                            </li>
+					            	<li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0 border-bottom" style="border-color: var(--border-color) !important;">
+		                                <span class="text-success"><i class="bi bi-person-check-fill me-2"></i>Đang hoạt động</span>
+		                                <span class="badge bg-success rounded-pill fs-6" th:text="${activeUsers}">0</span>
+		                            </li>
+					            	<li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0">
+		                                <span class="text-danger"><i class="bi bi-person-fill-lock me-2"></i>Đã bị khóa</span>
+		                                <span class="badge bg-danger rounded-pill fs-6" th:text="${lockedUsers}">0</span>
+		                            </li>
+					        	</ul>
+			        		</div>
+		        		<div class="col-md-6"> <div style="height: 180px;"> 
+		        			<canvas id="userStatusChart" class="h-100"></canvas> 
+		        		</div>
+	                  </div>
+			    </div>
             </div>
+            
+            <div class="content-card" style="grid-column: span 3;">
+	                <h5 class="text-primary mb-3">Người dùng mới đăng ký</h5>
+	                <div style="max-height: 220px; overflow-y: auto;"> 
+	                	<ul class="list-group list-group-flush">
+	                         <li th:if="${#lists.isEmpty(recentUsers)}" class="list-group-item bg-transparent text-muted text-center px-0">
+	                             Chưa có người dùng mới.
+	                         </li>
+	                        <li th:each="newUser : ${recentUsers}" class="list-group-item d-flex align-items-center bg-transparent px-0 border-bottom" style="border-color: var(--border-color) !important;">
+	                            <img th:src="${newUser.getAvatarUrl()}" class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+	                            <div class="flex-grow-1 overflow-hidden">
+	                                <a th:href="@{'/' + ${newUser.nameUser}}" target="_blank" class="fw-bold text-light text-decoration-none d-block text-truncate" th:text="${newUser.fullName}"></a>
+	                                <small class="text-muted d-block" th:text="'Tham gia: ' + ${#temporals.format(newUser.createdAt, 'dd/MM/yyyy')}"></small>
+	                            </div>
+	                        </li>
+	                    </ul>
+	                </div>
+	            </div>
+	            
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+    /*<![CDATA[*/ 
+
+        // 1. Lấy dữ liệu số lượng từ Model (Thymeleaf sẽ thay thế giá trị)
+        const activeUsersCount = /*[[${activeUsers}]]*/ 0; // Lấy số user hoạt động, mặc định là 0 nếu null
+        const lockedUsersCount = /*[[${lockedUsers}]]*/ 0; // Lấy số user bị khóa, mặc định là 0 nếu null
+
+        // 2. Lấy đối tượng canvas từ ID
+        const ctx = document.getElementById('userStatusChart');
+
+        // 3. Kiểm tra xem canvas có tồn tại và có dữ liệu để vẽ không
+        if (ctx && (activeUsersCount > 0 || lockedUsersCount > 0)) {
+            // Tạo biểu đồ mới
+            new Chart(ctx, {
+                type: 'pie', // Loại biểu đồ: doughnut (bánh vòng), 'pie' (bánh tròn)
+                data: {
+                    labels: [ // Nhãn cho từng phần
+                        'Đang hoạt động',
+                        'Đã bị khóa'
+                    ],
+                    datasets: [{
+                        label: 'Số lượng người dùng', // Chú giải cho bộ dữ liệu
+                        data: [activeUsersCount, lockedUsersCount], // Dữ liệu số lượng tương ứng với labels
+                        backgroundColor: [ // Màu nền cho từng phần
+                            'rgb(54, 162, 235)', // Màu xanh dương cho hoạt động
+                            'rgb(255, 99, 132)'  // Màu đỏ cho bị khóa
+                        ],
+                        hoverOffset: 4, // Hiệu ứng khi rê chuột vào
+                        borderColor: '#e2e8f0' , // Màu viền giống nền card
+                        borderWidth: 1 // Độ dày viền
+                    }]
+                },
+                options: {
+                    responsive: true, // Biểu đồ tự điều chỉnh kích thước
+                    maintainAspectRatio: false, // Cho phép biểu đồ co giãn theo chiều cao container
+                    plugins: {
+                        legend: {
+                            position: 'bottom', // Hiển thị chú giải ở dưới
+                            labels: {
+                            	color: '#e2e8f0' 
+                            }
+                        },
+                        title: {
+                            display: false // Không hiển thị tiêu đề mặc định của Chart.js
+                        }
+                    },
+                    //cutout: '60%' Độ dày của vòng bánh (xóa dòng này nếu dùng type: 'pie')
+                }
+            });
+        } else if (ctx) {
+             // Tùy chọn: Hiển thị thông báo nếu không có dữ liệu
+             const context = ctx.getContext('2d');
+             context.textAlign = 'center';
+             context.font = '14px Open Sans'; // Đặt font chữ
+             context.fillStyle = 'var(--text-muted)'; // Màu chữ
+             context.fillText('Không có dữ liệu người dùng để vẽ biểu đồ.', ctx.width / 2, ctx.height / 2);
+        }
+
+    /*]]>*/
+    </script>
 </body>
 </html>

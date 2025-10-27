@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.hibernate.Hibernate; 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -31,10 +32,18 @@ public class AdminService
     @Autowired
     private UserRepository userRepository;
 
-    public Page<User> getAllUsers(Pageable pageable) 
+    public Page<User> findUsersWithFilters(String keyword, String role, String status, Pageable pageable) 
     {
-    	return userRepository.findByRoleIn(Arrays.asList("user", "manager"), pageable); //truyền pageable vào repo
+        Boolean isLocked = null;
+        if ("active".equalsIgnoreCase(status)) {
+            isLocked = false;
+        } else if ("locked".equalsIgnoreCase(status)) {
+            isLocked = true;
+        }
+
+        return userRepository.findUsersWithFilters(keyword, role, isLocked, pageable);
     }
+    
     
     //Khoá tài khoản
     public void lockUser(Integer userId, String reason) 
@@ -92,9 +101,9 @@ public class AdminService
     @Autowired
     private PostsRepository postsRepository;
 
-    public List<Posts> getAllPosts() 
+    public Page<Posts> findPostsWithFilters(String keyword, String status, LocalDate startDate, LocalDate endDate, Pageable pageable)
     {
-    	return postsRepository.findAllWithUserForAdmin();
+    	return postsRepository.findPostsWithFiltersForAdmin(keyword, status, startDate, endDate, pageable);
     }
     
     @Transactional(readOnly = true)
@@ -162,9 +171,19 @@ public class AdminService
     private ReportsRepository reportsRepository;
     
     
-    public List<Reports> getAllReports() 
+    public Page<Reports> findReportsWithFilters(String keyword, String type, String status, String resolutionStatus, LocalDate startDate, LocalDate endDate, Pageable pageable) 
     {
-    	return reportsRepository.findAllWithReporterAndReportedUserOrderByCreatedAtDesc();
+    	return reportsRepository.findReportsWithFilters(keyword, type, status, resolutionStatus, startDate, endDate, pageable);
+    }
+    
+    public long countResolvedReportsAgainstUser(Integer userId) 
+    {
+        if (userId == null) 
+        {
+            return 0; 
+        }
+        // Lấy với status="completed" và resolutionStatus="resolved"
+        return reportsRepository.countByReportedUser_UserIdAndStatusAndResolutionStatus(userId, "completed", "resolved");
     }
     
     @Transactional(readOnly = true) 
@@ -219,6 +238,8 @@ public class AdminService
             reportsRepository.save(report);
         }
     }
+    
+    
 
     
    
@@ -247,6 +268,20 @@ public class AdminService
 
     public long getRejectedPostsCount() {
         return postsRepository.countByStatusAndIsDeletedFalse("rejected");
+    }
+    
+   
+    //Đếm số người dùng đang hoạt động, đếm User và Manager.
+    public long countActiveUsers() 
+    {
+        return userRepository.countByRoleInAndIsLockedFalse(Arrays.asList("user", "manager"));
+    }
+
+    
+    // Đếm số người dùng đã bị khóa, đếm User và Manager
+    public long countLockedUsers() 
+    {
+        return userRepository.countByRoleInAndIsLockedTrue(Arrays.asList("user", "manager"));
     }
 }
    
