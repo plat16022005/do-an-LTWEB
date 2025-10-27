@@ -50,13 +50,54 @@
                     AloUTE Admin
                 </a>
                 <ul class="nav flex-column mt-4">
-                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/dashboard}"><i class="bi bi-speedometer2"></i><span>Dashboard</span></a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/users}"><i class="bi bi-people-fill"></i><span>Quản lý Người dùng</span></a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/posts}"><i class="bi bi-journals"></i><span>Quản lý Bài đăng</span></a></li>
-                    <li class="nav-item"><a class="nav-link active" th:href="@{/admin/reports}"><i class="bi bi-flag-fill"></i><span>Khiếu nại</span></a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/audit-logs}"><i class="bi bi-clock-history"></i><span>Lịch sử Hoạt động</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-gear-fill"></i><span>Cài đặt</span></a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/logout}"><i class="bi bi-box-arrow-right"></i><span>Đăng xuất</span></a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/admin/dashboard}">
+                            <i class="bi bi-speedometer2"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/admin/users}">
+                            <i class="bi bi-people-fill"></i>
+                            <span>Quản lý Người dùng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/admin/posts}">
+                            <i class="bi bi-journals"></i>
+                            <span>Quản lý Bài đăng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/admin/reports}">
+                            <i class="bi bi-flag-fill"></i>
+                            <span>Khiếu nại</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+					    <a class="nav-link" th:href="@{/admin/audit-logs}">
+					        <i class="bi bi-clock-history"></i>
+					        <span>Lịch sử Hoạt động</span>
+					    </a>
+					</li>
+					<li class="nav-item">
+					    <a class="nav-link" th:href="@{/home}">  
+					    	<i class="bi bi-house-door-fill"></i> 
+					    	<span>Trang chủ User</span>
+					    </a>
+					</li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-gear-fill"></i>
+                            <span>Cài đặt</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/logout}">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Đăng xuất</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -99,20 +140,25 @@
 							<hr style="border-color: var(--border-color);">
 							<ul class="list-group list-group-flush text-start bg-transparent">
 								<li class="list-group-item bg-transparent px-0"><strong>ID:</strong>
-									<span th:text="${reportedUser.userId}"></span></li>
+									<span th:text="${reportedUser.userId}"></span>
+								</li>
 								<li class="list-group-item bg-transparent px-0"><strong>Email:</strong>
-									<span th:text="${reportedUser.email}"></span></li>
-								<li class="list-group-item bg-transparent px-0"><strong>Ngày
-										tham gia:</strong> <span
-									th:text="${#temporals.format(reportedUser.createdAt, 'dd-MM-yyyy')}"></span></li>
-								<li class="list-group-item bg-transparent px-0"><strong>Trạng
-										thái tài khoản:</strong> <span th:if="${reportedUser.isLocked}"
+									<span th:text="${reportedUser.email}"></span>
+								</li>
+								<li class="list-group-item bg-transparent px-0"><strong>Ngày tham gia:</strong> <span
+									th:text="${#temporals.format(reportedUser.createdAt, 'dd-MM-yyyy')}"></span>
+								</li>
+								<li class="list-group-item bg-transparent px-0"><strong>Trạng thái tài khoản:</strong> <span th:if="${reportedUser.isLocked}"
 									class="badge bg-danger">Đã khóa</span> <span
-									th:unless="${reportedUser.isLocked}" class="badge bg-success">Hoạt
-										động</span></li>
+									th:unless="${reportedUser.isLocked}" class="badge bg-success">Hoạt động</span>
+								</li>
 								<li th:if="${reportedUser.isLocked}"
-									class="list-group-item bg-transparent px-0"><strong>Lý
-										do khóa:</strong> <span th:text="${reportedUser.lockedReason}"></span></li>
+									class="list-group-item bg-transparent px-0"><strong>Lý do khóa:</strong> <span th:text="${reportedUser.lockedReason}"></span>
+								</li>
+								<li class="list-group-item bg-transparent px-0 text-warning">
+					               <strong><i class="bi bi-exclamation-triangle-fill me-1"></i>Số lần bị xử lý khiếu nại:</strong>
+					               <span class="fw-bold fs-5 ms-2" th:text="${resolvedReportCount}">0</span>
+					            </li>	
 							</ul>
 						</div>
 					</div>

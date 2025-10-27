@@ -12,6 +12,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import aloute.com.entity.Posts;
 import aloute.com.entity.Reports;
@@ -38,7 +40,7 @@ public interface ReportsRepository extends JpaRepository<Reports, Integer>
     	Optional<Reports> findByIdWithDetails(@Param("reportId") Integer reportId);
     
     
-    //Lấy danh sách tố cáo, khiếu nại
+    //Lấy danh sách tố cáo, khiếu nại và tìm kiếm theo keyword, lọc theo cột
     @Query("SELECT DISTINCT r FROM Reports r " +
     	       "LEFT JOIN FETCH r.reporter " +
     	       "LEFT JOIN FETCH r.reportedUser " +
@@ -56,22 +58,24 @@ public interface ReportsRepository extends JpaRepository<Reports, Integer>
             "AND (:type IS NULL OR :type = '' OR r.type = :type) " +                  // Lọc theo type
             "AND (:status IS NULL OR :status = '' OR r.status = :status) " +              // Lọc theo trạng thái
             "AND (:resolutionStatus IS NULL OR :resolutionStatus = '' OR r.resolutionStatus = :resolutionStatus) " +
-			"AND (CAST(:startDate AS date) IS NULL OR r.createdAt >= :startDateTime) " +
-			"AND (CAST(:endDate AS date) IS NULL OR r.createdAt <= :endDateTime) ")
+		    "AND (CAST(:startDate AS date) IS NULL OR r.createdAt >= :startDateTime) " +
+		    "AND (CAST(:endDate AS date) IS NULL OR r.createdAt <= :endDateTime) ")
 
     Page<Reports> findReportsWithFilters(
-			@Param("keyword") String keyword,
-			@Param("type") String type,
-			@Param("status") String status,
-			@Param("resolutionStatus") String resolutionStatus,
-			
-			@Param("startDate") LocalDate startDate,
-			@Param("endDate") LocalDate endDate,
-			@Param("startDateTime") LocalDateTime startDateTime,
-			@Param("endDateTime") LocalDateTime endDateTime,
-			
-			Pageable pageable	
-	);
+             @Param("keyword") String keyword,
+             @Param("type") String type,
+             @Param("status") String status,
+             @Param("resolutionStatus") String resolutionStatus,
+             
+             @Param("startDate") LocalDate startDate,
+             @Param("endDate") LocalDate endDate,
+             @Param("startDateTime") LocalDateTime startDateTime,
+             @Param("endDateTime") LocalDateTime endDateTime,
+             
+             Pageable pageable	
+     );
+    
+    
     // Helper method để chuyển đổi LocalDate -> LocalDateTime
     default Page<Reports> findReportsWithFilters(String keyword, String type, String status, String resolutionStatus, LocalDate startDate, LocalDate endDate, Pageable pageable) {
         LocalDateTime startDateTime = (startDate != null) ? startDate.atStartOfDay() : null;

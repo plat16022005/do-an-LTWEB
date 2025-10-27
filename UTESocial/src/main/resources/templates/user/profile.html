@@ -120,7 +120,7 @@
                 >
                   <i class="bi bi-person-circle fs-3"></i> <span>Cá nhân</span>
                 </a>
-              </li>
+              </li>              
               <li class="nav-item">
                 <a
                   class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
@@ -129,6 +129,14 @@
                   <i class="bi bi-gear fs-3"></i> <span>Cài đặt</span>
                 </a>
               </li>
+              <th:block th:if="${user != null and user.role == 'Admin'}">
+			    <li class="nav-item">
+			         <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" 
+			         th:href="@{/admin/dashboard}"> <i class="bi bi-shield-lock-fill fs-3 text-warning"></i> 
+			         <span class="text-warning">Trang Admin</span> 
+			         </a>
+			    </li>
+			 </th:block>
               <li class="nav-item mt-2">
                 <a
                   class="nav-link text-danger rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"

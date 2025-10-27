@@ -185,6 +185,7 @@
             border-color: var(--primary-color);
             box-shadow: 0 0 0 0.25rem rgba(14, 165, 233, 0.25);
         }
+        
         @media (max-width: 992px) {
             .main-wrapper {
                 flex-direction: column;
@@ -210,6 +211,23 @@
                 max-width: none;
             }
         }
+        
+        
+		.type-details-column {
+		    white-space: nowrap; 
+		    min-width: 180px;   
+		    width: 1%;
+		    vertical-align: middle; 
+		}
+		
+		
+		.table td:nth-child(5) { 
+		    max-width: 250px; 
+		    overflow: hidden;
+		    text-overflow: ellipsis; 
+		    white-space: nowrap; 
+		}
+        
     </style>
 </head>
 <body>
@@ -251,6 +269,12 @@
 					        <span>Lịch sử Hoạt động</span>
 					    </a>
 					</li>
+					<li class="nav-item">
+					    <a class="nav-link" th:href="@{/home}">  
+					    	<i class="bi bi-house-door-fill"></i> 
+					    	<span>Trang chủ User</span>
+					    </a>
+					</li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">
                             <i class="bi bi-gear-fill"></i>
@@ -273,13 +297,63 @@
                     <p class="text-muted mb-0">Xem và xử lý các khiếu nại từ người dùng.</p>
                 </div>
                 <div class="d-flex align-items-center gap-3">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Tìm kiếm khiếu nại..." aria-label="Tìm kiếm">
-                        <span class="input-group-text"><i class="bi bi-search"></i></span>
-                    </div>
                     <img src="https://placehold.co/40x40/0ea5e9/FFFFFF?text=A" alt="Admin Avatar" class="profile-avatar">
                 </div>
             </div>
+            
+			<div class="search-bar-container mb-3 px-md-3">
+			    <form th:action="@{/admin/reports}" method="get" class="search-form"> 
+				    <div class="input-group border rounded-pill shadow-sm" style="border-color: var(--border-color) !important; background-color: var(--card-bg);">
+			            <span class="input-group-text bg-transparent border-0 ps-3 pe-1 text-muted">
+			                <i class="bi bi-search"></i>
+			            </span>
+			            
+			            <input type="search" name="keyword" class="form-control bg-transparent border-0 shadow-none"
+		                   th:placeholder="'Tìm theo Lý do, Người tố cáo, Bị tố cáo...'" 
+		                   th:value="${keyword}"
+		                   aria-label="Tìm kiếm">
+		                   
+			            <select name="type" class="form-select flex-grow-0 w-auto border-0 bg-transparent shadow-none ms-2">
+			                <option value="" th:selected="${type == null or #strings.isEmpty(type)}">Loại</option>
+			                <option value="post" th:selected="${type == 'post'}">Bài viết</option>
+			                <option value="user" th:selected="${type == 'user'}">Người dùng</option>
+			            </select>
+			
+			            <select name="status" class="form-select flex-grow-0 w-auto border-0 bg-transparent shadow-none ms-1">
+			                <option value="" th:selected="${status == null or #strings.isEmpty(status)}">Trạng thái</option>
+			                <option value="pending" th:selected="${status == 'pending'}">Chờ xử lý</option>
+			                <option value="completed" th:selected="${status == 'completed'}">Đã hoàn thành</option>
+			            </select>
+			
+			            <select name="resolutionStatus" class="form-select flex-grow-0 w-auto border-0 bg-transparent shadow-none ms-1 me-2">
+			                <option value="" th:selected="${resolutionStatus == null or #strings.isEmpty(resolutionStatus)}">Kết quả</option>
+			                <option value="pending" th:selected="${resolutionStatus == 'pending'}">Chưa giải quyết</option>
+			                <option value="resolved" th:selected="${resolutionStatus == 'resolved'}">Đã xử lý </option>
+			                <option value="rejected" th:selected="${resolutionStatus == 'rejected'}">Đã từ chối </option>
+			            </select>
+			            
+			            <input type="date" name="startDate" class="form-control form-control-sm bg-transparent border-0 shadow-none mx-1"
+			                    style="max-width: 150px; color-scheme: dark;"
+			                    th:value="${startDate}"
+			                    title="Từ ngày">
+			             <span class="input-group-text bg-transparent border-0 px-1 text-muted">đến</span>
+			             
+			             <input type="date" name="endDate" class="form-control form-control-sm bg-transparent border-0 shadow-none mx-1 me-1" style="max-width: 150px; color-scheme: dark;"
+			                    th:value="${endDate}"
+			                    title="Đến ngày">
+			                    
+			            <button type="submit" class="btn btn-primary rounded-pill px-3 py-1 me-1 my-1 d-flex align-items-center gap-1">
+			                <i class="bi bi-funnel-fill"></i> Lọc
+			            </button>
+			            <a th:href="@{/admin/reports}"
+			               class="btn btn-outline-secondary rounded-pill px-3 py-1 me-1 my-1 d-flex align-items-center gap-1"
+			               title="Tải lại danh sách gốc">
+			                <i class="bi bi-arrow-clockwise"></i> Làm mới
+			            </a>
+			        </div>
+			    </form>
+			</div>            
+            
             <div class="content-card p-0">
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
@@ -295,7 +369,7 @@
                             </tr>
                         </thead>
                         <tbody>
-							<tr th:each="report : ${reports}">
+							<tr th:each="report : ${reportPage.content}">
 						         <td class="py-3 px-4" th:text="${report.reportId}"></td>
 						         <td class="py-3 px-4" th:text="${report.reporter?.fullName ?: 'N/A'}"></td> <td class="py-3 px-4">
 						             <a th:if="${report.type == 'user' and report.reportedUser != null}"
@@ -308,7 +382,7 @@
 						                   th:text="${report.reportedUser.fullName ?: 'N/A'}"></span>
 						             <span th:unless="${report.reportedUser != null}">N/A</span> </td>
 						             
-						         <td class="py-3 px-4">
+						         <td class="py-3 px-4 type-details-column">
 						             <span th:text="${#strings.capitalize(report.type)}"></span>
 						             
 						             <!-- Tố cáo bài viết -->
@@ -334,11 +408,22 @@
 								    <span th:if="${report.status == 'completed' and report.resolutionStatus == 'rejected'}" class="badge bg-danger">Đã từ chối</span>
 						         </td>
 						     </tr>
-						     <tr th:if="${reports.isEmpty()}">
+						     <tr th:if="${reportPage.empty}">
 						         <td colspan="7" class="text-center py-3 px-4 text-muted">Không có khiếu nại nào.</td>
 						     </tr>                        
                         </tbody>
                     </table>
+                    <nav aria-label="Page navigation" th:if="${reportPage.totalPages > 1}" class="p-3">
+		                <ul class="pagination justify-content-center">
+		                    <li class="page-item" th:classappend="${reportPage.first} ? 'disabled'">
+		                        <a class="page-link" th:href="@{/admin/reports(page=${currentPage - 1}, size=${pageSize}, keyword=${keyword}, type=${type}, status=${status}, resolutionStatus=${resolutionStatus}, startDate=${startDate}, endDate=${endDate})}">Trước</a>
+		                    </li>
+		                    <li class="page-item" th:each="i : ${#numbers.sequence( T(java.lang.Math).max(0, currentPage - 2), T(java.lang.Math).min(reportPage.totalPages - 1, currentPage + 2) )}" th:classappend="${i == currentPage} ? 'active'">
+								<a class="page-link" th:href="@{/admin/reports(page=${i}, size=${pageSize}, keyword=${keyword}, type=${type}, status=${status}, resolutionStatus=${resolutionStatus}, startDate=${startDate}, endDate=${endDate})}" th:text="${i + 1}"></a>		                    </li>
+		                    <li class="page-item" th:classappend="${reportPage.last} ? 'disabled'">
+								<a class="page-link" th:href="@{/admin/reports(page=${currentPage + 1}, size=${pageSize}, keyword=${keyword}, type=${type}, status=${status}, resolutionStatus=${resolutionStatus}, startDate=${startDate}, endDate=${endDate})}">Sau</a>		                    </li>
+		                </ul>
+		            </nav>
                 </div>
             </div>
         </div>

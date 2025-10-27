@@ -221,12 +221,54 @@
                     AloUTE Admin
                 </a>
                 <ul class="nav flex-column mt-4">
-                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/dashboard}"><i class="bi bi-speedometer2"></i><span>Dashboard</span></a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/users}"><i class="bi bi-people-fill"></i><span>Quản lý Người dùng</span></a></li>
-                    <li class="nav-item"><a class="nav-link active" th:href="@{/admin/posts}"><i class="bi bi-journals"></i><span>Quản lý Bài đăng</span></a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/reports}"><i class="bi bi-flag-fill"></i><span>Khiếu nại</span></a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/audit-logs}"><i class="bi bi-clock-history"></i><span>Lịch sử Hoạt động</span></a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/logout}"><i class="bi bi-box-arrow-right"></i><span>Đăng xuất</span></a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/admin/dashboard}">
+                            <i class="bi bi-speedometer2"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/admin/users}">
+                            <i class="bi bi-people-fill"></i>
+                            <span>Quản lý Người dùng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/admin/posts}">
+                            <i class="bi bi-journals"></i>
+                            <span>Quản lý Bài đăng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/admin/reports}">
+                            <i class="bi bi-flag-fill"></i>
+                            <span>Khiếu nại</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+					    <a class="nav-link" th:href="@{/admin/audit-logs}">
+					        <i class="bi bi-clock-history"></i>
+					        <span>Lịch sử Hoạt động</span>
+					    </a>
+					</li>
+					<li class="nav-item">
+					    <a class="nav-link" th:href="@{/home}">  
+					    	<i class="bi bi-house-door-fill"></i> 
+					    	<span>Trang chủ User</span>
+					    </a>
+					</li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-gear-fill"></i>
+                            <span>Cài đặt</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/logout}">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Đăng xuất</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>

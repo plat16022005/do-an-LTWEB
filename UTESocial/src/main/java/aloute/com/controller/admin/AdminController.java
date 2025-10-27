@@ -3,9 +3,14 @@ package aloute.com.controller.admin;
 import aloute.com.entity.Posts;
 import aloute.com.entity.Reports;
 import aloute.com.entity.User;
-import aloute.com.service.AdminService;
 import aloute.com.entity.AuditLogs; 
+import aloute.com.entity.Reports;
+
+import aloute.com.repository.UserRepository;
 import aloute.com.repository.AuditLogRepository; 
+import aloute.com.repository.common.ReportsRepository;
+
+import aloute.com.service.AdminService;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +24,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.PostMapping; 
 import org.springframework.web.servlet.mvc.support.RedirectAttributes; 
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.data.domain.Sort;
 
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,9 +41,12 @@ import org.springframework.data.domain.Sort;
 @RequestMapping("/admin")
 public class AdminController 
 {
-
     @Autowired
     private AdminService adminService;
+    @Autowired 
+    private ReportsRepository reportsRepository;
+    @Autowired 
+    private UserRepository userRepository;
     
     
     @GetMapping
@@ -54,15 +66,39 @@ public class AdminController
 	public String showAdminDashboard(Model model, HttpSession session) 
 	{
     	User user = (User) session.getAttribute("user");
-    	if (user == null)
+    	if (user == null || !"Admin".equals(user.getRole()) )
     	{
     		return "redirect:/access-deniel";
     	}
+    	//Thống kê cơ bản 
     	model.addAttribute("totalUsers", adminService.countManagedUsers());	  
 	    model.addAttribute("pendingReports", adminService.getPendingReportsCount());
 	    model.addAttribute("approvedPostsCount", adminService.getApprovedPostsCount());
         model.addAttribute("pendingPostsCount", adminService.getPendingPostsCount());
         model.addAttribute("rejectedPostsCount", adminService.getRejectedPostsCount());
+        
+        // 1. Lấy 5 Audit Logs mới nhất (Fetch cả User nếu có)
+        Pageable latestFiveLogs = PageRequest.of(0, 5, Sort.by("createdAt").descending());
+        List<AuditLogs> recentActivityLogs = auditLogRepository.findAllWithUserOrderByCreatedAtDesc(latestFiveLogs).getContent();
+        model.addAttribute("recentActivityLogs", recentActivityLogs);
+        
+        // 2. Lấy 5 khiếu nại mới nhất
+        List<Reports> recentReports = reportsRepository.findTop5ByOrderByCreatedAtDesc();
+        model.addAttribute("recentReports", recentReports);
+        
+        //3. Thống kê user chi tiết 
+        model.addAttribute("activeUsers", adminService.countActiveUsers());
+        model.addAttribute("lockedUsers", adminService.countLockedUsers());
+        
+        //4. Lấy 5 user mới đăng ký
+        Pageable latestFiveUsers = PageRequest.of(0, 5, Sort.by("createdAt").descending());
+        List<User> recentUsers = userRepository.findByRoleInOrderByCreatedAtDesc
+        (
+            Arrays.asList("user", "manager"), // Chỉ lấy role user và manager
+            latestFiveUsers
+        );
+        model.addAttribute("recentUsers", recentUsers);
+        
 	    return "admin/dashboard";
 	}
     
@@ -71,6 +107,9 @@ public class AdminController
     public String manageUsers(Model model, 
 				    		@RequestParam(defaultValue = "0") int page, // Tham số trang hiện tại
 				            @RequestParam(defaultValue = "10") int size, // Tham số kích thước trang
+				            @RequestParam(required = false) String keyword, // Thêm keyword
+	                        @RequestParam(required = false) String role,    // Thêm role
+	                        @RequestParam(required = false) String status,  //Thêm trạng thái
 				    		HttpSession session) 
     {
     	User user = (User) session.getAttribute("user");
@@ -82,11 +121,17 @@ public class AdminController
     	// Tạo đối tượng Pageable với sắp xếp mặc định theo UserID tăng dần
         Pageable pageable = PageRequest.of(page, size, Sort.by("userId").ascending());
     	
-    	Page<User> userPage = adminService.getAllUsers(pageable);
+        Page<User> userPage = adminService.findUsersWithFilters(keyword, role, status, pageable);
     	
     	model.addAttribute("userPage", userPage); // Truyền cả đối tượng Page vào model
         model.addAttribute("currentPage", page);   // Truyền trang hiện tại để dùng trong pagination
         model.addAttribute("pageSize", size);      // Truyền kích thước trang
+        model.addAttribute("pageTitle", "Người dùng"); //Thêm một thuộc tính (attribute) vào Model để cho biết tên của trang
+        
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("role", role);
+        model.addAttribute("status", status);
+        
         return "admin/users";
     }
 
@@ -131,17 +176,40 @@ public class AdminController
     
     //Hiển thị danh sách bài đăng, xoá bài đăng, xem chi tiết bài viết, kiểm duyệt bài
     @GetMapping("/posts")
-    public String managePosts(Model model, HttpSession session) 
+    public String managePosts(	Model model, 
+					    		@RequestParam(defaultValue = "0") int page, 	// tham số phân trang
+					            @RequestParam(defaultValue = "10") int size,	// tham số phân trang
+					    		@RequestParam(required = false) String keyword,
+					            @RequestParam(required = false) String status,
+					            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+	                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,					            
+    							HttpSession session) 
     {
     	User user = (User) session.getAttribute("user");
-    	if (user == null)
+    	if (user == null || !"Admin".equals(user.getRole()) )
     	{
     		return "redirect:/access-deniel";
     	}
-        List<Posts> posts = adminService.getAllPosts(); 
-        model.addAttribute("posts", posts);
+    	
+    	Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());	// Sắp xếp theo ngày tạo mới nhất
+    	Page<Posts> postPage = adminService.findPostsWithFilters(keyword, status, startDate, endDate, pageable);	//Truyền pageable, nhận Page<Posts>
+    	
+    	model.addAttribute("postPage", postPage);
+        
+        model.addAttribute("currentPage", page); 
+        model.addAttribute("pageSize", size);
+        
+        model.addAttribute("pageTitle", "Bài đăng");  //Thêm một thuộc tính (attribute) vào Model để cho biết tên của trang
+        
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("status", status);
+        
+        model.addAttribute("startDate", (startDate != null) ? startDate.toString() : "");
+        model.addAttribute("endDate", (endDate != null) ? endDate.toString() : "");
+        
         return "admin/posts";
     }
+    
     
     @PostMapping("/posts/delete")
     public String deletePost(@RequestParam Integer postId, RedirectAttributes redirectAttributes, HttpSession session) 
@@ -166,6 +234,7 @@ public class AdminController
         return "redirect:/admin/posts";
     }
   
+    
     // Xem bài đăng chi tiết
     @GetMapping("/posts/view")
     public String viewPost(@RequestParam Integer postId, Model model, HttpSession session) 
@@ -182,6 +251,7 @@ public class AdminController
         return "admin/post_detail";
     }
     
+    
     //Duyệt bài
     @PostMapping("/posts/approve")
     public String approvePost(@RequestParam Integer postId) 
@@ -192,21 +262,44 @@ public class AdminController
 
     
     
-    
     // Hiển thị danh sách khiếu nại và xử lý
     @GetMapping("/reports")
-    public String manageReports(Model model, HttpSession session) 
+    public String manageReports(Model model,
+					    		@RequestParam(defaultValue = "0") int page,
+					            @RequestParam(defaultValue = "10") int size,
+					            @RequestParam(required = false) String keyword,
+					            @RequestParam(required = false) String type,
+					            @RequestParam(required = false) String status,
+					            @RequestParam(required = false) String resolutionStatus,
+					            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+	                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+    							HttpSession session) 
     {
     	User user = (User) session.getAttribute("user");
-    	if (user == null)
+    	if (user == null || !"Admin".equals(user.getRole()) )
     	{
     		return "redirect:/access-deniel";
     	}
-        List<Reports> reports = adminService.getAllReports();
-        model.addAttribute("reports", reports);
+    	
+    	Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+    	Page<Reports> reportPage = adminService.findReportsWithFilters(keyword, type, status, resolutionStatus,startDate, endDate, pageable);
+    	
+    	model.addAttribute("reportPage", reportPage);
+    	model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("type", type);
+        model.addAttribute("status", status);
+        model.addAttribute("resolutionStatus", resolutionStatus);
+        
+        model.addAttribute("startDate", (startDate != null) ? startDate.toString() : "");
+        model.addAttribute("endDate", (endDate != null) ? endDate.toString() : "");
+        
+        model.addAttribute("pageTitle", "Khiếu nại"); //Thêm một thuộc tính (attribute) vào Model để cho biết tên của trang
         return "admin/reports";
     }
 
+    
     @PostMapping("/reports/resolve")
     public String resolveReport(@RequestParam Integer reportId) 
     {
@@ -214,6 +307,7 @@ public class AdminController
         return "redirect:/admin/reports";
     }
 
+    
     @PostMapping("/reports/reject")
     public String rejectReport(@RequestParam Integer reportId) 
     {
@@ -241,6 +335,7 @@ public class AdminController
         model.addAttribute("postId", postId);
         return "admin/reject_post"; // Tạo file HTML này ở bước sau
     }
+    
 
     // Xử lý việc từ chối bài đăng
     @PostMapping("/posts/reject")
@@ -271,6 +366,10 @@ public class AdminController
     public String showAuditLogs(Model model,
                                 @RequestParam(defaultValue = "0") int page,
                                 @RequestParam(defaultValue = "15") int size,
+                                @RequestParam(required = false) String keyword,
+                                @RequestParam(required = false) String action,
+                                @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
                                 HttpSession session) 
     {
         User user = (User) session.getAttribute("user");
@@ -280,11 +379,18 @@ public class AdminController
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<AuditLogs> logPage = auditLogRepository.findAllWithUserOrderByCreatedAtDesc(pageable); 
+        Page<AuditLogs> logPage = auditLogRepository.findLogsWithFilters(keyword, action, startDate, endDate, pageable);
 
         model.addAttribute("logPage", logPage);
         model.addAttribute("currentPage", page);
         model.addAttribute("pageSize", size);
+        model.addAttribute("pageTitle", "Lịch sử"); //Thêm một thuộc tính (attribute) vào Model để cho biết tên của trang
+        
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("action", action);
+        model.addAttribute("startDate", (startDate != null) ? startDate.toString() : "");
+        model.addAttribute("endDate", (endDate != null) ? endDate.toString() : "");
+        
         return "admin/audit_logs"; 
     }
     
@@ -336,11 +442,48 @@ public class AdminController
         }
 
         Reports report = reportOpt.get();
+        User reportedUser = report.getReportedUser();
+        
+        long resolvedReportCount = adminService.countResolvedReportsAgainstUser(reportedUser.getUserId());
+        
         model.addAttribute("report", report);
         model.addAttribute("reportedUser", report.getReportedUser());
+        model.addAttribute("resolvedReportCount", resolvedReportCount);
         model.addAttribute("headerTitle", "Chi tiết Khiếu nại Người dùng");
         model.addAttribute("headerDescription", "Xem thông tin khiếu nại và người dùng bị khiếu nại.");
 
         return "admin/report_user_detail";
+    }
+    
+    
+    //Xem chi tiết thông tin người dùng
+    @GetMapping("/users/view/{userId}")
+    public String viewUserDetails(@PathVariable Integer userId, Model model, HttpSession session) 
+    {
+        User adminUser = (User) session.getAttribute("user");
+        if (adminUser == null || !"Admin".equals(adminUser.getRole())) 
+        {
+            return "redirect:/access-deniel";
+        }
+
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty() || "Admin".equals(userOpt.get().getRole())) 
+        {
+             model.addAttribute("errorMessage", "Không tìm thấy người dùng hoặc không thể xem chi tiết.");
+             return "admin/report_not_found"; 
+        }
+
+        User targetUser = userOpt.get();
+        long resolvedReportCount = adminService.countResolvedReportsAgainstUser(userId);
+
+        model.addAttribute("targetUser", targetUser);
+        model.addAttribute("resolvedReportCount", resolvedReportCount);
+        model.addAttribute("pageTitle", "Chi tiết Người dùng"); 
+        model.addAttribute("keyword", "");
+        model.addAttribute("role", "");
+        model.addAttribute("status", "");
+
+
+        return "admin/user_detail"; 
     }
 }
