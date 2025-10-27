@@ -1806,101 +1806,204 @@
     }</script>
     <script>
  // === HÀM MỞ MODAL THÔNG TIN NHÓM ===
-    async function openGroupInfoModal() {
-        if (!currentGroupId) {
-            console.warn("Chưa chọn nhóm nào để xem thông tin.");
-            return;
+// === HÀM MỞ MODAL THÔNG TIN NHÓM (SỬA LẠI HOÀN CHỈNH) ===
+async function openGroupInfoModal() {
+    // Check if a group is selected (Keep this)
+    if (!currentGroupId) {
+        console.warn("Chưa chọn nhóm nào để xem thông tin.");
+        return;
+    }
+
+    try {
+        console.log("Đang lấy thông tin nhóm:", currentGroupId);
+        // 1. Call your API endpoint
+        const response = await fetch(`/group/${currentGroupId}/info`); // Use the correct path from your Controller
+
+        // 2. Basic check if the fetch itself failed (network error, 404, 500 etc.)
+        if (!response.ok) {
+            // Try to get error message from response if possible
+            let errorMsg = `HTTP error! status: ${response.status}`;
+            try {
+                const errorData = await response.json();
+                errorMsg = errorData.error || errorMsg; // Use error field if available
+            } catch (e) { /* Ignore if response wasn't JSON */ }
+            throw new Error(errorMsg);
         }
 
-        try {
-            console.log("Đang lấy thông tin nhóm:", currentGroupId);
-            const response = await fetch(`/group/info/${currentGroupId}`);
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ error: "Lỗi không xác định" }));
-                throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
-            }
-            const groupInfo = await response.json();
+        // 3. Parse the JSON response
+        const apiResult = await response.json();
+        console.log("Thông tin nhóm nhận được:", apiResult);
 
-            // Kiểm tra nếu API trả về lỗi thành công nhưng có message lỗi
-            if (!groupInfo.success && groupInfo.error) {
-                 throw new Error(groupInfo.error);
-            }
-            if (!groupInfo.success) { // Lỗi chung khác
-                 throw new Error("Không nhận được dữ liệu nhóm hợp lệ.");
-            }
+        // 4. Extract data based on YOUR API structure
+        const groupData = apiResult.group;        // Object {groupId, nameGroup, avatar, createdById, ...}
+        const memberListFromApi = apiResult.members; // Array [{userId, fullName, avatarUrl}, ...]
+        const isAdminViewing = apiResult.isAdmin;  // Boolean (true if the person viewing is the admin)
+        const adminUserIdFromApi = groupData ? groupData.createdById : null; // Get admin ID from group data
 
+        // Check if essential data is missing
+        if (!groupData || !memberListFromApi || adminUserIdFromApi === null) {
+            throw new Error("Dữ liệu trả về từ API không đầy đủ.");
+        }
 
-            console.log("Thông tin nhóm nhận được:", groupInfo);
+        // --- Populate basic info ---
+        document.getElementById('group-info-avatar').src = groupData.avatar || 'https://placehold.co/100x100?text=G';
+        document.getElementById('group-info-name').textContent = groupData.nameGroup;
 
-            // --- Điền thông tin cơ bản ---
-            document.getElementById('group-info-avatar').src = groupInfo.avatar || 'https://placehold.co/100x100?text=G';
-            document.getElementById('group-info-name').textContent = groupInfo.name;
+        // --- Populate members list AND ADD REMOVE BUTTONS ---
+        const membersListElement = document.getElementById('group-members-list');
+        const memberCountSpan = document.getElementById('group-member-count'); // Optional: Update count display
+        membersListElement.innerHTML = ''; // Clear old list
+        let memberCount = 0;
 
-            // --- Điền danh sách thành viên ---
-            const membersList = document.getElementById('group-members-list');
-            const memberCountSpan = document.getElementById('group-member-count');
-            membersList.innerHTML = ''; // Xóa danh sách cũ
-            let memberCount = 0;
-            if (groupInfo.members && Array.isArray(groupInfo.members)) {
-                 memberCount = groupInfo.members.length;
-                 groupInfo.members.forEach(member => {
-                    const li = document.createElement('li');
-                    li.className = 'list-group-item bg-transparent border-secondary d-flex align-items-center py-2'; // Thêm padding y
-                    const isAdmin = String(member.userId) === String(groupInfo.adminUserId); // So sánh ID admin
-                    li.innerHTML = `
-                        <img src="${member.avatarUrl || 'https://placehold.co/30x30?text=U'}" class="rounded-circle me-2" width="30" height="30" style="object-fit: cover;">
-                        <span class="flex-grow-1 text-truncate">${member.fullName}</span>
-                        ${isAdmin ? '<span class="badge bg-primary ms-auto">Admin</span>' : ''}
-                    `;
-                    membersList.appendChild(li);
-                });
-            }
-             if (memberCountSpan) memberCountSpan.textContent = memberCount; // Cập nhật số lượng
+        if (Array.isArray(memberListFromApi)) {
+             memberCount = memberListFromApi.length;
+             memberListFromApi.forEach(member => {
+                const li = document.createElement('li');
+                // Added border-0 to remove default list-group borders if needed
+                li.className = 'list-group-item bg-transparent border-0 border-bottom border-secondary d-flex align-items-center py-2';
+                // Check if this specific member is the admin
+                const isThisMemberAdmin = String(member.userId) === String(adminUserIdFromApi);
 
+                // Basic member info HTML
+                let memberHTML = `
+                    <img src="${member.avatarUrl || 'https://placehold.co/30x30?text=U'}" class="rounded-circle me-2" width="30" height="30" style="object-fit: cover;">
+                    <span class="flex-grow-1 text-truncate">${member.fullName}</span>
+                    ${isThisMemberAdmin ? '<span class="badge bg-primary ms-auto">Admin</span>' : ''}
+                `;
 
-            // --- HIỂN THỊ NÚT RỜI HOẶC XÓA ---
-            const leaveBtn = document.getElementById('btn-leave-group');
-            const deleteBtn = document.getElementById('btn-delete-group');
-            const adminActions = document.getElementById('group-admin-actions'); // Form sửa
-
-            // Ẩn hết ban đầu
-            if(leaveBtn) leaveBtn.classList.add('d-none');
-            if(deleteBtn) deleteBtn.classList.add('d-none');
-            if (adminActions) adminActions.classList.add('d-none');
-
-            // Kiểm tra xem user hiện tại có phải admin không
-            const isAdmin = (String(USER_ID) === String(groupInfo.adminUserId));
-
-            if (isAdmin) {
-                if(deleteBtn) {
-                     deleteBtn.classList.remove('d-none'); // Hiện nút Xóa
-                     deleteBtn.setAttribute('data-group-id', currentGroupId); // Gán ID nhóm vào nút
+                // ⭐ ADD REMOVE BUTTON LOGIC ⭐
+                // Show remove button IF: the person viewing is admin AND this member is NOT the admin
+                if (isAdminViewing && !isThisMemberAdmin) {
+                     memberHTML += `
+                         <button class="btn btn-sm btn-outline-danger ms-2 btn-remove-member"
+                                 data-member-id="${member.userId}"
+                                 data-group-id="${currentGroupId}"
+                                 data-member-name="${member.fullName}"
+                                 title="Loại ${member.fullName} khỏi nhóm">
+                             <i class="bi bi-person-x-fill"></i>
+                         </button>
+                     `;
                 }
-                if (adminActions) adminActions.classList.remove('d-none'); // Hiện form Sửa
-            } else {
-                 if(leaveBtn) {
-                    leaveBtn.classList.remove('d-none'); // Hiện nút Rời
-                    leaveBtn.setAttribute('data-group-id', currentGroupId); // Gán ID nhóm vào nút
-                 }
-            }
 
-            // --- Hiển thị Modal ---
-            const modalElement = document.getElementById('groupInfoModal');
-            // Đảm bảo Bootstrap JS đã được tải
-            if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-                 const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
-                 modalInstance.show();
-            } else {
-                 console.error("Bootstrap Modal JS chưa được tải!");
-                 modalElement.style.display = 'block'; // Fallback hiển thị đơn giản
-            }
-
-
-        } catch (error) {
-            console.error("Lỗi khi mở modal thông tin nhóm:", error);
-            alert("Không thể tải thông tin nhóm. Chi tiết: " + error.message);
+                li.innerHTML = memberHTML;
+                membersListElement.appendChild(li);
+            });
         }
-    }</script>
+         if (memberCountSpan) memberCountSpan.textContent = memberCount;
+
+        // --- SHOW LEAVE OR DELETE BUTTON (Your existing logic is fine here) ---
+        const leaveBtn = document.getElementById('btn-leave-group');
+        const deleteBtn = document.getElementById('btn-delete-group');
+        const adminActions = document.getElementById('group-admin-actions');
+
+        // Hide all initially
+        if(leaveBtn) leaveBtn.classList.add('d-none');
+        if(deleteBtn) deleteBtn.classList.add('d-none');
+        if (adminActions) adminActions.classList.add('d-none');
+
+        // Show the correct button based on whether the viewer is admin
+        if (isAdminViewing) {
+            if(deleteBtn) {
+                 deleteBtn.classList.remove('d-none');
+                 deleteBtn.setAttribute('data-group-id', currentGroupId);
+            }
+            if (adminActions) adminActions.classList.remove('d-none'); // Show edit form if admin
+        } else {
+             if(leaveBtn) {
+                leaveBtn.classList.remove('d-none');
+                leaveBtn.setAttribute('data-group-id', currentGroupId);
+             }
+        }
+
+        // --- Show Modal ---
+        const modalElement = document.getElementById('groupInfoModal');
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+             const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+             modalInstance.show();
+        } else {
+             console.error("Bootstrap Modal JS chưa được tải!");
+             modalElement.style.display = 'block';
+        }
+
+        // --- ⭐ Attach listeners AFTER adding buttons to DOM ⭐ ---
+        attachRemoveMemberListeners(); // Call the function to add listeners to the remove buttons
+
+
+    } catch (error) {
+        console.error("Lỗi khi mở modal thông tin nhóm:", error);
+        alert("Không thể tải thông tin nhóm. Chi tiết: " + error.message);
+    }
+}
+
+// === KEEP THESE HELPER FUNCTIONS (FROM PREVIOUS RESPONSE) ===
+
+// Attaches listeners to newly created remove buttons
+function attachRemoveMemberListeners() {
+    const removeButtons = document.querySelectorAll('#groupInfoModal .btn-remove-member');
+    removeButtons.forEach(button => {
+        // Replace node to remove old listeners before adding new one
+        button.replaceWith(button.cloneNode(true));
+    });
+    document.querySelectorAll('#groupInfoModal .btn-remove-member').forEach(button => {
+         button.addEventListener('click', handleRemoveMemberClick);
+    });
+}
+
+// Handles the click on a remove member button
+async function handleRemoveMemberClick(event) {
+    const button = event.currentTarget;
+    const memberId = button.getAttribute('data-member-id');
+    const groupId = button.getAttribute('data-group-id');
+    const memberName = button.getAttribute('data-member-name');
+
+    if (!memberId || !groupId || !confirm(`Bạn có chắc muốn loại "${memberName}" khỏi nhóm không?`)) {
+        return;
+    }
+
+    console.log(`Đang loại thành viên ${memberId} khỏi nhóm ${groupId}`);
+    try {
+        // Use FormData because your API uses @RequestParam
+        const formData = new FormData();
+        formData.append('memberId', memberId);
+
+        // Call your remove member API endpoint
+        const response = await fetch(`/group/${groupId}/remove-member`, { // Make sure this URL is correct
+             method: 'POST',
+             body: formData
+        });
+
+        // Assuming API returns JSON like {success: true/false, message: "..."}
+        // If it returns ResponseEntity.ok().build(), it might not have JSON body on success.
+        let result = { success: response.ok, message: "" }; // Default success based on status code
+         try {
+            result = await response.json(); // Try to parse JSON for more details
+         } catch(e) {
+             if (!response.ok) { // If status code indicated error, but no JSON
+                 result.message = `Lỗi ${response.status}: ${response.statusText}`;
+             }
+             // If status was ok but no JSON, result remains { success: true, message: "" }
+         }
+
+
+        console.log("Kết quả loại thành viên:", result);
+
+        if (result.success || response.ok) { // Check status code too, as ResponseEntity.ok() might have empty body
+            alert(`Đã loại "${memberName}" khỏi nhóm.`);
+            button.closest('li').remove(); // Remove the list item from modal
+            // Update member count display if you have one
+            const memberCountSpan = document.getElementById('group-member-count');
+            if (memberCountSpan) {
+                 const currentCount = parseInt(memberCountSpan.textContent || '1', 10);
+                 memberCountSpan.textContent = Math.max(0, currentCount - 1);
+             }
+        } else {
+            alert(`Lỗi: ${result.message || 'Không thể loại thành viên.'}`);
+        }
+    } catch (error) {
+        console.error("Lỗi khi gọi API loại thành viên:", error);
+        alert("Đã xảy ra lỗi kết nối khi loại thành viên.");
+    }
+}</script>
     <script th:src="@{/js/notification.js}"></script>
   </body>
 </html>
