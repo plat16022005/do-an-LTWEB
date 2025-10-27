@@ -44,5 +44,11 @@ public interface UserGroupRepository extends JpaRepository<UserGroup, Integer> {
     // Tự động tạo câu query kiểm tra xem có tồn tại bản ghi
     // khớp cả userId và groupId không.
     boolean existsByUser_UserIdAndGroup_GroupId(Integer userId, Integer groupId);
+    void deleteByGroupGroupIdAndUserUserId(Integer groupId, Integer userId);
+    // boolean existsByUser_UserIdAndGroup_GroupId(Integer userId, Integer groupId); // Hàm isUserInGroup của bạn đã dùng tên này
+
+    // Cần cho hàm deleteGroup và getGroupMembers (hàm getGroupMembers của bạn dùng tên khác, giữ lại tên của bạn)
+    void deleteByGroupGroupId(Integer groupId);
+    // List<UserGroup> findByGroup_GroupId(Integer groupId); // Hàm getGroupMembers của bạn đã dùng tên này
     
 }

@@ -425,4 +425,82 @@ public class UserMessageController {
 	    
 	    return Map.of("count", count);
 	}
+	@PostMapping("/group/leave/{groupId}")
+	@ResponseBody
+	public Map<String, Object> handleLeaveGroup(@PathVariable Integer groupId, HttpSession session) {
+	    User currentUser = (User) session.getAttribute("user");
+	    if (currentUser == null) {
+	        return Map.of("success", false, "message", "Chưa đăng nhập");
+	    }
+	    try {
+	        groupService.leaveGroup(groupId, currentUser.getUserId());
+	        return Map.of("success", true, "message", "Rời nhóm thành công.");
+	    } catch (Exception e) {
+	        // Log lỗi ra console server để debug
+	        System.err.println("Lỗi khi rời nhóm: " + e.getMessage());
+	        // Trả về thông báo lỗi thân thiện cho người dùng
+	        return Map.of("success", false, "message", "Đã xảy ra lỗi: " + e.getMessage());
+	    }
+	}
+
+	/**
+	 * API để người tạo (admin) xóa nhóm
+	 */
+	@PostMapping("/group/delete/{groupId}")
+	@ResponseBody
+	public Map<String, Object> handleDeleteGroup(@PathVariable Integer groupId, HttpSession session) {
+	    User currentUser = (User) session.getAttribute("user");
+	    if (currentUser == null) {
+	        return Map.of("success", false, "message", "Chưa đăng nhập");
+	    }
+	    try {
+	        groupService.deleteGroup(groupId, currentUser.getUserId());
+	        return Map.of("success", true, "message", "Xóa nhóm thành công.");
+	    } catch (Exception e) {
+	        System.err.println("Lỗi khi xóa nhóm: " + e.getMessage());
+	        return Map.of("success", false, "message", "Đã xảy ra lỗi: " + e.getMessage());
+	    }
+	}
+
+	/**
+	 * API lấy thông tin chi tiết nhóm (cho modal)
+	 */
+	@GetMapping("/group/info/{groupId}")
+	@ResponseBody
+	public Map<String, Object> getGroupInfo(@PathVariable Integer groupId, HttpSession session) {
+	     User currentUser = (User) session.getAttribute("user");
+	     // Kiểm tra xem người dùng có quyền xem thông tin nhóm không (là thành viên)
+	     if (currentUser == null || !groupService.isUserInGroup(currentUser.getUserId(), groupId)) {
+	          return Map.of("error", "Không có quyền truy cập hoặc nhóm không tồn tại");
+	     }
+//	     try {
+	         GroupsUTE group = groupService.getGroupById(groupId);
+	         System.out.println(group.getNameGroup());
+	         List<User> members = groupService.getGroupMembers(groupId);
+	         System.out.println("Pass");
+	         // Chuẩn bị danh sách thành viên đơn giản để gửi về JSON
+	         List<Map<String, Object>> memberList = members.stream()
+	                .filter(m -> m != null) // Lọc null members
+	                .map(m -> Map.<String, Object>of(
+	                     "userId", m.getUserId(),
+	                     "fullName", m.getFullName(),
+	                     "avatarUrl", m.getAvatarUrl() // Giả sử có getAvatarUrl()
+	                )).toList();
+	         System.out.println("Pass");
+	         // Lấy ID người tạo (admin)
+	         Integer creatorId = (group.getCreatedBy() != null) ? group.getCreatedBy().getUserId() : null;
+	         
+	         return Map.of(
+	              "success", true, // Thêm success flag
+	              "groupId", group.getGroupId(),
+	              "name", group.getNameGroup(),
+	              "avatar", group.getAvatar(),
+	              "adminUserId", creatorId != null ? creatorId : -1, // Gửi ID người tạo (admin)
+	              "members", memberList
+	         );
+//	     } catch (Exception e) {
+//	          System.err.println("Lỗi khi lấy thông tin nhóm: " + e.getMessage());
+//	         return Map.of("success", false, "error", "Không thể tải thông tin nhóm.");
+//	     }
+	}
 }

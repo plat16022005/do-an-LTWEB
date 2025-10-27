@@ -717,6 +717,14 @@
             <ul id="group-members-list" class="list-group text-start">
               <!-- JS render -->
             </ul>
+			<div class="mt-4 pt-3 border-top">
+	            <button id="btn-leave-group" class="btn btn-warning w-100 mb-2 d-none">
+	                <i class="bi bi-door-open"></i> Rời khỏi nhóm
+	            </button>
+	            <button id="btn-delete-group" class="btn btn-danger w-100 d-none">
+	                <i class="bi bi-trash3"></i> Xóa nhóm này
+	            </button>
+	        </div>            
           </div>
         </div>
       </div>
@@ -835,6 +843,103 @@
               autoGroupId
             );
           }
+        }
+        const groupInfoBtn = document.getElementById('btn-group-info');
+        if (groupInfoBtn) {
+            groupInfoBtn.addEventListener('click', openGroupInfoModal);
+        }
+
+        // Listener cho nút RỜI NHÓM (nằm trong modal)
+        const leaveBtn = document.getElementById('btn-leave-group');
+        if (leaveBtn) {
+            leaveBtn.addEventListener('click', async (e) => {
+                const groupId = e.currentTarget.getAttribute('data-group-id');
+                if (!groupId || !confirm('Bạn có chắc chắn muốn rời khỏi nhóm này không?')) {
+                    return;
+                }
+                console.log("Đang rời nhóm:", groupId);
+                try {
+                    const response = await fetch(`/group/leave/${groupId}`, { method: 'POST' });
+                    const result = await response.json();
+                    console.log("Kết quả rời nhóm:", result);
+
+                    if (result.success) {
+                        alert('Bạn đã rời khỏi nhóm.');
+                        // Đóng modal
+                        const modalElement = document.getElementById('groupInfoModal');
+                        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                            if(modalInstance) modalInstance.hide();
+                        } else {
+                             modalElement.style.display = 'none'; // Fallback
+                        }
+
+                        // Xóa nhóm khỏi sidebar
+                        document.querySelector(`.conversation-item[data-group-id="${groupId}"]`)?.remove();
+
+                        // Reset cửa sổ chat nếu đang mở nhóm này
+                        if (String(currentGroupId) === String(groupId)) {
+                            resetChatWindow();
+                            document.getElementById('chat-header-name').textContent = 'Đã rời nhóm';
+                            document.getElementById('chat-body').innerHTML = '<div class="text-center text-muted mt-4">Bạn đã rời khỏi nhóm này.</div>';
+                        }
+                    } else {
+                        alert(`Lỗi: ${result.message || 'Không thể rời nhóm.'}`);
+                    }
+                } catch (error) {
+                    console.error("Lỗi khi gọi API rời nhóm:", error);
+                    alert("Đã xảy ra lỗi kết nối khi rời nhóm.");
+                }
+            });
+        }
+
+        // Listener cho nút XÓA NHÓM (nằm trong modal)
+        const deleteBtn = document.getElementById('btn-delete-group');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', async (e) => {
+                const groupId = e.currentTarget.getAttribute('data-group-id');
+                // Xác nhận 2 lần cho an toàn
+                if (!groupId || !confirm('BẠN CÓ CHẮC MUỐN XÓA NHÓM NÀY KHÔNG?')) {
+                    return;
+                }
+                if (!confirm('HÀNH ĐỘNG NÀY KHÔNG THỂ HOÀN TÁC! Xóa nhóm?')) {
+                     return;
+                }
+
+                console.log("Đang xóa nhóm:", groupId);
+                try {
+                    const response = await fetch(`/group/delete/${groupId}`, { method: 'POST' });
+                    const result = await response.json();
+                    console.log("Kết quả xóa nhóm:", result);
+
+                     if (result.success) {
+                        alert('Nhóm đã được xóa.');
+                        // Đóng modal
+                        const modalElement = document.getElementById('groupInfoModal');
+                         if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                             if(modalInstance) modalInstance.hide();
+                        } else {
+                             modalElement.style.display = 'none'; // Fallback
+                        }
+
+                         // Xóa nhóm khỏi sidebar
+                        document.querySelector(`.conversation-item[data-group-id="${groupId}"]`)?.remove();
+
+                         // Reset cửa sổ chat nếu đang mở nhóm này
+                         if (String(currentGroupId) === String(groupId)) {
+                             resetChatWindow();
+                             document.getElementById('chat-header-name').textContent = 'Nhóm đã xóa';
+                             document.getElementById('chat-body').innerHTML = '<div class="text-center text-muted mt-4">Nhóm này đã bị xóa.</div>';
+                         }
+                     } else {
+                        alert(`Lỗi: ${result.message || 'Không thể xóa nhóm.'}`);
+                     }
+                } catch (error) {
+                    console.error("Lỗi khi gọi API xóa nhóm:", error);
+                    alert("Đã xảy ra lỗi kết nối khi xóa nhóm.");
+                }
+            });
         }
       });
 
@@ -1459,6 +1564,7 @@
         // --- (Phần còn lại của hàm giữ nguyên) ---
 
         showGroupActions();
+        
         document.getElementById("chat-header-avatar").src = groupAvatar;
         document.getElementById("chat-header-name").innerText = groupName;
         document.getElementById("chat-header-nameUser").innerText = "Nhóm chat";
@@ -1696,6 +1802,103 @@
             }
         } catch (e) {
             return '';
+        }
+    }</script>
+    <script>
+ // === HÀM MỞ MODAL THÔNG TIN NHÓM ===
+    async function openGroupInfoModal() {
+        if (!currentGroupId) {
+            console.warn("Chưa chọn nhóm nào để xem thông tin.");
+            return;
+        }
+
+        try {
+            console.log("Đang lấy thông tin nhóm:", currentGroupId);
+            const response = await fetch(`/group/info/${currentGroupId}`);
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: "Lỗi không xác định" }));
+                throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+            }
+            const groupInfo = await response.json();
+
+            // Kiểm tra nếu API trả về lỗi thành công nhưng có message lỗi
+            if (!groupInfo.success && groupInfo.error) {
+                 throw new Error(groupInfo.error);
+            }
+            if (!groupInfo.success) { // Lỗi chung khác
+                 throw new Error("Không nhận được dữ liệu nhóm hợp lệ.");
+            }
+
+
+            console.log("Thông tin nhóm nhận được:", groupInfo);
+
+            // --- Điền thông tin cơ bản ---
+            document.getElementById('group-info-avatar').src = groupInfo.avatar || 'https://placehold.co/100x100?text=G';
+            document.getElementById('group-info-name').textContent = groupInfo.name;
+
+            // --- Điền danh sách thành viên ---
+            const membersList = document.getElementById('group-members-list');
+            const memberCountSpan = document.getElementById('group-member-count');
+            membersList.innerHTML = ''; // Xóa danh sách cũ
+            let memberCount = 0;
+            if (groupInfo.members && Array.isArray(groupInfo.members)) {
+                 memberCount = groupInfo.members.length;
+                 groupInfo.members.forEach(member => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item bg-transparent border-secondary d-flex align-items-center py-2'; // Thêm padding y
+                    const isAdmin = String(member.userId) === String(groupInfo.adminUserId); // So sánh ID admin
+                    li.innerHTML = `
+                        <img src="${member.avatarUrl || 'https://placehold.co/30x30?text=U'}" class="rounded-circle me-2" width="30" height="30" style="object-fit: cover;">
+                        <span class="flex-grow-1 text-truncate">${member.fullName}</span>
+                        ${isAdmin ? '<span class="badge bg-primary ms-auto">Admin</span>' : ''}
+                    `;
+                    membersList.appendChild(li);
+                });
+            }
+             if (memberCountSpan) memberCountSpan.textContent = memberCount; // Cập nhật số lượng
+
+
+            // --- HIỂN THỊ NÚT RỜI HOẶC XÓA ---
+            const leaveBtn = document.getElementById('btn-leave-group');
+            const deleteBtn = document.getElementById('btn-delete-group');
+            const adminActions = document.getElementById('group-admin-actions'); // Form sửa
+
+            // Ẩn hết ban đầu
+            if(leaveBtn) leaveBtn.classList.add('d-none');
+            if(deleteBtn) deleteBtn.classList.add('d-none');
+            if (adminActions) adminActions.classList.add('d-none');
+
+            // Kiểm tra xem user hiện tại có phải admin không
+            const isAdmin = (String(USER_ID) === String(groupInfo.adminUserId));
+
+            if (isAdmin) {
+                if(deleteBtn) {
+                     deleteBtn.classList.remove('d-none'); // Hiện nút Xóa
+                     deleteBtn.setAttribute('data-group-id', currentGroupId); // Gán ID nhóm vào nút
+                }
+                if (adminActions) adminActions.classList.remove('d-none'); // Hiện form Sửa
+            } else {
+                 if(leaveBtn) {
+                    leaveBtn.classList.remove('d-none'); // Hiện nút Rời
+                    leaveBtn.setAttribute('data-group-id', currentGroupId); // Gán ID nhóm vào nút
+                 }
+            }
+
+            // --- Hiển thị Modal ---
+            const modalElement = document.getElementById('groupInfoModal');
+            // Đảm bảo Bootstrap JS đã được tải
+            if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                 const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+                 modalInstance.show();
+            } else {
+                 console.error("Bootstrap Modal JS chưa được tải!");
+                 modalElement.style.display = 'block'; // Fallback hiển thị đơn giản
+            }
+
+
+        } catch (error) {
+            console.error("Lỗi khi mở modal thông tin nhóm:", error);
+            alert("Không thể tải thông tin nhóm. Chi tiết: " + error.message);
         }
     }</script>
     <script th:src="@{/js/notification.js}"></script>

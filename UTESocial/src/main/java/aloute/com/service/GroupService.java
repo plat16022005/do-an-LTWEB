@@ -1,6 +1,7 @@
 package aloute.com.service;
 
 import aloute.com.entity.*;
+import aloute.com.repository.GroupMessageRepository;
 import aloute.com.repository.GroupsUTERepository;
 import aloute.com.repository.UserGroupRepository;
 import aloute.com.repository.UserRepository;
@@ -132,17 +133,25 @@ public class GroupService {
         // Hàm này trả về true nếu tìm thấy, false nếu không
         return userGroupRepository.existsByUser_UserIdAndGroup_GroupId(userId, groupId);
     }
-	@Transactional(readOnly = true) // Dùng readOnly vì đây là hàm chỉ đọc
-    public List<User> getGroupMembers(Integer groupId) {
-        
-        // 1. Lấy danh sách các bản ghi "UserGroup" (bảng trung gian)
-        List<UserGroup> userGroups = userGroupRepository.findByGroup_GroupId(groupId);
+	@Transactional(readOnly = true)
+	public List<User> getGroupMembers(Integer groupId) {
+	    // Dòng này của bạn đã đúng:
+	    List<UserGroup> userGroups = userGroupRepository.findByGroup_GroupId(groupId);
 
-        // 2. Dùng Stream API để trích xuất đối tượng User từ mỗi bản ghi
-        return userGroups.stream()
-                .map(UserGroup::getUser) // Tương đương: userGroup -> userGroup.getUser()
-                .collect(Collectors.toList());
-    }
+	    return userGroups.stream()
+	             .map(ug -> {
+	                 User user = ug.getUser();
+	                 if (user != null) {
+	                     // ⭐ KHỞI TẠO Ở ĐÂY ⭐
+	                     user.getUserId(); // Lấy ID để chắc chắn user được tải
+	                     user.getFullName(); // Buộc tải fullName <<< SỬA LỖI
+	                     user.getAvatarUrl(); // Buộc tải avatarUrl <<< NÊN THÊM
+	                 }
+	                 return user; // Trả về user (đã được khởi tạo)
+	             })
+	             .filter(user -> user != null) // Lọc null sau khi map
+	             .collect(Collectors.toList());
+	}
 	@Transactional(readOnly = true)
 	public List<User> getFriendsNotInGroup(Integer currentUserId, Integer groupId) {
 	    
@@ -166,4 +175,70 @@ public class GroupService {
 
 	    return friendsNotInGroup;
 	}
+	@Transactional(readOnly = true)
+	public GroupsUTE getGroupById(Integer groupId) {
+	    GroupsUTE group = groupsUTERepository.findById(groupId)
+	            .orElseThrow(() -> new RuntimeException("Không tìm thấy nhóm với ID: " + groupId));
+
+	    // ⭐ THÊM DÒNG NÀY ĐỂ KHỞI TẠO ⭐
+	    // Chỉ cần gọi getter là đủ để Hibernate tải dữ liệu
+	    if (group.getCreatedBy() != null) {
+	        group.getCreatedBy().getUserId(); // Hoặc gọi bất kỳ getter nào khác của User
+	    }
+	    // ⭐ KẾT THÚC THÊM MỚI ⭐
+
+	    return group; // Trả về đối tượng group đã được khởi tạo phần createdBy
+	}
+	@Transactional // Hàm này thay đổi dữ liệu
+    public void leaveGroup(Integer groupId, Integer userId) {
+        // 1. Lấy thông tin nhóm (dùng hàm vừa thêm)
+        GroupsUTE group = getGroupById(groupId);
+
+        // 2. Kiểm tra xem người dùng có phải là người tạo (admin) không
+        //    (Dùng trường createdBy của bạn)
+        if (group.getCreatedBy() != null && group.getCreatedBy().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("Người tạo nhóm (Admin) không thể rời nhóm. Vui lòng xóa nhóm.");
+        }
+
+        // 3. Kiểm tra xem người dùng có thực sự trong nhóm không (dùng hàm bạn đã có)
+        if (!isUserInGroup(userId, groupId)) {
+             throw new IllegalArgumentException("Bạn không phải là thành viên của nhóm này.");
+        }
+
+        // 4. Gọi hàm xóa trong UserGroupRepository
+        //    (Bạn cần đảm bảo hàm này tồn tại trong UserGroupRepository)
+        userGroupRepository.deleteByGroupGroupIdAndUserUserId(groupId, userId);
+
+        System.out.println("User " + userId + " đã rời khỏi nhóm " + groupId);
+        // (Tùy chọn: Gửi thông báo WebSocket)
+    }
+	@Transactional // Hàm này thay đổi dữ liệu
+    public void deleteGroup(Integer groupId, Integer creatorUserId) {
+        // 1. Lấy thông tin nhóm
+        GroupsUTE group = getGroupById(groupId);
+
+        // 2. Xác minh người dùng là người tạo (admin)
+        //    (Dùng trường createdBy của bạn)
+        if (group.getCreatedBy() == null || !group.getCreatedBy().getUserId().equals(creatorUserId)) {
+            throw new SecurityException("Chỉ người tạo nhóm (Admin) mới có thể xóa nhóm.");
+        }
+
+        // --- Xóa dữ liệu liên quan THEO THỨ TỰ ---
+
+        // 3. Xóa Tin nhắn nhóm (GroupMessages)
+        //    (Bạn cần đảm bảo hàm này tồn tại trong GroupMessageRepository)
+        groupMessageRepository.deleteByGroupGroupId(groupId);
+        System.out.println("Đã xóa tin nhắn của nhóm " + groupId);
+
+        // 4. Xóa liên kết Thành viên (UserGroups)
+        //    (Bạn cần đảm bảo hàm này tồn tại trong UserGroupRepository)
+        userGroupRepository.deleteByGroupGroupId(groupId);
+        System.out.println("Đã xóa thành viên của nhóm " + groupId);
+
+        // 5. Xóa Nhóm (GroupsUTE)
+        groupsUTERepository.delete(group);
+        System.out.println("Đã xóa nhóm " + groupId);
+
+        // (Tùy chọn: Gửi thông báo WebSocket cho các thành viên cũ)
+    }
 }

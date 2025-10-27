@@ -15,4 +15,5 @@ public interface GroupMessageRepository extends JpaRepository<GroupMessage, Inte
             "WHERE gm.group.groupId = :groupId " +
             "ORDER BY gm.createdAt ASC")
      List<GroupMessage> findMessagesByGroupIdWithDetails(@Param("groupId") Integer groupId);
+    void deleteByGroupGroupId(Integer groupId);
 }
