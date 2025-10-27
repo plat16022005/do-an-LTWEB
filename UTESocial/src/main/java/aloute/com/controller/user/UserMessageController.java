@@ -473,7 +473,7 @@ public class UserMessageController {
 	     if (currentUser == null || !groupService.isUserInGroup(currentUser.getUserId(), groupId)) {
 	          return Map.of("error", "Không có quyền truy cập hoặc nhóm không tồn tại");
 	     }
-//	     try {
+	     try {
 	         GroupsUTE group = groupService.getGroupById(groupId);
 	         System.out.println(group.getNameGroup());
 	         List<User> members = groupService.getGroupMembers(groupId);
@@ -498,9 +498,9 @@ public class UserMessageController {
 	              "adminUserId", creatorId != null ? creatorId : -1, // Gửi ID người tạo (admin)
 	              "members", memberList
 	         );
-//	     } catch (Exception e) {
-//	          System.err.println("Lỗi khi lấy thông tin nhóm: " + e.getMessage());
-//	         return Map.of("success", false, "error", "Không thể tải thông tin nhóm.");
-//	     }
+	     } catch (Exception e) {
+	          System.err.println("Lỗi khi lấy thông tin nhóm: " + e.getMessage());
+	         return Map.of("success", false, "error", "Không thể tải thông tin nhóm.");
+	     }
 	}
 }
