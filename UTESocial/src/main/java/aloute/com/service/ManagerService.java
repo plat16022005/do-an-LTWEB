@@ -183,7 +183,7 @@ public class ManagerService {
                 Notification notification = new Notification();
                 notification.setUser(postOwner);
                 notification.setRelatedId(post.getPostId());
-                notification.setType("POST_REJECTION");
+                notification.setType("SYSTEM");
 
                 String content = "Your post (ID: " + postId + ") has been rejected. Reason: " + reason;
                 notification.setContent(content);
@@ -238,37 +238,124 @@ public class ManagerService {
                     post.getModerations().forEach(mod -> Hibernate.initialize( mod.getModerator()) );
                 }
             }
-
-            Hibernate.initialize(report.getReporter());
-            Hibernate.initialize(report.getReportedUser());
         }
 
         return reportOpt;
     }
     
-    public void resolveReport(Integer reportId) 
+    private void sendNotification(User recipient, String type, Integer relatedId, String content) {
+        if (recipient == null) return;
+
+        Notification notification = new Notification();
+        notification.setUser(recipient);
+        notification.setType(type);
+        notification.setRelatedId(relatedId);
+        notification.setContent(content);
+        notification.setActorAvatar(null); 
+        notification.setIsRead(false);
+        notificationRepository.save(notification);
+        System.out.println("Đã gửi thông báo '" + type + "' đến User ID: " + recipient.getUserId());
+    }
+
+
+    public void resolveReport(Integer reportId, User managerUser) 
     {
-        Optional<Reports> reportOptional = reportsRepository.findById(reportId);
-        if (reportOptional.isPresent()) 
-        {
+        Optional<Reports> reportOptional = reportsRepository.findByIdWithDetails(reportId); // Dùng query này tốt hơn findById
+
+        if (reportOptional.isPresent()) {
             Reports report = reportOptional.get();
+
+            if (!"pending".equals(report.getStatus())) {
+                System.err.println("Report ID " + reportId + " đã được xử lý trước đó.");
+                return; // Hoặc ném Exception
+            }
+
+            User reporter = report.getReporter();
+            String reportType = report.getType();
+            String defaultLockReason = "Tài khoản bị khóa do vi phạm dựa trên khiếu nại ID: " + reportId;
+
+            // 1. Thực hiện hành động tự động
+            User targetUser = null; 
+            String violationNotificationContent = ""; 
+
+            if ("user".equals(reportType)) {
+                targetUser = report.getReportedUser(); // Người bị báo cáo
+                if (targetUser != null) {
+                    lockUser(targetUser.getUserId(), report.getReason() != null ? report.getReason() : defaultLockReason); // Khóa user với lý do từ report hoặc mặc định
+                    System.out.println("Đã tự động khóa User ID: " + targetUser.getUserId() + " do Report ID: " + reportId);
+                    violationNotificationContent = "Tài khoản của bạn đã bị khóa do vi phạm dựa trên khiếu nại.";
+                    
+                    if(report.getReason() != null && !report.getReason().isEmpty()) {
+                        violationNotificationContent += " Lý do: " + report.getReason();
+                    }
+                } else {
+                    System.err.println("Không tìm thấy Reported User liên quan đến Report ID: " + reportId);
+                }
+            }
+
+            // 2. Cập nhật trạng thái Report
             report.setResolutionStatus("resolved");
             report.setStatus("completed");
             report.setResolvedAt(LocalDateTime.now());
+            report.setResolvedBy(managerUser); // Gán người xử lý
             reportsRepository.save(report);
+
+            // 3. Gửi thông báo ẩn danh cho người gửi report (reporter)
+            if (reporter != null) {
+                sendNotification(
+                    reporter,
+                    "SYSTEM",
+                    report.getReportId(),
+                    "Khiếu nại (ID: " + report.getReportId() + ") của bạn đã được xác nhận và xử lý."
+                );
+            }
+
+            // 4. Gửi thông báo ẩn danh cho người bị report (targetUser)
+            if (targetUser != null && !violationNotificationContent.isEmpty()) {
+                sendNotification(
+                    targetUser,
+                    "SYSTEM", // Loại thông báo mới: hành động tài khoản do report
+                    report.getReportId(), // Liên quan đến report nào
+                    violationNotificationContent
+                );
+            }
+        } else {
+            System.err.println("Không tìm thấy Report ID: " + reportId + " để xử lý.");
         }
     }
     
-    public void rejectReport(Integer reportId) 
+    public void rejectReport(Integer reportId, User managerUser) 
     {
-        Optional<Reports> reportOptional = reportsRepository.findById(reportId);
-        if (reportOptional.isPresent()) 
-        {
+        Optional<Reports> reportOptional = reportsRepository.findById(reportId); // Có thể dùng findByIdWithDetails nếu cần reporter
+
+        if (reportOptional.isPresent()) {
             Reports report = reportOptional.get();
+
+            if (!"pending".equals(report.getStatus())) {
+                System.err.println("Report ID " + reportId + " đã được xử lý trước đó.");
+                return;
+            }
+
+            User reporter = report.getReporter(); // Cần đảm bảo reporter được tải
+
+            // 1. Cập nhật trạng thái report
             report.setResolutionStatus("rejected");
             report.setStatus("completed");
             report.setResolvedAt(LocalDateTime.now());
+            report.setResolvedBy(managerUser); // Gán người xử lý
             reportsRepository.save(report);
+
+            // 2. Gửi thông báo CHỈ cho người gửi report
+            if (reporter != null) {
+                sendNotification(
+                    reporter,
+                    "SYSTEM",
+                    report.getReportId(),
+                    "Khiếu nại (ID: " + report.getReportId() + ") của bạn đã bị từ chối do không đủ cơ sở." // Thêm lý do chung
+                );
+            }
+        } else {
+            System.err.println("Không tìm thấy Report ID: " + reportId + " để từ chối.");
         }
     }
 

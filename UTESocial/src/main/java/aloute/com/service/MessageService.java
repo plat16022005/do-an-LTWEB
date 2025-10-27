@@ -29,8 +29,8 @@ public class MessageService {
     private final AttachmentRepository attachmentsRepository;
 
     public MessageService(MessageRepository messageRepository,
-                          UserRepository userRepository,
-                          AttachmentRepository attachmentsRepository) {
+                        UserRepository userRepository,
+                        AttachmentRepository attachmentsRepository) {
         this.messageRepository = messageRepository;
         this.userRepository = userRepository;
         this.attachmentsRepository = attachmentsRepository;
