@@ -26,6 +26,7 @@ public class GroupService {
     private UserRepository userRepository;
     @Autowired
     private FriendService friendService; // ⬅️ THÊM DÒNG NÀY
+    @Autowired private GroupMessageRepository groupMessageRepository;
 
     public GroupsUTE createGroup(String name, MultipartFile avatarFile, User creator, List<User> members) {
         String avatarUrl = null;

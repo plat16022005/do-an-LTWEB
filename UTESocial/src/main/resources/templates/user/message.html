@@ -727,6 +727,7 @@
     <script th:src="@{/js/notification.js}"></script>
     <script>
       const USER_ID = document.getElementById("current-user-id").value;
+      let lastDisplayedMessageDate = null;
     </script>
     <script>
       function resetChatWindow() {
@@ -739,6 +740,7 @@
 
         currentChatFriendId = null; // reset người chat riêng
         currentGroupId = null; // reset nhóm cũ
+        lastDisplayedMessageDate = null;
       }
     </script>
     <script>
@@ -836,96 +838,148 @@
         }
       });
 
+      /**
+       * Renders a message bubble, potentially adding a date separator first.
+       */
       function renderMessage(msg) {
-        const sentByMe = msg.sender.userId == USER_ID;
-        const row = document.createElement("div");
-        row.classList.add("chat-row");
-        if (sentByMe) row.classList.add("sent");
+          // --- Date Separator Logic (Keep this) ---
+          try {
+              if (!msg.createdAt) {
+                   console.warn("Tin nhắn thiếu createdAt:", msg);
+              } else {
+                   const messageDate = new Date(msg.createdAt);
+                   const messageDayString = messageDate.toDateString();
+                   if (messageDayString !== lastDisplayedMessageDate) {
+                       renderDateSeparator(messageDate);
+                       lastDisplayedMessageDate = messageDayString;
+                   }
+              }
+          } catch(e) {
+              console.error("Lỗi xử lý ngày trong renderMessage:", e);
+          }
+          // --- End Date Separator Logic ---
 
-        const avatarUrl =
-          msg.sender.avatarUrl || "https://placehold.co/36x36?text=U";
+          // --- Message Rendering Logic ---
+          const sentByMe = msg.sender.userId == USER_ID;
+          const row = document.createElement("div");
+          row.classList.add("chat-row");
+          if (sentByMe) row.classList.add("sent");
 
-        let messageContent = `
-        ${
-          !sentByMe
-            ? `<img src="${avatarUrl}" class="rounded-circle avatar-chat" alt="${msg.sender.fullName}">`
-            : ""
-        }
-        <div class="message ${sentByMe ? "message-sent" : "message-received"}">
-            ${
-              !sentByMe
-                ? `<small class="d-block text-muted sender-name">${msg.sender.fullName}:</small>`
-                : ""
-            }
-            ${msg.content || ""}
-    `;
+          const avatarUrl = msg.sender.avatarUrl || "https://placehold.co/36x36?text=U";
+          // Get HH:mm time using the helper
+          const formattedTime = formatMessageTimestamp(msg.createdAt);
 
-        // ✅ Hiển thị attachments có thanh trượt ngang
-        if (msg.attachments && msg.attachments.length > 0) {
-          messageContent += `<div class="attachment-scroll mt-2">`;
+          let messageContent = `
+              ${!sentByMe ? `<img src="${avatarUrl}" class="rounded-circle avatar-chat" alt="${msg.sender.fullName}">` : ''}
+              <div class="message ${sentByMe ? 'message-sent' : 'message-received'}">
+                  ${!sentByMe ? `<small class="d-block text-muted sender-name">${msg.sender.fullName}:</small>` : ''}
+                  ${msg.content || ''}
+          `;
 
-          msg.attachments.forEach((att) => {
-            const fileUrl = att.fileUrl ?? att.fileURL ?? att.url ?? "";
-            if (!fileUrl) return;
-            // 👉 Chuyển URL tương đối thành tuyệt đối
-            const absoluteUrl = new URL(fileUrl, window.location.origin).href;
+          // --- Render Attachments (Keep your logic) ---
+          if (msg.attachments && msg.attachments.length > 0) {
+            messageContent += `<div class="attachment-scroll mt-2">`;
+            msg.attachments.forEach((att) => {
+                const fileUrl = att.fileUrl ?? att.fileURL ?? att.url ?? "";
+                if (!fileUrl) return;
+                const absoluteUrl = new URL(fileUrl, window.location.origin).href;
+                let fileType = att.fileType ? att.fileType.toLowerCase() : "";
+                if (fileType === "video" || absoluteUrl.endsWith(".mp4")) {
+                  fileType = "video/mp4";
+                }
+                // Render image, video, file links...
+                if (fileType.startsWith("image")) {
+                   messageContent += `<div class="attachment-item me-2"><img src="${absoluteUrl}" ... onclick="showImageModal('${absoluteUrl}')"></div>`;
+                } else if (fileType.startsWith("video")) {
+                   messageContent += `<div class="attachment-item me-2"><video controls ...><source src="${absoluteUrl}" type="${fileType}"></video></div>`;
+                } else {
+                   const fileName = absoluteUrl.split("/").pop();
+                   messageContent += `<div class="attachment-item me-2 ..."><i class="bi bi-paperclip ..."></i><a href="${absoluteUrl}" ...>${fileName}</a></div>`;
+                }
+            });
+            messageContent += `</div>`; // Close attachment-scroll div
+          }
+          // --- End Attachments ---
 
-            let fileType = att.fileType ? att.fileType.toLowerCase() : "";
-            if (fileType === "video" || absoluteUrl.endsWith(".mp4")) {
-              fileType = "video/mp4"; // fallback MIME chuẩn
-            }
 
-            // 👀 In ra console để kiểm tra
-            console.log("📎 Attachment URL:", absoluteUrl);
-            console.log("📄 Attachment Type:", fileType);
+          // --- ⭐ MOVE TIMESTAMP HERE ⭐ ---
+          // Add timestamp *after* attachments but *before* closing the main message div
+          if (formattedTime) {
+              // Only HH:mm
+              messageContent += `<small class="text-muted message-time d-block mt-1 ${sentByMe ? 'text-end' : ''}">${formattedTime}</small>`;
+          }
+          // --- ⭐ END TIMESTAMP ---
 
-            if (fileType.startsWith("image")) {
-              // 🖼 Ảnh (ĐÃ CẬP NHẬT)
-              messageContent += `
-                    <div class="attachment-item me-2">
-                        <img src="${absoluteUrl}" 
-                             class="img-fluid rounded" 
-                             style="max-width: 200px; max-height: 200px; object-fit: cover; cursor: pointer;"
-                             onclick="showImageModal('${absoluteUrl}')">
-                    </div>
-                `;
-            } else if (fileType.startsWith("video")) {
-              // 📹 Video
-              messageContent += `
-                    <div class="attachment-item me-2">
-                        <video controls playsinline preload="metadata" style="max-width: 250px; max-height: 250px; border-radius: 8px;">
-                            <source src="${absoluteUrl}" type="${fileType}">
-                            Trình duyệt của bạn không hỗ trợ video.
-                        </video>
-                    </div>
-                `;
-            } else if (fileType.includes("pdf")) {
-              // 📄 PDF
-              messageContent += `
-                    <div class="attachment-item me-2 p-2 border rounded bg-dark-subtle d-flex align-items-center">
-                        <i class="bi bi-file-earmark-pdf-fill fs-2 text-danger me-2"></i>
-                        <a href="${absoluteUrl}" target="_blank" class="text-primary small">Tải PDF</a>
-                    </div>
-                `;
-            } else {
-              // 📎 File khác
-              const fileName = absoluteUrl.split("/").pop();
-              messageContent += `
-                    <div class="attachment-item me-2 p-2 border rounded bg-dark-subtle d-flex align-items-center">
-                        <i class="bi bi-paperclip fs-2 me-2"></i>
-                        <a href="${absoluteUrl}" target="_blank" class="text-primary small">${fileName}</a>
-                    </div>
-                `;
-            }
-          });
 
-          messageContent += `</div>`;
-        }
+          messageContent += `</div>`; // Close the main message div
 
-        row.innerHTML = messageContent;
-        document.getElementById("chat-body").appendChild(row);
+          row.innerHTML = messageContent;
+
+          const chatBody = document.getElementById("chat-body");
+          if(chatBody){
+              chatBody.appendChild(row);
+          } else {
+              console.error("Chat body not found!");
+          }
       }
 
+      // --- Keep the helper functions from the previous response ---
+
+      /**
+       * Returns HH:mm time string.
+       */
+      function formatMessageTimestamp(isoString) {
+          if (!isoString) return '';
+          try {
+              const messageDate = new Date(isoString);
+              const hh = String(messageDate.getHours()).padStart(2, '0');
+              const mm = String(messageDate.getMinutes()).padStart(2, '0');
+              return `${hh}:${mm}`;
+          } catch (e) { return ''; }
+      }
+
+      /**
+       * Creates and appends the date separator element.
+       */
+      function renderDateSeparator(dateObject) {
+          const chatBody = document.getElementById('chat-body');
+          if (!chatBody) return;
+          const formattedDate = formatDateSeparator(dateObject); // Get "Hôm nay", "Hôm qua", etc.
+          const separatorDiv = document.createElement('div');
+          separatorDiv.classList.add('date-separator', 'text-center', 'my-3');
+          separatorDiv.innerHTML = `<span class="badge bg-secondary">${formattedDate}</span>`;
+          chatBody.appendChild(separatorDiv);
+      }
+
+      /**
+       * Formats date into "Hôm nay", "Hôm qua", or dd/MM/yyyy.
+       */
+      function formatDateSeparator(dateObject) {
+          if (!dateObject) return '';
+          try {
+              const now = new Date();
+              const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+              const yesterdayStart = new Date(todayStart);
+              yesterdayStart.setDate(todayStart.getDate() - 1);
+              const messageDayStart = new Date(dateObject.getFullYear(), dateObject.getMonth(), dateObject.getDate());
+
+              if (messageDayStart.getTime() === todayStart.getTime()) {
+                  return 'Hôm nay';
+              } else if (messageDayStart.getTime() === yesterdayStart.getTime()) {
+                  return 'Hôm qua';
+              } else {
+                  const dd = String(dateObject.getDate()).padStart(2, '0');
+                  const MM = String(dateObject.getMonth() + 1).padStart(2, '0');
+                  const yyyy = dateObject.getFullYear();
+                  return `${dd}/${MM}/${yyyy}`;
+              }
+          } catch (e) { return ''; }
+      }
+
+      // --- Also ensure 'lastDisplayedMessageDate' variable exists globally ---
+      // let lastDisplayedMessageDate = null;
+      // --- And that it's reset in 'resetChatWindow' ---
+      // function resetChatWindow() { ... lastDisplayedMessageDate = null; ... }
       //... ngay bên dưới hàm renderMessage(msg) { ... }
 
       function updateConversationPreview(msg) {
@@ -1597,6 +1651,53 @@
         }
       }
     </script>
+    <script>
+    /**
+     * Chèn một dòng ngăn cách ngày vào khung chat.
+     * @param {Date} dateObject - Đối tượng Date cần hiển thị.
+     */
+    function renderDateSeparator(dateObject) {
+        const chatBody = document.getElementById('chat-body');
+        if (!chatBody) return;
+
+        // Định dạng ngày (Hôm nay, Hôm qua, dd/MM/yyyy)
+        const formattedDate = formatDateSeparator(dateObject);
+
+        // Tạo phần tử div
+        const separatorDiv = document.createElement('div');
+        separatorDiv.classList.add('date-separator', 'text-center', 'my-3'); // Thêm class CSS
+        separatorDiv.innerHTML = `<span class="badge bg-secondary">${formattedDate}</span>`; // Dùng badge cho đẹp
+
+        // Chèn vào khung chat
+        chatBody.appendChild(separatorDiv);
+    }
+
+    /**
+     * Định dạng Date object thành chuỗi "Hôm nay", "Hôm qua", hoặc "dd/MM/yyyy".
+     */
+    function formatDateSeparator(dateObject) {
+        if (!dateObject) return '';
+        try {
+            const now = new Date();
+            const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const yesterdayStart = new Date(todayStart);
+            yesterdayStart.setDate(todayStart.getDate() - 1);
+            const messageDayStart = new Date(dateObject.getFullYear(), dateObject.getMonth(), dateObject.getDate());
+
+            if (messageDayStart.getTime() === todayStart.getTime()) {
+                return 'Hôm nay';
+            } else if (messageDayStart.getTime() === yesterdayStart.getTime()) {
+                return 'Hôm qua';
+            } else {
+                const dd = String(dateObject.getDate()).padStart(2, '0');
+                const MM = String(dateObject.getMonth() + 1).padStart(2, '0');
+                const yyyy = dateObject.getFullYear();
+                return `${dd}/${MM}/${yyyy}`;
+            }
+        } catch (e) {
+            return '';
+        }
+    }</script>
     <script th:src="@{/js/notification.js}"></script>
   </body>
 </html>
