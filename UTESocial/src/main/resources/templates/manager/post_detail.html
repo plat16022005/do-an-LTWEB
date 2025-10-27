@@ -200,7 +200,9 @@
                                     <a th:if="${att.fileType != null and !att.fileType.startsWith('image') and !att.fileType.startsWith('video')}" th:href="@{${att.fileUrl}}" target="_blank">
                                         <i class="bi bi-file-earmark-text me-2"></i>
                                         <!-- SỬA: Lỗi #strings.substringAfterLast -->
-                                        <span th:text="${#strings.substring(att.fileUrl, #strings.lastIndexOf(att.fileUrl, '/') + 1)}">Tên file</span>
+                                        <!-- SỬA THÀNH -->
+                                        <span th:text="${att.fileUrl.substring(att.fileUrl.lastIndexOf('/') + 1)}">Tên file</span>
+                                        <!-- <span th:text="${#strings.substring(att.fileUrl, #strings.lastIndexOf(att.fileUrl, '/') + 1)}">Tên file</span> -->
                                     </a>
                                 </th:block>
                             </div>
