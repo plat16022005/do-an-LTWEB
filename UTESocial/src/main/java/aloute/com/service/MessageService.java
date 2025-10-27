@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import aloute.com.dto.LastMessageInfo;
 import aloute.com.entity.Attachments;
 import aloute.com.entity.Message;
 import aloute.com.entity.User;
@@ -36,30 +37,77 @@ public class MessageService {
         this.attachmentsRepository = attachmentsRepository;
     }
 
-    public String getLatestMessagePreview(Integer userId1, Integer userId2) {
-        List<Message> result = messageRepository.findLatestMessageBetween(
-                userId1, userId2, PageRequest.of(0, 1)
+    @Transactional(readOnly = true)
+    public LastMessageInfo getLatestMessageInfo(Integer userId1, Integer userId2) {
+        // Assuming findLatestMessageBetween returns the latest Message object
+        // You might need Pageable.ofSize(1) here
+        List<Message> latestMessages = messageRepository.findLatestMessageBetween(
+                userId1, userId2, org.springframework.data.domain.PageRequest.of(0, 1)
         );
 
-        if (result.isEmpty()) {
-            return "Nhắn tin với bạn này...";
+        if (latestMessages.isEmpty()) {
+            return new LastMessageInfo("", null); // No messages yet
         }
 
-        Message latest = result.get(0);
-        String content = latest.getContent();
-        if (content == null || content.trim().isEmpty()) {
-            content = "[Tệp đính kèm]";
-        }
+        Message latestMessage = latestMessages.get(0);
+        String preview = generatePreview(latestMessage); // Use a helper to generate preview text
 
-        if (content.length() > 30) {
-            content = content.substring(0, 30) + "...";
-        }
+        return new LastMessageInfo(preview, latestMessage.getCreatedAt());
+    }
+    private String generatePreview(Message msg) {
+        if (msg == null) return "";
 
-        if (latest.getSender().getUserId().equals(userId1)) {
-            return "Bạn: " + content;
-        } else {
-            return latest.getSender().getFullName() + ": " + content;
+        String content = msg.getContent();
+        String prefix = (msg.getSender() != null && msg.getSender().getUserId().equals(USER_ID_FROM_SOMEWHERE)) // Need current user ID logic here, maybe pass it in?
+                        ? "Bạn: " : ""; // Add "Bạn: " prefix if sent by current user
+
+        if (content != null && !content.isEmpty()) {
+            return prefix + content;
+        } else if (msg.getAttachments() != null && !msg.getAttachments().isEmpty()) {
+            // Determine preview based on attachment type (similar to JS)
+            Attachments firstAtt = msg.getAttachments().iterator().next(); // Get first attachment
+            String fileType = firstAtt.getFileType() != null ? firstAtt.getFileType().toLowerCase() : "";
+            if (fileType.startsWith("image")) return prefix + "🖼️ [Hình ảnh]";
+            if (fileType.startsWith("video")) return prefix + "📹 [Video]";
+            return prefix + "📎 [Tệp đính kèm]";
         }
+        return prefix + "..."; // Fallback
+    }
+
+    // !! IMPORTANT !! You need a way to get the current USER_ID inside generatePreview
+    // or adjust the logic. Maybe getLatestMessageInfo should return the sender ID too.
+    // Let's simplify for now and remove the "Bạn: " prefix in the service.
+
+    private String generatePreviewSimple(Message msg) {
+         if (msg == null) return "";
+         String content = msg.getContent();
+         if (content != null && !content.isEmpty()) {
+             return content;
+         } else if (msg.getAttachments() != null && !msg.getAttachments().isEmpty()) {
+            Attachments firstAtt = msg.getAttachments().iterator().next();
+            String fileType = firstAtt.getFileType() != null ? firstAtt.getFileType().toLowerCase() : "";
+            if (fileType.startsWith("image")) return "🖼️ [Hình ảnh]";
+            if (fileType.startsWith("video")) return "📹 [Video]";
+            return "📎 [Tệp đính kèm]";
+         }
+         return "...";
+    }
+
+    // Modify getLatestMessageInfo to use the simple preview
+    @Transactional(readOnly = true)
+    public LastMessageInfo getLatestMessageInfo(Integer userId1, Integer userId2) {
+        // ... find latest message ...
+        if (latestMessages.isEmpty()) {
+            return new LastMessageInfo("", null);
+        }
+        Message latestMessage = latestMessages.get(0);
+        String preview = generatePreviewSimple(latestMessage); // Use simple preview
+        // Determine if current user sent it (needed for "Bạn: " prefix in Thymeleaf later)
+        boolean sentByMe = latestMessage.getSender() != null && latestMessage.getSender().getUserId().equals(userId1); // Assuming userId1 is current user
+
+        // Pass 'sentByMe' info along, maybe modify LastMessageInfo DTO?
+        // Let's keep it simple and handle "Bạn: " in Thymeleaf for now.
+        return new LastMessageInfo(preview, latestMessage.getCreatedAt());
     }
     @Transactional(readOnly = true)
     public List<Message> getAllMessagesBetween(Integer userId1, Integer userId2) {
