@@ -1,115 +1,218 @@
 <!DOCTYPE html>
 <html lang="vi" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Thông báo - AloUTE</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
     <link rel="stylesheet" th:href="@{/css/style.css}" />
-</head>
-<body class="text-light">
-
+  </head>
+  <body class="text-light">
     <!-- Navbar -->
     <nav class="navbar sticky-top">
-        <div class="container-xl">
-            <a class="navbar-brand fw-bold fs-4 d-flex align-items-center" th:href="@{/home}">
-                <svg class="bi me-2" width="32" height="32" fill="#0ea5e9">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18" stroke="currentColor"></path>
-                </svg>
-                AloUTE
-            </a>
-        </div>
+      <div class="container-xl">
+        <a
+          class="navbar-brand fw-bold fs-4 d-flex align-items-center"
+          th:href="@{/home}"
+        >
+          <svg class="bi me-2" width="32" height="32" fill="#0ea5e9">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6.253v11.494m-9-5.747h18"
+              stroke="currentColor"
+            ></path>
+          </svg>
+          AloUTE
+        </a>
+      </div>
     </nav>
 
     <div class="container-xl mt-4">
-        <div class="row g-4">
-            <!-- Sidebar -->
-			<div class="col-lg-3 d-none d-lg-block">
-				<aside class="sticky-top" style="top: 80px;">
-					<ul class="nav flex-column gap-1">
-						<li class="nav-item"><a
-							class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
-							href="/home"><i class="bi bi-house-door-fill fs-3"></i><span>Trang
-									chủ</span></a></li>
-						<li class="nav-item"><a
-							class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
-							href="/upload"><i class="bi bi-upload fs-3"></i><span>Đăng
-									tải</span></a></li>
-						<li class="nav-item"><a
-							class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
-							href="/search"><i class="bi bi-search fs-3"></i><span>Tìm
-									kiếm</span></a></li>
-						<li class="nav-item"><a
-							class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
-							href="/friend"><i class="bi bi-people fs-3"></i><span>Bạn
-									bè</span></a></li>
-						<li class="nav-item"><a
-							class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
-							href="/group"><i class="bi bi-globe2 fs-3"></i><span>Nhóm</span></a></li>
-						<li class="nav-item"><a
-							class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
-							href="/message"><i class="bi bi-envelope fs-3"></i><span>Tin
-									nhắn</span></a></li>
-						<li class="nav-item"><a
-							class="nav-link active rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
-							href="/notification">								
-								<span class="position-relative">
-						            <i class="bi bi-bell fs-3"></i>
-						            
-						            <span id="notification-badge" 
-						                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none"
-						                  style="font-size: 0.75em;"> 0
-						            </span>
-						        </span><span>Thông
-									báo</span></a></li>
-						<li class="nav-item"><a
-							class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
-							th:href="@{/{username}(username=${user.nameUser})}"><i
-								class="bi bi-person-circle fs-3"></i><span>Cá nhân</span></a></li>
-						<li class="nav-item"><a
-							class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
-							href="/setting"><i class="bi bi-gear fs-3"></i><span>Cài
-									đặt</span></a></li>
-						<li class="nav-item mt-2"><a
-							class="nav-link text-danger rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
-							href="/logout"><i class="bi bi-box-arrow-right fs-3"></i><span>Đăng
-									xuất</span></a></li>
-					</ul>
-				</aside>
-			</div>
+      <div class="row g-4">
+        <!-- Sidebar -->
+        <div class="col-lg-3 d-none d-lg-block">
+          <aside class="sticky-top" style="top: 80px">
+            <ul class="nav flex-column gap-1">
+              <li class="nav-item">
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/home"
+                  ><i class="bi bi-house-door-fill fs-3"></i
+                  ><span>Trang chủ</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/upload"
+                  ><i class="bi bi-upload fs-3"></i><span>Đăng tải</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/search"
+                  ><i class="bi bi-search fs-3"></i><span>Tìm kiếm</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/friend"
+                  ><i class="bi bi-people fs-3"></i><span>Bạn bè</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/group"
+                  ><i class="bi bi-globe2 fs-3"></i><span>Nhóm</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/message"
+                  ><i class="bi bi-envelope fs-3"></i><span>Tin nhắn</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link active rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/notification"
+                >
+                  <span class="position-relative">
+                    <i class="bi bi-bell fs-3"></i>
 
-			<!-- Content -->
-            <div class="col-lg-9">
-                <main>
-                    <div class="card rounded-4">
-                        <div class="card-header bg-transparent border-bottom p-3">
-                            <h3 class="mb-0">Thông báo</h3>
-                        </div>
-                        <div class="card-body p-0">
-                            <!-- Tabs -->
-                            <ul class="nav nav-tabs nav-fill">
-                                <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#all-notifications"><i class="bi bi-bell-fill me-2"></i>Tất cả</a></li>
-                                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-user"><i class="bi bi-person-fill me-2 text-success"></i>Người dùng</a></li>
-                                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-post"><i class="bi bi-megaphone-fill me-2 text-info"></i>Bài viết</a></li>
-                                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-message"><i class="bi bi-envelope-fill me-2 text-secondary"></i>Tin nhắn</a></li>
-                                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-system"><i class="bi bi-gear-fill me-2 text-warning"></i>Hệ thống</a></li>
-                            </ul>
+                    <span
+                      id="notification-badge"
+                      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none"
+                      style="font-size: 0.75em"
+                    >
+                      0
+                    </span> </span
+                  ><span>Thông báo</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  th:href="@{/{username}(username=${user.nameUser})}"
+                  ><i class="bi bi-person-circle fs-3"></i
+                  ><span>Cá nhân</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/setting"
+                  ><i class="bi bi-gear fs-3"></i><span>Cài đặt</span></a
+                >
+              </li>
 
-                            <!-- Tab content -->
-<div class="tab-content">
-    <div class="tab-pane fade show active" id="all-notifications">
-        <div class="list-group list-group-flush">
-            <a th:each="n : ${notifications}"
-               th:if="${!n.isRead}"
-               th:href="@{'/notification/read/' + ${n.notificationId}}"
-               class="list-group-item list-group-item-action bg-transparent p-3 notification-item unread">
-                <div class="d-flex w-100 align-items-center">
-                    <div class="notification-avatar me-3 position-relative">
-                        <img th:src="${n.actorAvatar != null ? n.actorAvatar : '/uploads/avatars/default.jpg'}"
-                             class="rounded-circle" alt="Avatar" width="56" height="56">
-                        <span class="notification-icon text-white"
-                            th:classappend="${
+              <li
+                class="nav-item border-top mt-2 pt-2"
+                th:if="${session.user != null and (session.user.role == 'manager' or session.user.role == 'admin')}"
+              >
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  th:href="@{/manager/posts}"
+                >
+                  <i class="bi bi-shield-lock-fill fs-3"></i>
+                  <!-- Icon khiên/ổ khóa -->
+                  <span>Trang quản lý</span>
+                </a>
+              </li>
+
+              <li class="nav-item mt-2">
+                <a
+                  class="nav-link text-danger rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/logout"
+                  ><i class="bi bi-box-arrow-right fs-3"></i
+                  ><span>Đăng xuất</span></a
+                >
+              </li>
+            </ul>
+          </aside>
+        </div>
+
+        <!-- Content -->
+        <div class="col-lg-9">
+          <main>
+            <div class="card rounded-4">
+              <div class="card-header bg-transparent border-bottom p-3">
+                <h3 class="mb-0">Thông báo</h3>
+              </div>
+              <div class="card-body p-0">
+                <!-- Tabs -->
+                <ul class="nav nav-tabs nav-fill">
+                  <li class="nav-item">
+                    <a
+                      class="nav-link active"
+                      data-bs-toggle="tab"
+                      href="#all-notifications"
+                      ><i class="bi bi-bell-fill me-2"></i>Tất cả</a
+                    >
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#tab-user"
+                      ><i class="bi bi-person-fill me-2 text-success"></i>Người
+                      dùng</a
+                    >
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#tab-post"
+                      ><i class="bi bi-megaphone-fill me-2 text-info"></i>Bài
+                      viết</a
+                    >
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#tab-message"
+                      ><i class="bi bi-envelope-fill me-2 text-secondary"></i
+                      >Tin nhắn</a
+                    >
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#tab-system"
+                      ><i class="bi bi-gear-fill me-2 text-warning"></i>Hệ
+                      thống</a
+                    >
+                  </li>
+                </ul>
+
+                <!-- Tab content -->
+                <div class="tab-content">
+                  <div class="tab-pane fade show active" id="all-notifications">
+                    <div class="list-group list-group-flush">
+                      <a
+                        th:each="n : ${notifications}"
+                        th:if="${n.isRead==false}"
+                        th:href="@{'/notification/read/' + ${n.notificationId}}"
+                        class="list-group-item list-group-item-action bg-transparent p-3 notification-item unread"
+                      >
+                        <div class="d-flex w-100 align-items-center">
+                          <div
+                            class="notification-avatar me-3 position-relative"
+                          >
+                            <img
+                              th:src="${n.actorAvatar != null ? n.actorAvatar : '/uploads/avatars/default.jpg'}"
+                              class="rounded-circle"
+                              alt="Avatar"
+                              width="56"
+                              height="56"
+                            />
+                            <span
+                              class="notification-icon text-white"
+                              th:classappend="${
                                 n.type == 'LIKE' ? ' bg-danger' :
                                 n.type == 'COMMENT' ? ' bg-primary' :
                                 n.type == 'SHARE' ? ' bg-warning' :
@@ -118,8 +221,10 @@
                                 n.type == 'MESSAGE' ? ' bg-secondary' :
                                 n.type == 'FRIEND_POST' ? ' bg-info' :
                                 n.type == 'SYSTEM' ? ' bg-warning' : ''
-                            }">
-                            <i th:class="${
+                            }"
+                            >
+                              <i
+                                th:class="${
                                 n.type == 'LIKE' ? 'bi bi-heart-fill' :
                                 n.type == 'COMMENT' ? 'bi bi-chat-dots-fill' :
                                 n.type == 'SHARE' ? 'bi bi-share-fill' :
@@ -128,155 +233,228 @@
                                 n.type == 'MESSAGE' ? 'bi bi-envelope-fill' :
                                 n.type == 'FRIEND_POST' ? 'bi bi-megaphone-fill' :
                                 n.type == 'SYSTEM' ? 'bi bi-gear-fill' : ''
-                            }"></i>
-                        </span>
-                    </div>
-                    <div class="flex-grow-1">
-                        <p class="mb-1" th:text="${n.content}"></p>
-                        <small th:text="${#temporals.format(n.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
-                    </div>
-                    <div class="unread-dot"></div>
-                </div>
-            </a>
+                            }"
+                              ></i>
+                            </span>
+                          </div>
+                          <div class="flex-grow-1">
+                            <p class="mb-1" th:text="${n.content}"></p>
+                            <small
+                              th:text="${#temporals.format(n.createdAt, 'dd/MM/yyyy HH:mm')}"
+                            ></small>
+                          </div>
+                          <div class="unread-dot"></div>
+                        </div>
+                      </a>
 
-            <div th:if="${#lists.isEmpty(notifications.?[!isRead])}" class="text-center p-4 text-muted">
-                Không có thông báo chưa đọc.
-            </div>
-        </div>
-    </div>
-
-    <div class="tab-pane fade" id="tab-user">
-        <div class="list-group list-group-flush">
-            <a th:each="n : ${notifications}"
-               th:if="${(n.type == 'FRIEND_REQUEST' || n.type == 'FRIEND_ACCEPT') and !n.isRead}"
-               th:href="@{'/notification/read/' + ${n.notificationId}}"
-               class="list-group-item list-group-item-action bg-transparent p-3 notification-item unread">
-                <div class="d-flex w-100 align-items-center">
-                    <div class="notification-avatar me-3 position-relative">
-                        <img th:src="${n.actorAvatar != null ? n.actorAvatar : '/uploads/avatars/default.jpg'}"
-                             class="rounded-circle" alt="Avatar" width="56" height="56">
-                        <span class="notification-icon text-white bg-success">
-                            <i th:class="${n.type == 'FRIEND_REQUEST' ? 'bi bi-person-fill-add' : 'bi bi-person-check-fill'}"></i>
-                        </span>
+                      <div
+                        th:if="${#lists.isEmpty(notifications.?[isRead==false])}"
+                        class="text-center p-4 text-muted"
+                      >
+                        Không có thông báo chưa đọc.
+                      </div>
                     </div>
-                    <div class="flex-grow-1">
-                        <p class="mb-1" th:text="${n.content}"></p>
-                        <small th:text="${#temporals.format(n.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
-                    </div>
-                    <div class="unread-dot"></div>
-                </div>
-            </a>
-            <div th:if="${#lists.isEmpty(notifications.?[ (type == 'FRIEND_REQUEST' || type == 'FRIEND_ACCEPT') and !isRead ])}"
-                 class="text-center p-4 text-muted">
-                Không có thông báo người dùng chưa đọc.
-            </div>
-        </div>
-    </div>
+                  </div>
 
-    <div class="tab-pane fade" id="tab-post">
-        <div class="list-group list-group-flush">
-            <a th:each="n : ${notifications}"
-               th:if="${(n.type == 'LIKE' || n.type == 'COMMENT' || n.type == 'SHARE' || n.type == 'FRIEND_POST') and !n.isRead}"
-               th:href="@{'/notification/read/' + ${n.notificationId}}"
-               class="list-group-item list-group-item-action bg-transparent p-3 notification-item unread">
-                <div class="d-flex w-100 align-items-center">
-                    <div class="notification-avatar me-3 position-relative">
-                        <img th:src="${n.actorAvatar != null ? n.actorAvatar : '/uploads/avatars/default.jpg'}"
-                             class="rounded-circle" alt="Avatar" width="56" height="56">
-                        <span class="notification-icon text-white"
-                            th:classappend="${
+                  <div class="tab-pane fade" id="tab-user">
+                    <div class="list-group list-group-flush">
+                      <a
+                        th:each="n : ${notifications}"
+                        th:if="${(n.type == 'FRIEND_REQUEST' || n.type == 'FRIEND_ACCEPT') and n.isRead==false}"
+                        th:href="@{'/notification/read/' + ${n.notificationId}}"
+                        class="list-group-item list-group-item-action bg-transparent p-3 notification-item unread"
+                      >
+                        <div class="d-flex w-100 align-items-center">
+                          <div
+                            class="notification-avatar me-3 position-relative"
+                          >
+                            <img
+                              th:src="${n.actorAvatar != null ? n.actorAvatar : '/uploads/avatars/default.jpg'}"
+                              class="rounded-circle"
+                              alt="Avatar"
+                              width="56"
+                              height="56"
+                            />
+                            <span
+                              class="notification-icon text-white bg-success"
+                            >
+                              <i
+                                th:class="${n.type == 'FRIEND_REQUEST' ? 'bi bi-person-fill-add' : 'bi bi-person-check-fill'}"
+                              ></i>
+                            </span>
+                          </div>
+                          <div class="flex-grow-1">
+                            <p class="mb-1" th:text="${n.content}"></p>
+                            <small
+                              th:text="${#temporals.format(n.createdAt, 'dd/MM/yyyy HH:mm')}"
+                            ></small>
+                          </div>
+                          <div class="unread-dot"></div>
+                        </div>
+                      </a>
+                      <div
+                        th:if="${#lists.isEmpty(notifications.?[ (type == 'FRIEND_REQUEST' || type == 'FRIEND_ACCEPT') and isRead==false ])}"
+                        class="text-center p-4 text-muted"
+                      >
+                        Không có thông báo người dùng chưa đọc.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="tab-pane fade" id="tab-post">
+                    <div class="list-group list-group-flush">
+                      <a
+                        th:each="n : ${notifications}"
+                        th:if="${(n.type == 'LIKE' || n.type == 'COMMENT' || n.type == 'SHARE' || n.type == 'FRIEND_POST') and n.isRead==false}"
+                        th:href="@{'/notification/read/' + ${n.notificationId}}"
+                        class="list-group-item list-group-item-action bg-transparent p-3 notification-item unread"
+                      >
+                        <div class="d-flex w-100 align-items-center">
+                          <div
+                            class="notification-avatar me-3 position-relative"
+                          >
+                            <img
+                              th:src="${n.actorAvatar != null ? n.actorAvatar : '/uploads/avatars/default.jpg'}"
+                              class="rounded-circle"
+                              alt="Avatar"
+                              width="56"
+                              height="56"
+                            />
+                            <span
+                              class="notification-icon text-white"
+                              th:classappend="${
                                 n.type == 'LIKE' ? ' bg-danger' :
                                 n.type == 'COMMENT' ? ' bg-primary' :
                                 n.type == 'SHARE' ? ' bg-warning' :
                                 n.type == 'FRIEND_POST' ? ' bg-info' : ''
-                            }">
-                            <i th:class="${
+                            }"
+                            >
+                              <i
+                                th:class="${
                                 n.type == 'LIKE' ? 'bi bi-heart-fill' :
                                 n.type == 'COMMENT' ? 'bi bi-chat-dots-fill' :
                                 n.type == 'SHARE' ? 'bi bi-share-fill' :
                                 n.type == 'FRIEND_POST' ? 'bi bi-megaphone-fill' : ''
-                            }"></i>
-                        </span>
-                    </div>
-                    <div class="flex-grow-1">
-                        <p class="mb-1" th:text="${n.content}"></p>
-                        <small th:text="${#temporals.format(n.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
-                    </div>
-                    <div class="unread-dot"></div>
-                </div>
-            </a>
-            <div th:if="${#lists.isEmpty(notifications.?[ (type == 'LIKE' || type == 'COMMENT' || type == 'SHARE' || type == 'FRIEND_POST') and !isRead ])}"
-                 class="text-center p-4 text-muted">
-                Không có thông báo bài viết chưa đọc.
-            </div>
-        </div>
-    </div>
-
-    <div class="tab-pane fade" id="tab-message">
-        <div class="list-group list-group-flush">
-            <a th:each="n : ${notifications}"
-               th:if="${(n.type == 'MESSAGE' || n.type == 'GROUP_MESSAGE') and !n.isRead}"
-               th:href="@{'/notification/read/' + ${n.notificationId}}"
-               class="list-group-item list-group-item-action bg-transparent p-3 notification-item unread">
-                <div class="d-flex w-100 align-items-center">
-                    <div class="notification-avatar me-3 position-relative">
-                        <img th:src="${n.actorAvatar != null ? n.actorAvatar : '/uploads/avatars/default.jpg'}"
-                             class="rounded-circle" alt="Avatar" width="56" height="56">
-                        <span class="notification-icon bg-secondary text-white">
-                            <i th:class="${n.type == 'MESSAGE' ? 'bi bi-envelope-fill' : 
-                                         (n.type == 'GROUP_MESSAGE' ? 'bi bi-people-fill' : '')}"></i>
-                        </span>
-                    </div>
-                    <div class="flex-grow-1">
-                        <p class="mb-1" th:text="${n.content}"></p>
-                        <small th:text="${#temporals.format(n.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
-                    </div>
-                    <div class="unread-dot"></div>
-                </div>
-            </a>
-            <div th:if="${#lists.isEmpty(notifications.?[ (type == 'MESSAGE' || type == 'GROUP_MESSAGE') and !isRead ])}"
-                 class="text-center p-4 text-muted">
-                Không có thông báo tin nhắn chưa đọc.
-            </div>
-        </div>
-    </div>
-
-    <div class="tab-pane fade" id="tab-system">
-        <div class="list-group list-group-flush">
-            <a th:each="n : ${notifications}"
-               th:if="${n.type == 'SYSTEM' and !n.isRead}"
-               th:href="@{'/notification/read/' + ${n.notificationId}}"
-               class="list-group-item list-group-item-action bg-transparent p-3 notification-item unread">
-                <div class="d-flex w-100 align-items-center">
-                    <div class="notification-avatar me-3 position-relative">
-                        <img src="/uploads/avatars/default-system.jpg" class="rounded-circle" alt="System" width="56" height="56">
-                        <span class="notification-icon bg-warning text-white">
-                            <i class="bi bi-gear-fill"></i>
-                        </span>
-                    </div>
-                    <div class="flex-grow-1">
-                        <p class="mb-1" th:text="${n.content}"></p>
-                        <small th:text="${#temporals.format(n.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
-                    </div>
-                    <div class="unread-dot"></div>
-                </div>
-            </a>
-            <div th:if="${#lists.isEmpty(notifications.?[ type == 'SYSTEM' and !isRead ])}"
-                 class="text-center p-4 text-muted">
-                Không có thông báo hệ thống chưa đọc.
-            </div>
-        </div>
-    </div>
-</div>
+                            }"
+                              ></i>
+                            </span>
+                          </div>
+                          <div class="flex-grow-1">
+                            <p class="mb-1" th:text="${n.content}"></p>
+                            <small
+                              th:text="${#temporals.format(n.createdAt, 'dd/MM/yyyy HH:mm')}"
+                            ></small>
+                          </div>
+                          <div class="unread-dot"></div>
                         </div>
+                      </a>
+                      <div
+                        th:if="${#lists.isEmpty(notifications.?[ (type == 'LIKE' || type == 'COMMENT' || type == 'SHARE' || type == 'FRIEND_POST') and isRead==false ])}"
+                        class="text-center p-4 text-muted"
+                      >
+                        Không có thông báo bài viết chưa đọc.
+                      </div>
                     </div>
-                </main>
+                  </div>
+
+                  <div class="tab-pane fade" id="tab-message">
+                    <div class="list-group list-group-flush">
+                      <a
+                        th:each="n : ${notifications}"
+                        th:if="${(n.type == 'MESSAGE' || n.type == 'GROUP_MESSAGE') and n.isRead==false}"
+                        th:href="@{'/notification/read/' + ${n.notificationId}}"
+                        class="list-group-item list-group-item-action bg-transparent p-3 notification-item unread"
+                      >
+                        <div class="d-flex w-100 align-items-center">
+                          <div
+                            class="notification-avatar me-3 position-relative"
+                          >
+                            <img
+                              th:src="${n.actorAvatar != null ? n.actorAvatar : '/uploads/avatars/default.jpg'}"
+                              class="rounded-circle"
+                              alt="Avatar"
+                              width="56"
+                              height="56"
+                            />
+                            <span
+                              class="notification-icon bg-secondary text-white"
+                            >
+                              <i
+                                th:class="${n.type == 'MESSAGE' ? 'bi bi-envelope-fill' : 
+                                         (n.type == 'GROUP_MESSAGE' ? 'bi bi-people-fill' : '')}"
+                              ></i>
+                            </span>
+                          </div>
+                          <div class="flex-grow-1">
+                            <p class="mb-1" th:text="${n.content}"></p>
+                            <small
+                              th:text="${#temporals.format(n.createdAt, 'dd/MM/yyyy HH:mm')}"
+                            ></small>
+                          </div>
+                          <div class="unread-dot"></div>
+                        </div>
+                      </a>
+                      <div
+                        th:if="${#lists.isEmpty(notifications.?[ (type == 'MESSAGE' || type == 'GROUP_MESSAGE') and isRead==false ])}"
+                        class="text-center p-4 text-muted"
+                      >
+                        Không có thông báo tin nhắn chưa đọc.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="tab-pane fade" id="tab-system">
+                    <div class="list-group list-group-flush">
+                      <a
+                        th:each="n : ${notifications}"
+                        th:if="${n.type == 'SYSTEM' and n.isRead==false}"
+                        th:href="@{'/notification/read/' + ${n.notificationId}}"
+                        class="list-group-item list-group-item-action bg-transparent p-3 notification-item unread"
+                      >
+                        <div class="d-flex w-100 align-items-center">
+                          <div
+                            class="notification-avatar me-3 position-relative"
+                          >
+                            <img
+                              src="/uploads/avatars/default-system.jpg"
+                              class="rounded-circle"
+                              alt="System"
+                              width="56"
+                              height="56"
+                            />
+                            <span
+                              class="notification-icon bg-warning text-white"
+                            >
+                              <i class="bi bi-gear-fill"></i>
+                            </span>
+                          </div>
+                          <div class="flex-grow-1">
+                            <p class="mb-1" th:text="${n.content}"></p>
+                            <small
+                              th:text="${#temporals.format(n.createdAt, 'dd/MM/yyyy HH:mm')}"
+                            ></small>
+                          </div>
+                          <div class="unread-dot"></div>
+                        </div>
+                      </a>
+                      <div
+                        th:if="${#lists.isEmpty(notifications.?[ type == 'SYSTEM' and isRead==false ])}"
+                        class="text-center p-4 text-muted"
+                      >
+                        Không có thông báo hệ thống chưa đọc.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
+          </main>
         </div>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script th:src="@{/js/theme-toggle.js}"></script>
-        <script th:src="@{/js/notification.js}"></script>
-</body>
+    <script th:src="@{/js/notification.js}"></script>
+  </body>
 </html>

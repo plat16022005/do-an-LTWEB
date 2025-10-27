@@ -1,265 +1,414 @@
 <!DOCTYPE html>
 <html lang="vi" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tạo nhóm mới - AloUTE</title>
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
     <!-- Link to external stylesheet -->
     <link rel="stylesheet" th:href="@{/css/style.css}" />
     <style>
-        /* Thêm style cho phần xem trước avatar */
-        .avatar-preview-container {
-            width: 120px;
-            height: 120px;
-            border: 2px dashed #334155;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden; /* Ensure image fits */
-        }
-        .light-theme .avatar-preview-container {
-             border-color: #cbd5e1;
-        }
-        .avatar-preview-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Cover the container */
-        }
-        .avatar-preview-container .icon-placeholder {
-            font-size: 3rem;
-            color: #64748b;
-        }
-         .light-theme .avatar-preview-container .icon-placeholder {
-            color: #94a3b8;
-         }
-         
-        /* Thêm style cho phần xem trước ảnh bìa */
-        .cover-preview-container {
-            width: 100%;
-            height: 200px; /* Adjust height as needed */
-            border: 2px dashed #334155;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            border-radius: 0.5rem; /* Match card rounding */
-        }
-        .light-theme .cover-preview-container {
-             border-color: #cbd5e1;
-        }
-        .cover-preview-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .cover-preview-container .icon-placeholder {
-            font-size: 3rem;
-            color: #64748b;
-        }
-         .light-theme .cover-preview-container .icon-placeholder {
-            color: #94a3b8;
-         }
-    </style>
-</head>
-<body class="text-light">
+      /* Thêm style cho phần xem trước avatar */
+      .avatar-preview-container {
+        width: 120px;
+        height: 120px;
+        border: 2px dashed #334155;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden; /* Ensure image fits */
+      }
+      .light-theme .avatar-preview-container {
+        border-color: #cbd5e1;
+      }
+      .avatar-preview-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Cover the container */
+      }
+      .avatar-preview-container .icon-placeholder {
+        font-size: 3rem;
+        color: #64748b;
+      }
+      .light-theme .avatar-preview-container .icon-placeholder {
+        color: #94a3b8;
+      }
 
+      /* Thêm style cho phần xem trước ảnh bìa */
+      .cover-preview-container {
+        width: 100%;
+        height: 200px; /* Adjust height as needed */
+        border: 2px dashed #334155;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        border-radius: 0.5rem; /* Match card rounding */
+      }
+      .light-theme .cover-preview-container {
+        border-color: #cbd5e1;
+      }
+      .cover-preview-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .cover-preview-container .icon-placeholder {
+        font-size: 3rem;
+        color: #64748b;
+      }
+      .light-theme .cover-preview-container .icon-placeholder {
+        color: #94a3b8;
+      }
+    </style>
+  </head>
+  <body class="text-light">
     <nav class="navbar sticky-top">
-        <div class="container-xl">
-            <a class="navbar-brand fw-bold fs-4 d-flex align-items-center" th:href="@{/home}">
-                <svg class="bi me-2" width="32" height="32" fill="#0ea5e9"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18" stroke="currentColor"></path></svg>
-                AloUTE
-            </a>
-        </div>
+      <div class="container-xl">
+        <a
+          class="navbar-brand fw-bold fs-4 d-flex align-items-center"
+          th:href="@{/home}"
+        >
+          <svg class="bi me-2" width="32" height="32" fill="#0ea5e9">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6.253v11.494m-9-5.747h18"
+              stroke="currentColor"
+            ></path>
+          </svg>
+          AloUTE
+        </a>
+      </div>
     </nav>
 
     <div class="container-xl mt-4">
-        <div class="row g-4">
-            <div class="col-lg-3 d-none d-lg-block">
-				<aside class="sticky-top" style="top: 80px;">
-				    <ul class="nav flex-column gap-1">
-						<li class="nav-item">
-				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/home">
-				                <i class="bi bi-house-door-fill fs-3"></i>
-				                <span>Trang chủ</span>
-				            </a>
-				        </li>
-				        <li class="nav-item">
-				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/upload">
-				                <i class="bi bi-upload fs-3"></i>
-				                <span>Đăng tải</span>
-				            </a>
-				        </li>
-				        <li class="nav-item">
-				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/search">
-				                <i class="bi bi-search fs-3"></i>
-				                <span>Tìm kiếm</span>
-				            </a>
-				        </li>
-				        <li class="nav-item">
-				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/friend">
-				                <i class="bi bi-people fs-3"></i>
-				                <span>Bạn bè</span>
-				            </a>
-				        </li>
-				        <li class="nav-item">
-						  <a id="nav-group" class="nav-link active rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/group">
-						      <i class="bi bi-globe2 fs-3"></i>
-						      <span>Nhóm</span>
-						  </a>
-						</li>				       
-				        <li class="nav-item">
-				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/message">
-				                <i class="bi bi-envelope fs-3"></i>
-				                <span>Tin nhắn</span>
-				            </a>
-				        </li>
-				        <li class="nav-item">
-				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/notification">
-				                <i class="bi bi-bell fs-3"></i>
-				                <span>Thông báo</span>
-				            </a>
-				        </li>
-				        <li class="nav-item">
-				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" th:href="@{/{username}(username=${user.nameUser})}">
-				                <i class="bi bi-person-circle fs-3"></i>
-				                <span>Cá nhân</span>
-				            </a>
-				        </li>
-				        <li class="nav-item">
-				            <a class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/setting">
-				                <i class="bi bi-gear fs-3"></i>
-				                <span>Cài đặt</span>
-				            </a>
-				        </li>
-				        <li class="nav-item mt-2">
-				            <a class="nav-link text-danger rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2" href="/logout">
-				                <i class="bi bi-box-arrow-right fs-3"></i>
-				                <span>Đăng xuất</span>
-				            </a>
-				        </li>
-				    </ul>
-				</aside>
-            </div>
-            
-            <div class="col-lg-9">
-                <main>
-                    <div class="card rounded-4">
-                        <div class="card-body p-4 p-md-5">
-                            <h2 class="mb-4 text-light">Tạo nhóm mới</h2>
-                            <form id="create-group-form">
-                                <div class="mb-3">
-                                    <label for="groupName" class="form-label">Tên nhóm <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="groupName" name="groupName" required placeholder="Ví dụ: CLB Lập trình Web">
-                                </div>
-
-                                <!-- Phần ảnh đại diện -->
-                                <div class="mb-3">
-                                    <label class="form-label">Ảnh đại diện (tùy chọn)</label>
-                                    <div>
-                                        <input type="file" id="groupAvatarInput" name="avatar" class="d-none" accept="image/*">
-                                        <div id="avatarPreviewContainer" class="avatar-preview-container rounded-circle" onclick="document.getElementById('groupAvatarInput').click();">
-                                            <img id="avatarPreview" src="#" alt="Xem trước ảnh đại diện" style="display: none;">
-                                            <i id="avatarPlaceholder" class="bi bi-camera-fill icon-placeholder"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Hết phần ảnh đại diện -->
-                                
-                                <!-- Phần ảnh bìa -->
-                                <div class="mb-3">
-                                    <label class="form-label">Ảnh bìa (tùy chọn)</label>
-                                    <div>
-                                        <input type="file" id="groupCoverInput" name="cover" class="d-none" accept="image/*">
-                                        <div id="coverPreviewContainer" class="cover-preview-container" onclick="document.getElementById('groupCoverInput').click();">
-                                            <img id="coverPreview" src="#" alt="Xem trước ảnh bìa" style="display: none;">
-                                            <i id="coverPlaceholder" class="bi bi-image icon-placeholder"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Hết phần ảnh bìa -->
-
-                                <div class="mb-3">
-                                    <label for="groupDescription" class="form-label">Mô tả (tùy chọn)</label>
-                                    <textarea id="groupDescription" class="form-control" name="description" rows="4" placeholder="Giới thiệu về mục đích, hoạt động của nhóm..."></textarea>
-                                </div>
-                                
-                                <div class="mb-4">
-                                     <label class="form-label d-block mb-2">Quyền riêng tư</label>
-                                     <div class="form-check form-check-inline">
-                                       <input class="form-check-input" type="radio" name="privacy" id="privacyPublic" value="public" checked>
-                                       <label class="form-check-label" for="privacyPublic">
-                                         <i class="bi bi-globe"></i> Công khai <small class="d-block text-muted">Bất kỳ ai cũng có thể xem nhóm, thành viên và bài đăng.</small>
-                                       </label>
-                                     </div>
-                                     <div class="form-check form-check-inline mt-2 mt-md-0">
-                                       <input class="form-check-input" type="radio" name="privacy" id="privacyPrivate" value="private">
-                                       <label class="form-check-label" for="privacyPrivate">
-                                        <i class="bi bi-lock-fill"></i> Riêng tư <small class="d-block text-muted">Chỉ thành viên mới có thể xem bài đăng và danh sách thành viên.</small>
-                                       </label>
-                                     </div>
-                                </div>
-
-                                <div class="d-flex justify-content-end align-items-center gap-2">
-                                    <a href="/group" class="btn btn-secondary rounded-pill px-4">Hủy</a>
-                                    <button type="submit" class="btn btn-primary rounded-pill px-5">Tạo nhóm</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </main>
-            </div>
+      <div class="row g-4">
+        <div class="col-lg-3 d-none d-lg-block">
+          <aside class="sticky-top" style="top: 80px">
+            <ul class="nav flex-column gap-1">
+              <li class="nav-item">
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/home"
+                >
+                  <i class="bi bi-house-door-fill fs-3"></i>
+                  <span>Trang chủ</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/upload"
+                >
+                  <i class="bi bi-upload fs-3"></i>
+                  <span>Đăng tải</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/search"
+                >
+                  <i class="bi bi-search fs-3"></i>
+                  <span>Tìm kiếm</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/friend"
+                >
+                  <i class="bi bi-people fs-3"></i>
+                  <span>Bạn bè</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  id="nav-group"
+                  class="nav-link active rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/group"
+                >
+                  <i class="bi bi-globe2 fs-3"></i>
+                  <span>Nhóm</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/message"
+                >
+                  <i class="bi bi-envelope fs-3"></i>
+                  <span>Tin nhắn</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/notification"
+                >
+                  <i class="bi bi-bell fs-3"></i>
+                  <span>Thông báo</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  th:href="@{/{username}(username=${user.nameUser})}"
+                >
+                  <i class="bi bi-person-circle fs-3"></i>
+                  <span>Cá nhân</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/setting"
+                >
+                  <i class="bi bi-gear fs-3"></i>
+                  <span>Cài đặt</span>
+                </a>
+              </li>
+              <li
+                class="nav-item border-top mt-2 pt-2"
+                th:if="${session.user != null and (session.user.role == 'manager' or session.user.role == 'admin')}"
+              >
+                <a
+                  class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  th:href="@{/manager/posts}"
+                >
+                  <i class="bi bi-shield-lock-fill fs-3"></i>
+                  <!-- Icon khiên/ổ khóa -->
+                  <span>Trang quản lý</span>
+                </a>
+              </li>
+              <li class="nav-item mt-2">
+                <a
+                  class="nav-link text-danger rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
+                  href="/logout"
+                >
+                  <i class="bi bi-box-arrow-right fs-3"></i>
+                  <span>Đăng xuất</span>
+                </a>
+              </li>
+            </ul>
+          </aside>
         </div>
+
+        <div class="col-lg-9">
+          <main>
+            <div class="card rounded-4">
+              <div class="card-body p-4 p-md-5">
+                <h2 class="mb-4 text-light">Tạo nhóm mới</h2>
+                <form id="create-group-form">
+                  <div class="mb-3">
+                    <label for="groupName" class="form-label"
+                      >Tên nhóm <span class="text-danger">*</span></label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="groupName"
+                      name="groupName"
+                      required
+                      placeholder="Ví dụ: CLB Lập trình Web"
+                    />
+                  </div>
+
+                  <!-- Phần ảnh đại diện -->
+                  <div class="mb-3">
+                    <label class="form-label">Ảnh đại diện (tùy chọn)</label>
+                    <div>
+                      <input
+                        type="file"
+                        id="groupAvatarInput"
+                        name="avatar"
+                        class="d-none"
+                        accept="image/*"
+                      />
+                      <div
+                        id="avatarPreviewContainer"
+                        class="avatar-preview-container rounded-circle"
+                        onclick="document.getElementById('groupAvatarInput').click();"
+                      >
+                        <img
+                          id="avatarPreview"
+                          src="#"
+                          alt="Xem trước ảnh đại diện"
+                          style="display: none"
+                        />
+                        <i
+                          id="avatarPlaceholder"
+                          class="bi bi-camera-fill icon-placeholder"
+                        ></i>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Hết phần ảnh đại diện -->
+
+                  <!-- Phần ảnh bìa -->
+                  <div class="mb-3">
+                    <label class="form-label">Ảnh bìa (tùy chọn)</label>
+                    <div>
+                      <input
+                        type="file"
+                        id="groupCoverInput"
+                        name="cover"
+                        class="d-none"
+                        accept="image/*"
+                      />
+                      <div
+                        id="coverPreviewContainer"
+                        class="cover-preview-container"
+                        onclick="document.getElementById('groupCoverInput').click();"
+                      >
+                        <img
+                          id="coverPreview"
+                          src="#"
+                          alt="Xem trước ảnh bìa"
+                          style="display: none"
+                        />
+                        <i
+                          id="coverPlaceholder"
+                          class="bi bi-image icon-placeholder"
+                        ></i>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Hết phần ảnh bìa -->
+
+                  <div class="mb-3">
+                    <label for="groupDescription" class="form-label"
+                      >Mô tả (tùy chọn)</label
+                    >
+                    <textarea
+                      id="groupDescription"
+                      class="form-control"
+                      name="description"
+                      rows="4"
+                      placeholder="Giới thiệu về mục đích, hoạt động của nhóm..."
+                    ></textarea>
+                  </div>
+
+                  <div class="mb-4">
+                    <label class="form-label d-block mb-2"
+                      >Quyền riêng tư</label
+                    >
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="privacy"
+                        id="privacyPublic"
+                        value="public"
+                        checked
+                      />
+                      <label class="form-check-label" for="privacyPublic">
+                        <i class="bi bi-globe"></i> Công khai
+                        <small class="d-block text-muted"
+                          >Bất kỳ ai cũng có thể xem nhóm, thành viên và bài
+                          đăng.</small
+                        >
+                      </label>
+                    </div>
+                    <div class="form-check form-check-inline mt-2 mt-md-0">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="privacy"
+                        id="privacyPrivate"
+                        value="private"
+                      />
+                      <label class="form-check-label" for="privacyPrivate">
+                        <i class="bi bi-lock-fill"></i> Riêng tư
+                        <small class="d-block text-muted"
+                          >Chỉ thành viên mới có thể xem bài đăng và danh sách
+                          thành viên.</small
+                        >
+                      </label>
+                    </div>
+                  </div>
+
+                  <div
+                    class="d-flex justify-content-end align-items-center gap-2"
+                  >
+                    <a href="/group" class="btn btn-secondary rounded-pill px-4"
+                      >Hủy</a
+                    >
+                    <button
+                      type="submit"
+                      class="btn btn-primary rounded-pill px-5"
+                    >
+                      Tạo nhóm
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script th:src="@{/js/theme-toggle.js}"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const avatarInput = document.getElementById('groupAvatarInput');
-            const avatarPreview = document.getElementById('avatarPreview');
-            const avatarPlaceholder = document.getElementById('avatarPlaceholder');
-            const coverInput = document.getElementById('groupCoverInput');
-            const coverPreview = document.getElementById('coverPreview');
-            const coverPlaceholder = document.getElementById('coverPlaceholder');
+      document.addEventListener("DOMContentLoaded", () => {
+        const avatarInput = document.getElementById("groupAvatarInput");
+        const avatarPreview = document.getElementById("avatarPreview");
+        const avatarPlaceholder = document.getElementById("avatarPlaceholder");
+        const coverInput = document.getElementById("groupCoverInput");
+        const coverPreview = document.getElementById("coverPreview");
+        const coverPlaceholder = document.getElementById("coverPlaceholder");
 
-            function handleImagePreview(inputElement, previewElement, placeholderElement) {
-                const file = inputElement.files[0];
-                if (file && file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        previewElement.src = e.target.result;
-                        previewElement.style.display = 'block';
-                        if (placeholderElement) placeholderElement.style.display = 'none';
-                    }
-                    reader.readAsDataURL(file);
-                } else {
-                    previewElement.src = '#';
-                    previewElement.style.display = 'none';
-                    if (placeholderElement) placeholderElement.style.display = 'block';
-                    if (file) { // Only alert if a file was selected but wasn't an image
-                      alert('Vui lòng chọn một tệp ảnh.');
-                    }
-                    inputElement.value = ''; // Reset input if file is invalid
-                }
+        function handleImagePreview(
+          inputElement,
+          previewElement,
+          placeholderElement
+        ) {
+          const file = inputElement.files[0];
+          if (file && file.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              previewElement.src = e.target.result;
+              previewElement.style.display = "block";
+              if (placeholderElement) placeholderElement.style.display = "none";
+            };
+            reader.readAsDataURL(file);
+          } else {
+            previewElement.src = "#";
+            previewElement.style.display = "none";
+            if (placeholderElement) placeholderElement.style.display = "block";
+            if (file) {
+              // Only alert if a file was selected but wasn't an image
+              alert("Vui lòng chọn một tệp ảnh.");
             }
+            inputElement.value = ""; // Reset input if file is invalid
+          }
+        }
 
-            avatarInput.addEventListener('change', function() {
-                handleImagePreview(avatarInput, avatarPreview, avatarPlaceholder);
-            });
-            
-            coverInput.addEventListener('change', function() {
-                handleImagePreview(coverInput, coverPreview, coverPlaceholder);
-            });
+        avatarInput.addEventListener("change", function () {
+          handleImagePreview(avatarInput, avatarPreview, avatarPlaceholder);
         });
-    </script>
-</body>
-</html>
 
+        coverInput.addEventListener("change", function () {
+          handleImagePreview(coverInput, coverPreview, coverPlaceholder);
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -168,8 +168,7 @@ public interface PostsRepository extends JpaRepository<Posts, Integer> {
 	//Đếm số lượng bài đăng theo trạng thái cụ thể và chưa bị xóa.
 	@Query("SELECT COUNT(p) FROM Posts p WHERE p.status = :status AND p.isDeleted = false")
     long countByStatusAndIsDeletedFalse(@Param("status") String status);
-
-
+	
 	//Lấy danh sách Post và lọc post
 	@Query("SELECT DISTINCT p FROM Posts p LEFT JOIN FETCH p.user u WHERE p.isDeleted = false " +
 			"AND (:keyword IS NULL OR :keyword = '' OR p.content LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(u.nameUser) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +

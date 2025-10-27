@@ -198,38 +198,42 @@ public class ManagerController {
     }
 
 
-    @PostMapping("/reports/{reportId}/resolve") 
+    @PostMapping("/reports/{reportId}/resolve")
     public String resolveReport(
-            @PathVariable Integer reportId, 
-            HttpSession session, 
-            RedirectAttributes redirectAttributes 
+            @PathVariable Integer reportId,
+            HttpSession session,
+            RedirectAttributes redirectAttributes
     ) {
-        if (isNotManager(session)) { 
-            return "redirect:/access-deniel"; 
+        User managerUser = (User) session.getAttribute("user"); // ⭐ Lấy manager từ session
+        if (managerUser == null || isNotManager(session)) { // Kiểm tra null và quyền
+            return "redirect:/access-denied"; // Sửa lỗi chính tả nếu cần
         }
         try {
-            managerService.resolveReport(reportId);
-            redirectAttributes.addFlashAttribute("successMessage", "Đã xử lý khiếu nại ID: " + reportId);
+            managerService.resolveReport(reportId, managerUser); // ⭐ Truyền managerUser vào service
+            redirectAttributes.addFlashAttribute("successMessage", "Đã xử lý khiếu nại ID: " + reportId + " và thực hiện hành động tương ứng.");
         } catch (Exception e) {
+             System.err.println("Lỗi khi xử lý Report ID " + reportId + ": " + e.getMessage()); // Log lỗi
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xử lý khiếu nại ID: " + reportId);
         }
         return "redirect:/manager/reports";
     }
 
 
-    @PostMapping("/reports/{reportId}/reject") 
+    @PostMapping("/reports/{reportId}/reject")
     public String rejectReport(
-            @PathVariable Integer reportId, 
-            HttpSession session, 
+            @PathVariable Integer reportId,
+            HttpSession session,
             RedirectAttributes redirectAttributes
     ) {
-        if (isNotManager(session)) { 
-            return "redirect:/access-deniel"; 
+         User managerUser = (User) session.getAttribute("user"); // ⭐ Lấy manager từ session
+        if (managerUser == null || isNotManager(session)) {
+            return "redirect:/access-denied"; // Sửa lỗi chính tả nếu cần
         }
         try {
-            managerService.rejectReport(reportId);
+            managerService.rejectReport(reportId, managerUser); // ⭐ Truyền managerUser vào service
             redirectAttributes.addFlashAttribute("successMessage", "Đã từ chối khiếu nại ID: " + reportId);
         } catch (Exception e) {
+             System.err.println("Lỗi khi từ chối Report ID " + reportId + ": " + e.getMessage()); // Log lỗi
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi từ chối khiếu nại ID: " + reportId);
         }
         return "redirect:/manager/reports";
