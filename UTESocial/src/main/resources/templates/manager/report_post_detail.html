@@ -322,10 +322,11 @@
                                 <th:block th:each="att : ${post.attachments}">
                                     <img th:if="${att.fileType != null and att.fileType.startsWith('image')}" th:src="@{${att.fileUrl}}" alt="Ảnh đính kèm">
                                     <video th:if="${att.fileType != null and att.fileType.startsWith('video')}" th:src="@{${att.fileUrl}}" controls></video>
-                                    <a th:if="${att.fileType != null and !att.fileType.startsWith('image') and !att.fileType.startsWith('video')}" th:href="@{${att.fileUrl}}" target="_blank">
-                                        <i class="bi bi-file-earmark-text me-2"></i>
-                                        <!-- SỬA: Lỗi #strings.substringAfterLast -->
-                                        <span th:text="${#strings.substring(att.fileUrl, #strings.lastIndexOf(att.fileUrl, '/') + 1)}">Tên file</span>
+                                    <a th:if="${att.fileType != null and !att.fileType.startsWith('image') and !att.fileType.startsWith('video')}"
+                                        th:href="@{/download/attachment/{id}(id=${att.attachmentId})}"
+                                        class="btn btn-outline-secondary btn-sm m-1" download>
+                                        <i class="bi bi-download me-1"></i>
+                                        <span th:text="${att.fileUrl != null ? att.fileUrl.substring(att.fileUrl.lastIndexOf('/') + 1) : 'Tải file'}">Tên file</span>
                                     </a>
                                 </th:block>
                             </div>
