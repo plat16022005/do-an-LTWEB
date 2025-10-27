@@ -89,6 +89,8 @@ public class AdminController
         //3. Thống kê user chi tiết 
         model.addAttribute("activeUsers", adminService.countActiveUsers());
         model.addAttribute("lockedUsers", adminService.countLockedUsers());
+        model.addAttribute("totalRoleUser", adminService.countUsersByRole("user"));
+        model.addAttribute("totalRoleManager", adminService.countUsersByRole("manager"));
         
         //4. Lấy 5 user mới đăng ký
         Pageable latestFiveUsers = PageRequest.of(0, 5, Sort.by("createdAt").descending());
@@ -485,5 +487,54 @@ public class AdminController
 
 
         return "admin/user_detail"; 
+    }
+    
+    
+    
+    //Thông báo
+    @GetMapping("/announcements/new")
+    public String showCreateAnnouncementForm(HttpSession session, Model model) 
+    {
+        User user = (User) session.getAttribute("user");
+        
+        if (user == null || !"Admin".equals(user.getRole())) {
+            return "redirect:/access-deniel";
+        }
+        model.addAttribute("pageTitle", "Gửi thông báo"); 
+        return "admin/create_announcement"; 
+    }
+
+    
+    //POST mapping để xử lý việc gửi thông báo.
+    @PostMapping("/announcements/create")
+    public String createAnnouncement(@RequestParam String content,
+                                     HttpSession session,
+                                     RedirectAttributes redirectAttributes) 
+    {
+        User adminUser = (User) session.getAttribute("user");
+        // Kiểm tra quyền Admin
+        if (adminUser == null || !"Admin".equals(adminUser.getRole())) 
+        {
+            return "redirect:/access-deniel";
+        }
+
+        try 
+        {
+            adminService.createGlobalAnnouncement(content, adminUser);
+            redirectAttributes.addFlashAttribute("successMessage", "Đã gửi thông báo thành công đến tất cả người dùng.");
+        } 
+        catch (IllegalArgumentException e) 
+        {
+             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+             return "redirect:/admin/announcements/new"; // Quay lại form nếu nội dung trống
+        } 
+        catch (Exception e) 
+        {
+            System.err.println("Lỗi khi gửi thông báo: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi gửi thông báo.");
+            return "redirect:/admin/announcements/new"; // Quay lại form nếu có lỗi khác
+        }
+
+        return "redirect:/admin/dashboard"; 
     }
 }

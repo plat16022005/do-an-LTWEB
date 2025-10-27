@@ -86,6 +86,7 @@ public class UserController
         		else
         		{
         			redirectAttributes.addFlashAttribute("error", "Tài khoản bạn đã bị khóa!");
+        			redirectAttributes.addFlashAttribute("lockedReason", user.getLockedReason());
         			return "redirect:/login";
         		}
         	}

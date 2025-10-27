@@ -72,6 +72,14 @@
         <strong>Lỗi!</strong> <span th:text="${error}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+    
+    <div th:if="${lockedReason != null}" class="alert alert-warning alert-dismissible fade show" role="alert"
+	     style="position: fixed; top: 80px; right: 20px; z-index: 9998; min-width: 300px; max-width: 400px;">
+	    <strong>Tài khoản bị khóa!</strong>
+	    <hr class="my-2">
+	    <p class="mb-0">Lý do: <span th:text="${lockedReason}"></span></p>
+	    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
 
     <main class="m-auto">
         <div class="card login-card rounded-4 shadow">

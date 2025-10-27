@@ -57,4 +57,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     
     // Lấy danh sách user mới nhất (chỉ user và manager)
     List<User> findByRoleInOrderByCreatedAtDesc(List<String> roles, Pageable pageable);
+    
+    //Đếm số người dùng theo vai trò cụ thể.
+    long countByRole(String role);
 }

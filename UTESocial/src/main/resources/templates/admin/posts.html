@@ -227,6 +227,70 @@
 		    text-overflow: ellipsis; 
 		    white-space: nowrap;
 		}
+		
+		.search-bar-container .input-group {
+			    padding: 2px;
+			}
+			
+			.search-bar-container .input-group .form-select,
+			.search-bar-container .input-group input[type="date"] {
+			    background-color: var(--card-bg) !important; 
+			    border: none !important; 
+			    border-radius: 1.5rem; 
+			    margin: 0 3px; 
+			    padding-top: 0.5rem;    
+			    padding-bottom: 0.5rem;
+			    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+			    transition: box-shadow 0.2s ease-in-out; 
+			}
+			
+			
+			 .search-bar-container .input-group .form-select:first-of-type,
+			 .search-bar-container .input-group input[type="search"] + .form-select { 
+			     margin-left: 5px; 
+			     margin-right: 3px;
+			 }
+			
+			.search-bar-container .input-group input[type="date"]:last-of-type {
+			     margin-right: 5px; 
+			     margin-left: 3px;
+			}
+			
+			
+			
+			.search-bar-container .input-group .form-select:focus,
+			.search-bar-container .input-group input[type="date"]:focus {
+			    box-shadow: 0 0 0 0.2rem rgba(14, 165, 233, 0.35); 
+			}
+			
+			
+			.search-bar-container .input-group input[type="search"] {
+			     background-color: transparent !important; 
+			     box-shadow: none !important; 
+			     border: none !important; 
+			     padding-left: 0.5rem; 
+			}
+			
+			 
+			 .search-bar-container .input-group .input-group-text {
+			     background-color: transparent !important;
+			     border: none !important;
+			 }
+			
+			 
+			.search-bar-container .input-group input[type="date"]::placeholder {
+			     color: var(--text-muted);
+			     opacity: 0.8;
+			}
+			 .search-bar-container .input-group input[type="date"]::-webkit-calendar-picker-indicator {
+			     filter: invert(70%) sepia(10%) saturate(500%) hue-rotate(180deg) brightness(90%) contrast(90%); 
+			 }
+			
+			 
+			 .search-bar-container .input-group .btn {
+			     z-index: 2; 
+			     margin: 2px; 
+			 }
     </style>
 </head>
 <body>
@@ -269,17 +333,16 @@
 					    </a>
 					</li>
 					<li class="nav-item">
+				        <a class="nav-link" th:href="@{/admin/announcements/new}">
+				            <i class="bi bi-megaphone-fill"></i> <span>Gửi Thông báo</span>
+				        </a>
+				    </li>
+					<li class="nav-item">
 					    <a class="nav-link" th:href="@{/home}">  
 					    	<i class="bi bi-house-door-fill"></i> 
 					    	<span>Trang chủ User</span>
 					    </a>
 					</li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="bi bi-gear-fill"></i>
-                            <span>Cài đặt</span>
-                        </a>
-                    </li>
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/logout}">
                             <i class="bi bi-box-arrow-right"></i>

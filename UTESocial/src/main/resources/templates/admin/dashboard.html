@@ -232,17 +232,16 @@
 					    </a>
 					</li>
 					<li class="nav-item">
+				        <a class="nav-link" th:href="@{/admin/announcements/new}">
+				            <i class="bi bi-megaphone-fill"></i> <span>Gửi Thông báo</span>
+				        </a>
+				    </li>
+					<li class="nav-item">
 					    <a class="nav-link" th:href="@{/home}">  
 					    	<i class="bi bi-house-door-fill"></i> 
 					    	<span>Trang chủ User</span>
 					    </a>
 					</li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="bi bi-gear-fill"></i>
-                            <span>Cài đặt</span>
-                        </a>
-                    </li>
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/logout}">
                             <i class="bi bi-box-arrow-right"></i>
@@ -328,34 +327,8 @@
 					    </li>
 					</ul>
                 </div>
-                
-                	<div class="content-card" style="grid-column: span 2;">
-                		<h5 class="text-primary mb-3">Thống kê Người dùng</h5>
-                		<div class="row align-items-center"> 
-                			<div class="col-md-6"> 
-		                		<ul class="list-group list-group-flush">
-					            	<li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0 border-bottom" style="border-color: var(--border-color) !important;">
-		                                <span><i class="bi bi-people-fill me-2"></i>Tổng số (User & Manager)</span>
-		                                <span class="badge bg-primary rounded-pill fs-6" th:text="${totalUsers}">0</span>
-		                            </li>
-					            	<li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0 border-bottom" style="border-color: var(--border-color) !important;">
-		                                <span class="text-success"><i class="bi bi-person-check-fill me-2"></i>Đang hoạt động</span>
-		                                <span class="badge bg-success rounded-pill fs-6" th:text="${activeUsers}">0</span>
-		                            </li>
-					            	<li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0">
-		                                <span class="text-danger"><i class="bi bi-person-fill-lock me-2"></i>Đã bị khóa</span>
-		                                <span class="badge bg-danger rounded-pill fs-6" th:text="${lockedUsers}">0</span>
-		                            </li>
-					        	</ul>
-			        		</div>
-		        		<div class="col-md-6"> <div style="height: 180px;"> 
-		        			<canvas id="userStatusChart" class="h-100"></canvas> 
-		        		</div>
-	                  </div>
-			    </div>
-            </div>
             
-            <div class="content-card" style="grid-column: span 3;">
+            	<div class="content-card" style="grid-column: span 2;">
 	                <h5 class="text-primary mb-3">Người dùng mới đăng ký</h5>
 	                <div style="max-height: 220px; overflow-y: auto;"> 
 	                	<ul class="list-group list-group-flush">
@@ -373,6 +346,41 @@
 	                </div>
 	            </div>
 	            
+	            <div class="content-card" style="grid-column: span 3;"> 
+	            	<h5 class="text-primary mb-3">Thống kê Người dùng</h5>
+				    <div class="row align-items-center"> 
+				
+				        <div class="col-md-7"> 
+				            <ul class="list-group list-group-flush">
+				                <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0 border-bottom" style="border-color: var(--border-color) !important;">
+				                    <span><i class="bi bi-people-fill me-2"></i>Tổng số (User & Manager)</span>
+				                    <span class="badge bg-primary rounded-pill fs-6" th:text="${totalUsers}">0</span>
+				                </li>
+				                <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0 border-bottom" style="border-color: var(--border-color) !important;">
+				                    <span class="text-success"><i class="bi bi-person-check-fill me-2"></i>Đang hoạt động</span>
+				                    <span class="badge bg-success rounded-pill fs-6" th:text="${activeUsers}">0</span>
+				                </li>
+				                <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0 border-bottom" style="border-color: var(--border-color) !important;">
+				                    <span class="text-danger"><i class="bi bi-person-fill-lock me-2"></i>Đã bị khóa</span>
+				                    <span class="badge bg-danger rounded-pill fs-6" th:text="${lockedUsers}">0</span>
+				                </li>
+				
+				                <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0 border-bottom" style="border-color: var(--border-color) !important;">
+				                    <span class="text-info"><i class="bi bi-person-badge me-2"></i>Tổng số Manager</span>
+				                    <span class="badge bg-info rounded-pill fs-6" th:text="${totalRoleManager}">0</span>
+				                </li>
+				                <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0">
+				                    <span class="text-light"><i class="bi bi-person me-2"></i>Tổng số User</span>
+				                    <span class="badge bg-light text-dark rounded-pill fs-6" th:text="${totalRoleUser}">0</span>
+				                </li>
+				        	</ul>
+				        </div>
+				
+				        <div class="col-md-5"> 
+				            <div style="height: 180px;">
+				                <canvas id="userStatusChart" class="h-100"></canvas>
+				            </div>
+				        </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -380,7 +388,7 @@
     <script th:inline="javascript">
     /*<![CDATA[*/ 
 
-        // 1. Lấy dữ liệu số lượng từ Model (Thymeleaf sẽ thay thế giá trị)
+        // 1. Lấy dữ liệu số lượng từ Model
         const activeUsersCount = /*[[${activeUsers}]]*/ 0; // Lấy số user hoạt động, mặc định là 0 nếu null
         const lockedUsersCount = /*[[${lockedUsers}]]*/ 0; // Lấy số user bị khóa, mặc định là 0 nếu null
 
@@ -389,29 +397,29 @@
 
         // 3. Kiểm tra xem canvas có tồn tại và có dữ liệu để vẽ không
         if (ctx && (activeUsersCount > 0 || lockedUsersCount > 0)) {
-            // Tạo biểu đồ mới
+            
             new Chart(ctx, {
                 type: 'pie', // Loại biểu đồ: doughnut (bánh vòng), 'pie' (bánh tròn)
                 data: {
-                    labels: [ // Nhãn cho từng phần
+                    labels: [ 
                         'Đang hoạt động',
                         'Đã bị khóa'
                     ],
                     datasets: [{
                         label: 'Số lượng người dùng', // Chú giải cho bộ dữ liệu
-                        data: [activeUsersCount, lockedUsersCount], // Dữ liệu số lượng tương ứng với labels
-                        backgroundColor: [ // Màu nền cho từng phần
+                        data: [activeUsersCount, lockedUsersCount], 
+                        backgroundColor: [ 
                             'rgb(54, 162, 235)', // Màu xanh dương cho hoạt động
                             'rgb(255, 99, 132)'  // Màu đỏ cho bị khóa
                         ],
-                        hoverOffset: 4, // Hiệu ứng khi rê chuột vào
-                        borderColor: '#e2e8f0' , // Màu viền giống nền card
-                        borderWidth: 1 // Độ dày viền
+                        hoverOffset: 4, 
+                        borderColor: '#e2e8f0' , 
+                        borderWidth: 1
                     }]
                 },
                 options: {
                     responsive: true, // Biểu đồ tự điều chỉnh kích thước
-                    maintainAspectRatio: false, // Cho phép biểu đồ co giãn theo chiều cao container
+                    maintainAspectRatio: false, //biểu đồ co giãn theo chiều cao container
                     plugins: {
                         legend: {
                             position: 'bottom', // Hiển thị chú giải ở dưới
@@ -420,14 +428,14 @@
                             }
                         },
                         title: {
-                            display: false // Không hiển thị tiêu đề mặc định của Chart.js
+                            display: false 
                         }
                     },
-                    //cutout: '60%' Độ dày của vòng bánh (xóa dòng này nếu dùng type: 'pie')
+                   
                 }
             });
         } else if (ctx) {
-             // Tùy chọn: Hiển thị thông báo nếu không có dữ liệu
+             
              const context = ctx.getContext('2d');
              context.textAlign = 'center';
              context.font = '14px Open Sans'; // Đặt font chữ
