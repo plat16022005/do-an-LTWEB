@@ -82,7 +82,16 @@
                 <a
                   class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
                   href="/message"
-                  ><i class="bi bi-envelope fs-3"></i><span>Tin nhắn</span></a
+                  >
+								<span class="position-relative">
+						            <i class="bi bi-envelope fs-3"></i>
+						            
+						            <span id="message-sidebar-badge" 
+						                  class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle d-none">
+						                <span class="visually-hidden">Tin nhắn mới</span>
+						            </span>
+						        </span>
+                  <span>Tin nhắn</span></a
                 >
               </li>
               <li class="nav-item">

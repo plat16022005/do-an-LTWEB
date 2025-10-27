@@ -94,7 +94,14 @@
                   class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
                   href="/message"
                 >
-                  <i class="bi bi-envelope fs-3"></i>
+								<span class="position-relative">
+						            <i class="bi bi-envelope fs-3"></i>
+						            
+						            <span id="message-sidebar-badge" 
+						                  class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle d-none">
+						                <span class="visually-hidden">Tin nhắn mới</span>
+						            </span>
+						        </span>
                   <span>Tin nhắn</span>
                 </a>
               </li>
@@ -103,7 +110,14 @@
                   class="nav-link rounded-pill fs-5 fw-bold d-flex align-items-center gap-3 p-2"
                   href="/notification"
                 >
-                  <i class="bi bi-bell fs-3"></i>
+								<span class="position-relative">
+						            <i class="bi bi-bell fs-3"></i>
+						            
+						            <span id="notification-badge" 
+						                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none"
+						                  style="font-size: 0.75em;"> 0
+						            </span>
+						        </span>
                   <span>Thông báo</span>
                 </a>
               </li>
@@ -349,5 +363,6 @@
       });
     </script>
     <script th:src="@{/js/theme-toggle.js}"></script>
+    <script th:src="@{/js/notification.js}"></script>
   </body>
 </html>
