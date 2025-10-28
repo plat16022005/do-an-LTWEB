@@ -362,20 +362,26 @@
                 <div class="d-flex align-items-center gap-3">
                     <img src="https://placehold.co/40x40/0ea5e9/FFFFFF?text=A" alt="Admin Avatar" class="profile-avatar">
                 </div>
-                
-                <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show mx-3" role="alert">
-				    <i class="bi bi-check-circle-fill me-2"></i>
-				    <span th:text="${successMessage}"></span>
-				    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-				</div>
-				
-				<div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show mx-3" role="alert">
-				    <i class="bi bi-exclamation-triangle-fill me-2"></i>
-				    <span th:text="${errorMessage}"></span>
-				    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-				</div>
             </div>
-            
+
+			<div th:if="${successMessage}"
+				class="alert alert-success alert-dismissible fade show mx-3"
+				role="alert">
+				<i class="bi bi-check-circle-fill me-2"></i> <span
+					th:text="${successMessage}"></span>
+				<button type="button" class="btn-close" data-bs-dismiss="alert"
+					aria-label="Close"></button>
+			</div>
+
+			<div th:if="${errorMessage}"
+				class="alert alert-danger alert-dismissible fade show mx-3"
+				role="alert">
+				<i class="bi bi-exclamation-triangle-fill me-2"></i> <span
+					th:text="${errorMessage}"></span>
+				<button type="button" class="btn-close" data-bs-dismiss="alert"
+					aria-label="Close"></button>
+			</div>
+
 			<div class="search-bar-container mb-3 px-md-3">
 			    <form th:action="@{/admin/posts}" method="get" class="search-form"> 
 				    <div class="input-group border rounded-pill shadow-sm" style="border-color: var(--border-color) !important; background-color: var(--card-bg);">

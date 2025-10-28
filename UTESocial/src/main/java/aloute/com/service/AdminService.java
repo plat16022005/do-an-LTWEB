@@ -51,6 +51,11 @@ public class AdminService
     //Khoá tài khoản
     public void lockUser(Integer userId, String reason) 
     {
+    	if (reason == null || reason.isBlank()) 
+    	{
+            throw new IllegalArgumentException("Lý do khóa không được để trống.");
+        }
+    	
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) 
         {
@@ -144,25 +149,75 @@ public class AdminService
         }
     }
     
+    @Transactional
     public void approvePost(Integer postId) 
     {
-        Optional<Posts> postOptional = postsRepository.findById(postId);
-        if (postOptional.isPresent()) {
-            Posts post = postOptional.get();
-            post.setStatus("approved");
-            postsRepository.save(post);
-        }
-    }
-    
-    public void rejectPost(Integer postId, String reason) 
-    {
-        Optional<Posts> postOptional = postsRepository.findById(postId);
+        Optional<Posts> postOptional = postsRepository.findPostWithUser(postId);
         if (postOptional.isPresent()) 
         {
             Posts post = postOptional.get();
+            post.setStatus("approved");
+            postsRepository.save(post);
+            
+            
+            //Gửi thông báo
+            User postOwner = post.getUser(); // Lấy người đăng bài
+            if (postOwner != null) 
+            {
+                sendNotification( 
+                    postOwner,
+                    "SYSTEM",
+                    post.getPostId(),
+                    "Chúc mừng! Bài viết (ID: " + post.getPostId() + ") của bạn đã được duyệt và hiển thị."
+                );
+            }
+            
+
+        } 
+        else 
+        {
+            throw new RuntimeException("Không tìm thấy bài đăng ID: " + postId);
+        }        
+    }
+    
+    @Transactional
+    public void rejectPost(Integer postId, String reason) 
+    {
+    	if (reason == null || reason.isBlank()) 
+    	{
+            throw new IllegalArgumentException("Lý do từ chối không được để trống.");
+        }
+    	
+        Optional<Posts> postOptional = postsRepository.findPostWithUser(postId);
+        if (postOptional.isPresent()) 
+        {
+            Posts post = postOptional.get();
+            User postOwner = post.getUser();
             post.setStatus("rejected");
             
             postsRepository.save(post);
+            
+            // Gửi thông báo cho người dùng
+            if (postOwner != null) 
+            {
+                Notification notification = new Notification();
+                notification.setUser(postOwner); // Người nhận là người đăng bài
+                notification.setRelatedId(post.getPostId());
+                notification.setType("SYSTEM"); // Loại thông báo hệ thống
+                
+                // Nội dung thông báo bao gồm lý do
+                String content = "Bài viết (ID: " + postId + ") của bạn đã bị từ chối. Lý do: " + reason;
+                notification.setContent(content);
+                
+                notification.setCreatedAt(LocalDateTime.now());
+                notification.setIsRead(false);
+                
+                notificationRepository.save(notification); // Lưu thông báo
+            }
+            else 
+            {
+                throw new RuntimeException("Không tìm thấy bài đăng ID: " + postId);
+            }
         }
     }
     
