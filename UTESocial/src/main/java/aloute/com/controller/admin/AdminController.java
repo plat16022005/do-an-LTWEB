@@ -153,9 +153,23 @@ public class AdminController
     }
     
     @PostMapping("/users/lock")
-    public String lockUser(@RequestParam Integer userId, @RequestParam String reason) 
+    public String lockUser(@RequestParam Integer userId, @RequestParam String reason, RedirectAttributes redirectAttributes) 
     {
-        adminService.lockUser(userId, reason);
+    	try 
+    	{
+            adminService.lockUser(userId, reason);
+            redirectAttributes.addFlashAttribute("successMessage", "Khóa người dùng thành công."); 
+        } 
+    	catch (IllegalArgumentException e) 
+    	{
+            // Bắt lỗi nếu lý do trống
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/admin/users/lock?userId=" + userId; // Quay lại trang nhập lý do
+        } 
+    	catch (Exception e) 
+    	{
+            redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi khóa người dùng.");
+        }
         return "redirect:/admin/users";
     }
 
@@ -352,8 +366,15 @@ public class AdminController
         {
             adminService.rejectPost(postId, reason);
             redirectAttributes.addFlashAttribute("successMessage", "Đã từ chối bài đăng ID: " + postId);
-        } catch (Exception e) {
-            // Ghi log lỗi nếu cần
+        }
+        catch (IllegalArgumentException e) 
+        {
+            // Bắt lỗi nếu lý do trống
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/admin/posts/reject?postId=" + postId;   // Quay lại trang nhập lý do
+        }
+        catch (Exception e) 
+        {
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi từ chối bài đăng.");
         }
         return "redirect:/admin/posts";
