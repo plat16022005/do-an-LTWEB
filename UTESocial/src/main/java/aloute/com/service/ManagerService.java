@@ -140,12 +140,34 @@ public class ManagerService {
     
     public void approvePost(Integer postId) 
     {
-        Optional<Posts> postOptional = postsRepository.findById(postId);
+        Optional<Posts> postOptional = postsRepository.findByIdWithUser(postId);
         if (postOptional.isPresent()) {
             Posts post = postOptional.get();
             post.setStatus("approved");
             postsRepository.save(post);
+
+            // Gửi thông báo đến người dùng
+            User postOwner = post.getUser();
+            if (postOwner != null) 
+            {
+                Notification notification = new Notification();
+                notification.setUser(postOwner);
+                notification.setRelatedId(post.getPostId());
+                notification.setType("SYSTEM");
+
+                String content = "Your post (ID: " + postId + ") đã được duyệt và hiển thị.";
+                notification.setContent(content);
+                notification.setCreatedAt(LocalDateTime.now());
+
+                notification.setActorAvatar(null);
+
+                notification.setIsRead(false);
+                notificationRepository.save(notification);
+            }
+
         }
+
+
     }
 
     @Autowired
