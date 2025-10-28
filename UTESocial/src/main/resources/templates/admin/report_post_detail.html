@@ -257,17 +257,16 @@
 					    </a>
 					</li>
 					<li class="nav-item">
+				        <a class="nav-link" th:href="@{/admin/announcements/new}">
+				            <i class="bi bi-megaphone-fill"></i> <span>Gửi Thông báo</span>
+				        </a>
+				    </li>
+					<li class="nav-item">
 					    <a class="nav-link" th:href="@{/home}">  
 					    	<i class="bi bi-house-door-fill"></i> 
 					    	<span>Trang chủ User</span>
 					    </a>
 					</li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="bi bi-gear-fill"></i>
-                            <span>Cài đặt</span>
-                        </a>
-                    </li>
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/logout}">
                             <i class="bi bi-box-arrow-right"></i>
@@ -333,9 +332,11 @@
                                 <th:block th:each="att : ${post.attachments}">
                                     <img th:if="${att.fileType != null and att.fileType.startsWith('image')}" th:src="@{${att.fileUrl}}" alt="Ảnh đính kèm">
                                     <video th:if="${att.fileType != null and att.fileType.startsWith('video')}" th:src="@{${att.fileUrl}}" controls></video>
-                                    <a th:if="${att.fileType != null and !att.fileType.startsWith('image') and !att.fileType.startsWith('video')}" th:href="@{${att.fileUrl}}" target="_blank">
-                                        <i class="bi bi-file-earmark-text me-2"></i>
-                                        <span th:text="${#strings.substringAfterLast(att.fileUrl, '/')}">Tên file</span>
+                                    <a th:if="${att.fileType != null and !att.fileType.startsWith('image') and !att.fileType.startsWith('video')}"
+                                        th:href="@{/download/attachment/{id}(id=${att.attachmentId})}"
+                                        class="btn btn-outline-secondary btn-sm m-1" download>
+                                        <i class="bi bi-download me-1"></i>
+                                        <span th:text="${att.fileUrl != null ? att.fileUrl.substring(att.fileUrl.lastIndexOf('/') + 1) : 'Tải file'}">Tên file</span>
                                     </a>
                                 </th:block>
                             </div>

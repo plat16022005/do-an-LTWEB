@@ -21,8 +21,9 @@ public class FileStorageService {
     private final Path root = Paths.get("uploads");
     private final aloute.com.repository.AttachmentRepository attachmentRepository;
 
-    public FileStorageService(aloute.com.repository.AttachmentRepository attachmentRepository) {
-        this.attachmentRepository = attachmentRepository;
+    public FileStorageService(aloute.com.repository.AttachmentRepository attachmentRepository) 
+    {
+    	this.attachmentRepository = attachmentRepository;
         try {
             if (!Files.exists(root)) {
                 Files.createDirectories(root);
@@ -32,7 +33,9 @@ public class FileStorageService {
         }
     }
 
-    public Attachments getAttachmentInfo(Integer attachmentId) {
+
+    public Attachments getAttachmentInfo(Integer attachmentId) 
+    {
         return attachmentRepository.findById(attachmentId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy tệp đính kèm với ID: " + attachmentId));
     }
@@ -52,9 +55,9 @@ public class FileStorageService {
             throw new RuntimeException("❌ Lỗi khi lưu file: " + file.getOriginalFilename(), e);
         }
     }
-
-
-    public Resource loadFileAsResource(String filename) {
+    
+    public Resource loadFileAsResource(String filename) 
+    {
         try {
             Path filePath = this.root.resolve(filename).normalize();
             Resource resource = new UrlResource(filePath.toUri());

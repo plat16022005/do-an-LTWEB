@@ -1,8 +1,10 @@
 package aloute.com.service;
 
+import aloute.com.entity.Notification;
 import aloute.com.entity.Posts;
 import aloute.com.entity.Reports;
 import aloute.com.entity.User;
+import aloute.com.repository.NotificationRepository;
 import aloute.com.repository.UserRepository;
 import aloute.com.repository.common.PostsRepository;
 import aloute.com.repository.common.ReportsRepository;
@@ -19,6 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 @Service
@@ -213,9 +216,10 @@ public class AdminService
         return reportOpt;
     }
     
+    @Transactional
     public void resolveReport(Integer reportId) 
     {
-        Optional<Reports> reportOptional = reportsRepository.findById(reportId);
+    	Optional<Reports> reportOptional = reportsRepository.findByIdWithDetails(reportId);
         if (reportOptional.isPresent()) 
         {
             Reports report = reportOptional.get();
@@ -223,12 +227,53 @@ public class AdminService
             report.setStatus("completed");
             report.setResolvedAt(LocalDateTime.now());
             reportsRepository.save(report);
+            
+            // Gửi thông báo 
+            User reporter = report.getReporter();
+            User reportedUser = report.getReportedUser(); 
+            Posts reportedPost = report.getPost();       
+
+            // 1. Thông báo cho người tố cáo (reporter)
+            sendNotification(
+                reporter,
+                "SYSTEM",
+                report.getReportId(),
+                "Khiếu nại (ID: " + report.getReportId() + ") của bạn đã được xác nhận và xử lý."
+            );
+
+            // 2. Thông báo cho người bị tố cáo
+            if ("user".equals(report.getType()) && reportedUser != null) 
+            {
+                // Nếu là khiếu nại người dùng
+                 sendNotification(
+                    reportedUser,
+                    "SYSTEM", 
+                    report.getReportId(),
+                    "Bạn đã nhận được một khiếu nại (ID: " + report.getReportId() + ") đã được xác nhận. Vui lòng xem xét lại hành vi của mình."
+                 );
+            } 
+            else if ("post".equals(report.getType()) && reportedPost != null && reportedPost.getUser() != null) 
+            {
+                 // Nếu là khiếu nại bài viết, thông báo cho người đăng bài
+                 sendNotification(
+                    reportedPost.getUser(),
+                    "SYSTEM", 
+                    report.getReportId(),
+                    "Bài viết (ID: " + reportedPost.getPostId() + ") của bạn đã bị khiếu nại và khiếu nại đã được xác nhận. Vui lòng xem xét lại nội dung."
+                 );
+            }
+        }
+        else 
+        {
+            System.err.println("Không tìm thấy Report ID: " + reportId + " để xử lý.");
         }
     }
     
+    
+    @Transactional
     public void rejectReport(Integer reportId) 
     {
-        Optional<Reports> reportOptional = reportsRepository.findById(reportId);
+    	Optional<Reports> reportOptional = reportsRepository.findByIdWithDetails(reportId);
         if (reportOptional.isPresent()) 
         {
             Reports report = reportOptional.get();
@@ -236,6 +281,21 @@ public class AdminService
             report.setStatus("completed");
             report.setResolvedAt(LocalDateTime.now());
             reportsRepository.save(report);
+            
+            // Gửi thông báo
+            User reporter = report.getReporter();
+
+            // Thông báo cho người tố cáo (reporter)
+            sendNotification(
+                reporter,
+                "SYSTEM",
+                report.getReportId(),
+                "Khiếu nại (ID: " + report.getReportId() + ") của bạn đã bị từ chối do không đủ cơ sở." // Lý do cố định
+            );
+        }
+        else 
+        {
+            System.err.println("Không tìm thấy Report ID: " + reportId + " để từ chối.");
         }
     }
     
@@ -282,6 +342,80 @@ public class AdminService
     public long countLockedUsers() 
     {
         return userRepository.countByRoleInAndIsLockedTrue(Arrays.asList("user", "manager"));
+    }
+    
+    //Đếm số người dùng theo vai trò
+    public long countUsersByRole(String role) 
+    {
+        return userRepository.countByRole(role);
+    }
+    
+    
+    
+    //Thông báo
+    @Autowired
+    private NotificationRepository notificationRepository;
+    
+    
+    @Transactional // Đảm bảo tất cả thông báo được lưu hoặc không lưu gì cả
+    public void createGlobalAnnouncement(String content, User adminUser) 
+    {
+        if (content == null || content.isBlank()) 
+        {
+            throw new IllegalArgumentException("Nội dung thông báo không được để trống.");
+        }
+
+        // 1. Lấy danh sách tất cả người dùng có vai trò 'user' hoặc 'manager'
+        List<User> targetUsers = userRepository.findByRoleIn(Arrays.asList("user", "manager"), Pageable.unpaged()).getContent();
+
+        if (targetUsers.isEmpty()) 
+        {
+            System.out.println("Không có người dùng nào (user/manager) để gửi thông báo.");
+            return; // Không có ai để gửi thì dừng lại
+        }
+
+        List<Notification> notificationsToSave = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
+
+        // 2. Tạo đối tượng Notification cho từng người dùng
+        for (User targetUser : targetUsers) {
+            Notification notification = new Notification();
+            notification.setUser(targetUser); // Người nhận thông báo
+            notification.setType("SYSTEM"); 
+            notification.setRelatedId(null); // Không liên quan đến ID cụ thể nào
+            notification.setContent(content); // Nội dung từ admin
+            notification.setCreatedAt(now);
+            notification.setIsRead(false);
+            
+            
+            notificationsToSave.add(notification);
+        }
+
+        // 3. Lưu tất cả thông báo vào database (hiệu quả hơn lưu từng cái)
+        notificationRepository.saveAll(notificationsToSave);
+
+        // 4. Ghi lại hành động vào Audit Log
+        auditLogService.logAction(adminUser, "CREATE_ANNOUNCEMENT", "Sent announcement to " + targetUsers.size() + " users. Content: " + content.substring(0, Math.min(content.length(), 100)) + "..."); // Ghi log, giới hạn độ dài nội dung
+
+        System.out.println("Đã tạo " + notificationsToSave.size() + " thông báo hệ thống.");
+    }
+    
+    
+    
+    private void sendNotification(User recipient, String type, Integer relatedId, String content) 
+    {
+        if (recipient == null) return; // Không gửi nếu không có người nhận
+
+        Notification notification = new Notification();
+        notification.setUser(recipient);
+        notification.setType(type); // Dùng type SYSTEM chung
+        notification.setRelatedId(relatedId); // Có thể dùng ID của report
+        notification.setContent(content);
+        
+        notification.setIsRead(false);
+        notification.setCreatedAt(LocalDateTime.now());
+        notificationRepository.save(notification);
+        System.out.println("Đã gửi thông báo '" + type + "' đến User ID: " + recipient.getUserId());
     }
 }
    

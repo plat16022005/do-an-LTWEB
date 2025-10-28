@@ -42,7 +42,10 @@ public class NotificationActionController {
                 break;
             case "GROUP_MESSAGE":
                 redirectUrl = "/message/group/" + n.getRelatedId();
-                break;                
+                break;
+            case "SYSTEM":
+            	redirectUrl = "/notification";
+                break;
             default:
                 redirectUrl = "/notification";
                 break;
