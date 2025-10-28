@@ -3,6 +3,7 @@ package aloute.com.service;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import aloute.com.entity.Attachments;
@@ -66,64 +67,102 @@ public class MessageService {
         return messageRepository.findAllMessagesWithAttachments(userId1, userId2);
     }
 
+    private String sanitizeFileName(String fileName) {
+        if (fileName == null) {
+            return "unknown_file";
+        }
+        // Loại bỏ đường dẫn (security) và các ký tự không an toàn
+        // Giữ lại chữ, số, dấu gạch dưới, dấu gạch ngang, dấu chấm
+        return StringUtils.cleanPath(fileName).replaceAll("[^a-zA-Z0-9.\\-_]", "_");
+    }
+
+
+    // Hàm saveMessage của bạn với logic kiểm tra FileType được thêm vào
+    @Transactional // <<< THÊM ANNOTATION NÀY
     public Message saveMessage(Integer senderId, Integer receiverId, String content, List<MultipartFile> files) {
-        User sender = userRepository.findById(senderId).orElseThrow();
-        User receiver = userRepository.findById(receiverId).orElseThrow();
+        User sender = userRepository.findById(senderId)
+                .orElseThrow(() -> new RuntimeException("Sender not found with ID: " + senderId));
+        User receiver = userRepository.findById(receiverId)
+                .orElseThrow(() -> new RuntimeException("Receiver not found with ID: " + receiverId));
 
         Message message = new Message();
         message.setSender(sender);
         message.setReceiver(receiver);
         message.setContent(content);
-        message = messageRepository.save(message); // Lưu trước để lấy ID
+        // Lưu message trước để có ID, Hibernate sẽ tự quản lý việc update attachments sau
+        message = messageRepository.save(message);
 
         // 📎 Nếu có file đính kèm
         if (files != null && !files.isEmpty()) {
             List<Attachments> savedAttachments = new ArrayList<>();
-            
-            // ⭐ SỬA LẠI: Định nghĩa 2 đường dẫn để KHỚP với WebConfig
-            
-            // 1. Đường dẫn WEB (URL trình duyệt gọi)
-            // Phải là /uploads/messages/ để khớp với pattern "/uploads/**" trong WebConfig
+
+            // Đường dẫn lưu file vật lý
+            final String PHYSICAL_PATH_ROOT = System.getProperty("user.dir") + "/uploads/messages/";
+            // Đường dẫn web (URL)
             final String WEB_PATH = "/uploads/messages/";
 
-            // 2. Đường dẫn VẬT LÝ (nơi lưu file)
-            // Phải là thư mục con bên trong thư mục WebConfig đã khai báo
-            final String PHYSICAL_PATH_ROOT = System.getProperty("user.dir") + "/uploads/messages/";
-            
-            // Đảm bảo thư mục vật lý tồn tại
             File uploadDir = new File(PHYSICAL_PATH_ROOT);
             if (!uploadDir.exists()) {
-                uploadDir.mkdirs(); // Tạo thư mục [ProjectFolder]/uploads/messages/
+                uploadDir.mkdirs(); // Tạo thư mục nếu chưa có
             }
 
             for (MultipartFile file : files) {
-                // Đảm bảo tên file không chứa các ký tự như ".." (security)
+                if (file.isEmpty()) continue; // Bỏ qua file rỗng
+
                 String originalFileName = file.getOriginalFilename();
-                if (originalFileName == null) originalFileName = "file";
-                String fileName = System.currentTimeMillis() + "_" + Chỉ_giữ_ký_tự_an_toàn(originalFileName);
-                
-                // Tạo file đích bằng đường dẫn VẬT LÝ
+                // Làm sạch tên file và tạo tên duy nhất
+                String fileName = System.currentTimeMillis() + "_" + sanitizeFileName(originalFileName);
+
                 File dest = new File(PHYSICAL_PATH_ROOT + fileName);
 
                 try {
-                    file.transferTo(dest); // Lưu file vào [ProjectFolder]/uploads/messages/
+                    file.transferTo(dest); // Lưu file vật lý
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.err.println("Lỗi khi lưu file: " + fileName + " - " + e.getMessage());
+                    // Có thể bỏ qua file này hoặc throw exception tùy logic của bạn
+                    continue; // Bỏ qua file lỗi này và xử lý file tiếp theo
                 }
 
-                Attachments attachment = new Attachments();
-                attachment.setMessage(message);
-                // Lưu đường dẫn WEB vào CSDL
-                attachment.setFileUrl(WEB_PATH + fileName); 
-                attachment.setFileType(file.getContentType());
+                String originalFileType = file.getContentType(); // Lấy MIME type gốc
 
-                savedAttachments.add(attachmentsRepository.save(attachment));
+                // ⭐ KIỂM TRA VÀ GÁN LẠI FileType ⭐
+                String fileTypeToSave;
+                if (originalFileType != null) {
+                    if (originalFileType.startsWith("image/")) {
+                        fileTypeToSave = originalFileType;
+                    } else if (originalFileType.startsWith("video/")) {
+                        fileTypeToSave = originalFileType;
+                    } else if (originalFileType.equals("application/pdf")) {
+                        fileTypeToSave = "application/pdf";
+                    } else {
+                        // Các loại khác (docx, xlsx, zip,...) -> "other"
+                        fileTypeToSave = "other";
+                    }
+                } else {
+                    fileTypeToSave = "other"; // Không xác định được kiểu
+                }
+                // ⭐ KẾT THÚC THAY ĐỔI ⭐
+
+                Attachments attachment = new Attachments();
+                attachment.setMessage(message); // Liên kết với message đã lưu
+                attachment.setFileUrl(WEB_PATH + fileName); // Lưu URL web
+                attachment.setFileType(fileTypeToSave); // <<< Gán giá trị đã kiểm tra
+
+                savedAttachments.add(attachmentsRepository.save(attachment)); // Lưu attachment
             }
 
-            message.setAttachments(savedAttachments);
+            // Cập nhật lại danh sách attachments cho message (quan trọng)
+            // Hibernate sẽ tự động quản lý mối quan hệ @OneToMany
+             if (!savedAttachments.isEmpty()) {
+                 message.setAttachments(savedAttachments);
+                 // Không cần gọi messageRepository.save(message) lại lần nữa
+                 // vì message đang trong trạng thái managed của @Transactional
+             }
         }
 
-        return messageRepository.save(message);
+        // Trả về message đã được cập nhật (nếu có attachments)
+        // hoặc message gốc (nếu không có attachments)
+        return message;
     }
     private String Chỉ_giữ_ký_tự_an_toàn(String filename) {
         // Thay thế mọi thứ KHÔNG phải là chữ, số, dấu gạch dưới, dấu gạch ngang, dấu chấm

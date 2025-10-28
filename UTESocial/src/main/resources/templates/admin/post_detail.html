@@ -189,6 +189,28 @@
                 max-width: none;
             }
         }
+        .attachment-preview img, 
+		.attachment-preview video {
+		    max-width: 150px;       
+		    max-height: 150px;      
+		    object-fit: cover;      
+		    border-radius: 8px;
+		    border: 1px solid var(--border-color);
+		    margin: 5px;
+		}
+		
+		.attachment-preview a {
+		     display: inline-block;
+		     margin: 5px;
+		     padding: 10px;
+		     background-color: var(--border-color);
+		     border-radius: 5px;
+		     color: var(--text-light);
+		     text-decoration: none;
+		}
+		.attachment-preview a:hover {
+		    background-color: #475569;
+		}
     </style>
 </head>
 <body>

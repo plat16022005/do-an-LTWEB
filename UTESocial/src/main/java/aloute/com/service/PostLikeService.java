@@ -67,4 +67,13 @@ public class PostLikeService {
             return new HashSet<>();
         }
     }
+    @Transactional(readOnly = true)
+    public List<User> getLikersForPost(Integer postId) {
+        List<PostLike> likes = postLikeRepository.findByPostIdWithUser(postId);
+        // Dùng stream để lấy đối tượng User từ mỗi PostLike
+        return likes.stream()
+                    .map(PostLike::getUser) // Lấy User từ PostLike
+                    .filter(user -> user != null) // Lọc bỏ user null (nếu có thể xảy ra)
+                    .collect(Collectors.toList());
+    }
 }

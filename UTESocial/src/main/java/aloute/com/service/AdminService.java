@@ -8,6 +8,7 @@ import aloute.com.repository.NotificationRepository;
 import aloute.com.repository.UserRepository;
 import aloute.com.repository.common.PostsRepository;
 import aloute.com.repository.common.ReportsRepository;
+import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,8 @@ public class AdminService
 	@Autowired
     private AuditLogService auditLogService;
 	
+	@Autowired
+	private PostsRepository postRepository;
 	
 	//Đối với user
     @Autowired
@@ -413,8 +416,9 @@ public class AdminService
     
     
     @Transactional // Đảm bảo tất cả thông báo được lưu hoặc không lưu gì cả
-    public void createGlobalAnnouncement(String content, User adminUser) 
+    public void createGlobalAnnouncement(String content, User adminUser, HttpSession session) 
     {
+    	User user = (User) session.getAttribute("user");
         if (content == null || content.isBlank()) 
         {
             throw new IllegalArgumentException("Nội dung thông báo không được để trống.");
@@ -431,13 +435,19 @@ public class AdminService
 
         List<Notification> notificationsToSave = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
-
+        Posts postNotification = new Posts();
+        postNotification.setUser(user);
+        postNotification.setContent(content);
+        postNotification.setCreatedAt(now);
+        postNotification.setVisibility("public");
+        postNotification.setStatus("approved");
+        postRepository.save(postNotification);
         // 2. Tạo đối tượng Notification cho từng người dùng
         for (User targetUser : targetUsers) {
             Notification notification = new Notification();
             notification.setUser(targetUser); // Người nhận thông báo
             notification.setType("SYSTEM"); 
-            notification.setRelatedId(null); // Không liên quan đến ID cụ thể nào
+            notification.setRelatedId(postNotification.getPostId()); // Không liên quan đến ID cụ thể nào
             notification.setContent(content); // Nội dung từ admin
             notification.setCreatedAt(now);
             notification.setIsRead(false);

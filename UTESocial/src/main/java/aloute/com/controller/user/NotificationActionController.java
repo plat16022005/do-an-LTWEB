@@ -44,7 +44,7 @@ public class NotificationActionController {
                 redirectUrl = "/message/group/" + n.getRelatedId();
                 break;
             case "SYSTEM":
-            	redirectUrl = "/notification";
+            	redirectUrl = "/posts/" + n.getRelatedId();
                 break;
             default:
                 redirectUrl = "/notification";

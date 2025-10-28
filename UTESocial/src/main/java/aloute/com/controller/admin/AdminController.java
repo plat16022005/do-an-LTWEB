@@ -541,7 +541,7 @@ public class AdminController
 
         try 
         {
-            adminService.createGlobalAnnouncement(content, adminUser);
+            adminService.createGlobalAnnouncement(content, adminUser, session);
             redirectAttributes.addFlashAttribute("successMessage", "Đã gửi thông báo thành công đến tất cả người dùng.");
         } 
         catch (IllegalArgumentException e) 

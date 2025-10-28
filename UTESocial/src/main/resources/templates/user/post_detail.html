@@ -315,19 +315,18 @@
                 <div
                   class="d-flex justify-content-between align-items-center w-100"
                 >
-                  <button
-                    class="btn text-muted d-flex align-items-center gap-2 like-btn"
-                    type="button"
-                    th:attr="data-post-id=${post.postId}"
-                    th:attrappend="data-liked=${likedPostIds.contains(post.postId)}"
-                  >
-                    <i
-                      th:classappend="${likedPostIds.contains(post.postId)} ? ' bi-heart-fill text-danger' : ' bi-heart'"
-                      class="bi"
-                    ></i>
-                    <span th:text="${post.likesCount}">0</span>
-                    <span class="ms-1">Thích</span>
-                  </button>
+					<button
+                        class="btn text-muted d-flex align-items-center gap-2 like-btn"
+                        type="button"
+                        th:attr="data-post-id=${post.postId}"
+                        th:attrappend="data-liked=${likedPostIds.contains(post.postId)}">
+                        <i
+                            th:classappend="${likedPostIds.contains(post.postId)} ? ' bi-heart-fill text-danger' : ' bi-heart'"
+                            class="bi">
+                        </i>
+                        <span class="like-count" th:id="'like-count-' + ${post.postId}" th:text="${post.likesCount}">0</span>
+                        <span class="ms-1">Thích</span>
+                    </button>
                   <button
                     class="btn text-muted d-flex align-items-center gap-2"
                   >
@@ -358,6 +357,16 @@
                   </button>
                 </div>
               </div>
+              <div class="card-body pt-0 pb-2 border-top"> <small class="text-muted">
+                    <a href="javascript:void(0);"
+                       class="text-muted text-decoration-none"
+                       th:attr="data-post-id=${post.postId}"
+                       onclick="showLikersModal(this.getAttribute('data-post-id'))"
+                       title="Xem danh sách người thích">
+                        <span th:id="'like-count-display-' + ${post.postId}" th:text="${post.likesCount}">0</span> lượt thích
+                    </a>
+                    </small>
+            </div>
             </div>
             <!-- 📢 HỘP BÌNH LUẬN -->
             <div class="card-body border-top pt-3">
@@ -541,7 +550,21 @@
         </div>
       </div>
     </div>
-
+<div class="modal fade" id="likersModal" tabindex="-1" aria-labelledby="likersModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content bg-dark text-light">
+      <div class="modal-header">
+        <h5 class="modal-title" id="likersModalLabel">Những người đã thích</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="likersListContainer">
+          <p class="text-center text-muted">Đang tải...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script>
       // =============================
@@ -889,6 +912,121 @@
         observer.observe(replyList, { childList: true, subtree: true });
       });
     </script>
+<script>
+    // === Hàm mở modal xem danh sách người thích ===
+    async function showLikersModal(postId) {
+        if (!postId) return;
+
+        const modalElement = document.getElementById('likersModal');
+        const likersListContainer = document.getElementById('likersListContainer');
+        const modalTitle = document.getElementById('likersModalLabel');
+
+        // Hiển thị trạng thái đang tải
+        likersListContainer.innerHTML = '<p class="text-center text-muted">Đang tải...</p>';
+        modalTitle.textContent = "Những người đã thích"; // Reset title
+
+        // Mở modal
+        const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+        modalInstance.show();
+
+        try {
+            // Gọi API backend để lấy danh sách
+            const response = await fetch(`/post/${postId}/likers`);
+            if (!response.ok) {
+                throw new Error(`Lỗi ${response.status}: Không thể tải danh sách.`);
+            }
+            const likers = await response.json();
+
+            // Cập nhật title với số lượng
+            modalTitle.textContent = `Những người đã thích (${likers.length})`;
+
+            // Xóa nội dung "Đang tải..."
+            likersListContainer.innerHTML = '';
+
+            if (likers.length === 0) {
+                likersListContainer.innerHTML = '<p class="text-center text-muted">Chưa có ai thích bài viết này.</p>';
+            } else {
+                // Tạo HTML cho từng người thích
+                likers.forEach(user => {
+                    const userDiv = document.createElement('div');
+                    // Thêm class hover
+                    userDiv.className = 'd-flex align-items-center mb-3 p-2 rounded hover-bg-dark-subtle';
+                    userDiv.innerHTML = `
+                        <a href="/${user.nameUser}" class="d-flex align-items-center text-decoration-none text-light w-100">
+                            <img src="${user.avatarUrl || 'https://placehold.co/40x40?text=U'}"
+                                 alt="${user.fullName}" class="rounded-circle me-3" width="40" height="40" style="object-fit: cover;">
+                            <span class="fw-bold">${user.fullName}</span>
+                            </a>
+                    `;
+                    likersListContainer.appendChild(userDiv);
+                });
+            }
+
+        } catch (error) {
+            console.error("Lỗi khi tải danh sách người thích:", error);
+            likersListContainer.innerHTML = `<p class="text-center text-danger">Đã xảy ra lỗi khi tải danh sách.</p>`;
+        }
+    }
+ // === Gắn các listener khi trang tải xong ===
+    document.addEventListener("DOMContentLoaded", function () {
+
+        // --- Listener cho nút LIKE/UNLIKE (.like-btn) ---
+        // (Đơn giản hóa: Bỏ kiểm tra event.target)
+        document.querySelectorAll(".like-btn").forEach((btn) => {
+            btn.addEventListener("click", () => { // Không cần 'event'
+                // Không cần kiểm tra if (event.target...) nữa
+
+                console.log("Clicked like button, processing like/unlike.");
+                const postId = btn.getAttribute("data-post-id");
+
+                fetch("/post/toggle-like/json", { /* ... (code fetch như cũ) ... */ })
+                .then(res => res.json()) // Nên thêm kiểm tra res.ok
+                .then(data => {
+                    console.log("Like toggle response:", data);
+                    if (!data.success) {
+                        return alert(data.message || "Lỗi khi cập nhật lượt thích.");
+                    }
+
+                    // ⭐ CẬP NHẬT CẢ HAI SPAN HIỂN THỊ SỐ LƯỢT THÍCH ⭐
+                    // 1. Cập nhật số trong nút like (như cũ)
+                    const likeCountInButton = document.getElementById(`like-count-${postId}`);
+                    if (likeCountInButton) {
+                        likeCountInButton.textContent = data.likesCount;
+                    }
+                    // 2. Cập nhật số ở dòng hiển thị riêng (mới thêm)
+                    const likeCountDisplay = document.getElementById(`like-count-display-${postId}`);
+                    if (likeCountDisplay) {
+                        likeCountDisplay.textContent = data.likesCount;
+                    }
+                    // --- Hết phần cập nhật ---
+
+
+                    // Cập nhật icon và data-liked (như cũ)
+                    const icon = btn.querySelector("i.bi");
+                    if (icon) {
+                       if (data.liked) {
+                           icon.classList.remove("bi-heart");
+                           icon.classList.add("bi-heart-fill", "text-danger");
+                           btn.setAttribute("data-liked", "true");
+                       } else {
+                           icon.classList.remove("bi-heart-fill", "text-danger");
+                           icon.classList.add("bi-heart");
+                           btn.setAttribute("data-liked", "false");
+                       }
+                    }
+                })
+                .catch(error => { /* ... (xử lý lỗi fetch như cũ) ... */ });
+            });
+        });
+
+        // --- XÓA BỎ LISTENER CHO .show-likers-trigger ---
+        // Không còn listener này nữa
+
+        // --- Các listener khác của bạn (Giữ nguyên) ---
+        // ...
+
+    }); // Kết thúc DOMContentLoaded
+</script>
     <script th:src="@{/js/theme-toggle.js}"></script>
     <script th:src="@{/js/report.js}"></script>
     <script th:src="@{/js/notification.js}"></script>

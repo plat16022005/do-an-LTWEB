@@ -1,7 +1,10 @@
 package aloute.com.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -11,7 +14,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import aloute.com.entity.User;
 import aloute.com.service.PostLikeService;
 import jakarta.servlet.http.HttpSession;
+
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class PostLikeController {
@@ -56,5 +63,31 @@ public class PostLikeController {
     //     Optional<Posts> post = postsRepository.findById(postId);
     //     return post.map(Posts::getLikesCount).orElse(0);
     // }
+    }
+    @GetMapping("/post/{postId}/likers")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getPostLikers(@PathVariable Integer postId) {
+        try {
+            List<User> likers = postLikeService.getLikersForPost(postId);
+
+            // Chuyển List<User> thành List<Map> để chỉ lấy thông tin cần thiết
+            List<Map<String, Object>> result = likers.stream()
+                .map(user -> {
+                    Map<String, Object> userInfo = new HashMap<>();
+                    userInfo.put("userId", user.getUserId());
+                    userInfo.put("fullName", user.getFullName());
+                    userInfo.put("avatarUrl", user.getAvatarUrl());
+                    userInfo.put("nameUser", user.getNameUser()); // Thêm username để tạo link profile
+                    return userInfo;
+                })
+                .collect(Collectors.toList());
+
+            return ResponseEntity.ok(result); // Trả về 200 OK và danh sách
+        } catch (Exception e) {
+            // Log lỗi ra server
+            System.err.println("Lỗi khi lấy danh sách người thích bài viết " + postId + ": " + e.getMessage());
+            // Trả về lỗi 500
+            return ResponseEntity.internalServerError().body(null);
+        }
     }
 }

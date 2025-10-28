@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import aloute.com.entity.Comment;
 import aloute.com.entity.Posts;
@@ -34,10 +36,20 @@ public class PostController {
     @GetMapping("/posts/{id}")
     public String postDetail(@PathVariable Integer id, Model model, HttpSession session) {
         User user = (User) session.getAttribute("user");
+        if (user == null)
+        {
+        	return "redirect:/access-deniel";
+        }
         model.addAttribute("user", user);
         Posts post = postRepository.findPostWithUser(id)
             .orElseThrow(() -> new RuntimeException("Không tìm thấy bài viết"));
-
+        if (post.getStatus().equals("rejected"))
+        {
+        	return "redirect:/access-deniel";
+        }
+        else 
+        {
+        	
         List<Posts> singlePostList = Collections.singletonList(post);
 
         model.addAttribute("post", post);
@@ -49,8 +61,20 @@ public class PostController {
         model.addAttribute("comments", rootComments);
 
         return "user/post_detail";
+        }
     }
 
-
+    @PostMapping("/posts/{postId}/delete")
+    public String deletePost(@PathVariable Integer postId, HttpSession session, RedirectAttributes redirectAttributes) {
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            redirectAttributes.addFlashAttribute("error", "Vui lòng đăng nhập.");
+            return "redirect:/login"; // Hoặc trang lỗi
+        }
+        Posts post = postRepository.findById(postId).orElseThrow();
+        post.setDeleted(true);
+        postRepository.save(post);
+        return "redirect:/" + currentUser.getNameUser();
+    }
 
 }
