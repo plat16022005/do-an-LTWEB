@@ -124,14 +124,3 @@ Mở trình duyệt và truy cập: http://localhost:8090 (hoặc cổng bạn c
  ┣ uploads            # Thư mục lưu file tải lên (avatar, attachments)
  ┗ pom.xml            # File quản lý thư viện Maven
 🚀 Hướng phát triểnTự động hóa kiểm duyệt: Sử dụng AI để phát hiện nội dung vi phạm.Nâng cao hệ thống thông báo: Thêm thông báo đẩy (push notification) và qua email.Xây dựng thuật toán gợi ý (Feed-AI): Cá nhân hóa bảng tin người dùng.Phát triển API: Xây dựng API cho phép ứng dụng bên thứ ba tương tác.
-
-## Đóng góp
-
-| Thành viên          | MSSV     |
-| ------------------- | -------- |
-| Huỳnh Hoài Bảo      | 23110178 |
-| Nguyễn Trọng Phúc    | 23110288 |
-| Võ Thanh Nhã        | 23110277 |
-| Nguyễn Thành Huy    | 23110227 |
-
-**Giáo viên hướng dẫn:** Nguyễn Hữu Trung
